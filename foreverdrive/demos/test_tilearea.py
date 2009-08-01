@@ -9,10 +9,6 @@ screen = pygame.display.set_mode((500, 500))
 
 area = TileArea("default_tile.png", (10, 10))
 
-boxes = pygame.sprite.RenderUpdates()
-box = MovingBox((128, 128, 128), (200, 200))
-boxes.add(box)
-
 quit = False
 while not quit:
     #Handle Input Events
@@ -28,20 +24,19 @@ while not quit:
             pdb.set_trace()
         elif event.type == KEYDOWN:
             if event.key == K_UP:
-                box.move_up()
+                area.top -= 1
             elif event.key == K_DOWN:
-                box.move_down()
+                area.top += 1
             elif event.key == K_LEFT:
-                box.move_left()
+                area.left -= 1
             elif event.key == K_RIGHT:
-                box.move_right()
+                area.left += 1
 
     ticks = pygame.time.get_ticks()
 
     tg = area.tile_group
     tg.update(ticks)
-    boxes.update(ticks)
 
     rectlist = tg.draw(screen)
-    pygame.display.update(rectlist + boxes.draw(screen))
+    pygame.display.update(rectlist)
 
