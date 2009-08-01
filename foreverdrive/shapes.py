@@ -47,7 +47,7 @@ class MovingBox(Box):
     hmove = 0
     vmove = 0
     lastmove = 0
-    speed = 50.0
+    speed = 15.0
 
     def update(self, current_time):
         if (current_time - self.lastmove) > self.speed:
@@ -55,11 +55,18 @@ class MovingBox(Box):
             self.rect.left += self.hmove
             self.lastmove = current_time
 
-    def move_up(self):
-        self.vmove = -1
-    def move_down(self):
-        self.vmove = 1
-    def move_left(self):
-        self.hmove = -1
-    def move_right(self):
-        self.hmove = 1
+    def handle_event(self, event):
+        if event.type == pygame.locals.KEYDOWN:
+            change = 1
+        elif event.type == pygame.locals.KEYUP:
+            change = -1
+
+        if event.key == pygame.locals.K_UP:
+            self.vmove -= change
+        elif event.key == pygame.locals.K_DOWN:
+            self.vmove += change
+        elif event.key == pygame.locals.K_LEFT:
+            self.hmove -= change
+        elif event.key == pygame.locals.K_RIGHT:
+            self.hmove += change
+
