@@ -22,3 +22,8 @@ class TileArea(object):
 
         tg.update(ticks)
         return tg.draw(screen)
+
+class BoundArea(TileArea):
+
+    def __init__(self, *args, **kwargs):
+        super(BoundArea, self).__init__(*args, **kwargs)

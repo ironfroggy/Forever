@@ -31,8 +31,9 @@ class EventRouter(object):
                 callback(event)
 
 class Mode(EventRouter):
-    def __init__(self):
+    def __init__(self, game):
         super(Mode, self).__init__()
+        self.game = game
         self.background = TileArea("default_tile.png",
                                    (10, 10))
 
@@ -46,6 +47,25 @@ class Mode(EventRouter):
     def leaving(self):
         pass
 
+class InitialMode(Mode):
+
+    def __init__(self, game):
+        super(InitialMode, self).__init__(game)
+        self.listen(self.enter_pause, KEYUP, K_p)
+
+    def enter_pause(self, event):
+        self.route(PAUSE)
+        self.game.set_mode('pause')
+
+class PauseMode(Mode):
+
+    def __init__(self, game):
+        super(PauseMode, self).__init__(game)
+        self.listen(self.leave_pause, KEYUP, K_p)
+
+    def leave_pause(self, event):
+        self.game.set_mode('init')
+
 class ForeverMain(object):
     """The ForeverMain instance represents the active game
     state. This manages the background, sprites, input,
@@ -56,7 +76,8 @@ class ForeverMain(object):
         super(ForeverMain, self).__init__()
         self.screen = pygame.display.set_mode((500, 500))
         self.modes = {
-            'init': Mode()
+            'init': InitialMode(self),
+            'pause': PauseMode(self),
             }
         self.current_mode = 'init'
 

@@ -13,16 +13,6 @@ def main():
     group.add(sprite)
     game.groups.append(group)
 
-    pause = Mode()
-    game.modes['pause'] = pause
-    def enter_pause(event):
-        game.mode.route(PAUSE)
-        game.set_mode('pause')
-    def leave_pause(event):
-        game.set_mode('init')
-    game.mode.listen(enter_pause, KEYUP, K_p)
-    pause.listen(leave_pause, KEYUP, K_p)
-
     game.run()
 
 if __name__ == "__main__":
