@@ -15,11 +15,16 @@ def main():
     pause = Mode()
     game.modes['pause'] = pause
     def enter_pause(event):
-        game.current_mode = 'pause'
+        game.set_mode('pause')
     def leave_pause(event):
-        game.current_mode = 'init'
+        game.set_mode('init')
     game.mode.listen(enter_pause, KEYUP, K_p)
     pause.listen(leave_pause, KEYUP, K_p)
+
+    def reset_movement():
+        sprite.hmove = 0
+        sprite.vmove = 0
+    game.mode.entering = reset_movement
 
     game.run()
 

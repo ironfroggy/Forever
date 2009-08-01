@@ -31,6 +31,12 @@ class Mode(EventRouter):
 
         self.groups = []
 
+    def entering(self):
+        pass
+
+    def leaving(self):
+        pass
+
 class ForeverMain(object):
     """The ForeverMain instance represents the active game
     state. This manages the background, sprites, input,
@@ -44,6 +50,11 @@ class ForeverMain(object):
             'init': Mode()
             }
         self.current_mode = 'init'
+
+    def set_mode(self, modename):
+        self.mode.leaving()
+        self.current_mode = modename
+        self.mode.entering()
 
     @property
     def mode(self):
