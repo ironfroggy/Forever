@@ -9,7 +9,7 @@ class Sprite(pygame.sprite.Sprite):
     hmove = 0
     vmove = 0
     lastmove = 0
-    speed = 15.0
+    speed = 10.0
 
     def __init__(self, initial_position=(100, 100), image_path="default_sprite.png"):
 
