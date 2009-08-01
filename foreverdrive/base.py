@@ -32,7 +32,9 @@ class Mode(EventRouter):
         self.groups = []
 
     def entering(self):
-        pass
+        for group in self.groups:
+            for sprite in group:
+                sprite.stop()
 
     def leaving(self):
         pass

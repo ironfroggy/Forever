@@ -27,6 +27,10 @@ class Sprite(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.topleft = initial_position
 
+    def stop(self):
+        self.hmove = 0
+        self.vmove = 0
+
     def update(self, current_time):
         if (current_time - self.lastmove) > self.speed:
             self.rect.top += self.vmove

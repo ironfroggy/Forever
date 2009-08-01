@@ -21,11 +21,6 @@ def main():
     game.mode.listen(enter_pause, KEYUP, K_p)
     pause.listen(leave_pause, KEYUP, K_p)
 
-    def reset_movement():
-        sprite.hmove = 0
-        sprite.vmove = 0
-    game.mode.entering = reset_movement
-
     game.run()
 
 if __name__ == "__main__":
