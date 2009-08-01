@@ -6,9 +6,6 @@ from foreverdrive.area import TileArea
 pygame.init()
 
 screen = pygame.display.set_mode((500, 500))
-background = pygame.Surface((500, 500))
-background.fill((0, 0, 0))
-screen.blit(background, (0, 0))
 
 area = TileArea("default_tile.png", (10, 10))
 
@@ -48,5 +45,3 @@ while not quit:
     rectlist = tg.draw(screen)
     pygame.display.update(rectlist + boxes.draw(screen))
 
-#   tg.clear(screen, background)
-#    boxes.clear(screen, background)
