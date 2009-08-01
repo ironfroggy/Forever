@@ -5,12 +5,17 @@ from pygame.locals import *
 
 from foreverdrive.area import TileArea
 
+PAUSE = object()
+
 class EventRouter(object):
     def __init__(self):
         self.listeners = {}
 
     def listen(self, callback, type, key):
         self.listeners.setdefault((type, key), []).append(callback)
+
+    def listen_pause(self, callback):
+        self.listeners.setdefault("__PAUSE__", []).append(callback)
 
     def listen_arrows(self, callback):
         for event_type in (KEYUP, KEYDOWN):
@@ -21,7 +26,9 @@ class EventRouter(object):
         if hasattr(event, 'type') and hasattr(event, 'key'):
             for callback in self.listeners.get((event.type, event.key), []):
                 callback(event)
-
+        elif event is PAUSE:
+            for callback in self.listeners.get("__PAUSE__", []):
+                callback(event)
 
 class Mode(EventRouter):
     def __init__(self):
@@ -34,7 +41,7 @@ class Mode(EventRouter):
     def entering(self):
         for group in self.groups:
             for sprite in group:
-                sprite.stop()
+                sprite.handle_event(PAUSE)
 
     def leaving(self):
         pass

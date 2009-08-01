@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import *
 
 from foreverdrive import get_media_path
+from foreverdrive.base import PAUSE
 
 class Sprite(pygame.sprite.Sprite):
 
@@ -27,10 +28,6 @@ class Sprite(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.topleft = initial_position
 
-    def stop(self):
-        self.hmove = 0
-        self.vmove = 0
-
     def update(self, current_time):
         if (current_time - self.lastmove) > self.speed:
             self.rect.top += self.vmove
@@ -38,6 +35,11 @@ class Sprite(pygame.sprite.Sprite):
             self.lastmove = current_time
 
     def handle_event(self, event):
+        if event is PAUSE:
+            self.hmove = 0
+            self.vmove = 0
+            return
+
         if event.type == pygame.locals.KEYDOWN:
             change = 1
         elif event.type == pygame.locals.KEYUP:
