@@ -22,7 +22,16 @@ class EventRouter(object):
             for callback in self.listeners.get((event.type, event.key), []):
                 callback(event)
 
-class ForeverMain(EventRouter):
+
+class Mode(EventRouter):
+    def __init__(self):
+        super(Mode, self).__init__()
+        self.background = TileArea("default_tile.png",
+                                   (10, 10))
+
+        self.groups = []
+
+class ForeverMain(object):
     """The ForeverMain instance represents the active game
     state. This manages the background, sprites, input,
     etc.
@@ -31,18 +40,29 @@ class ForeverMain(EventRouter):
     def __init__(self):
         super(ForeverMain, self).__init__()
         self.screen = pygame.display.set_mode((500, 500))
-        self.background = TileArea("default_tile.png",
-                                   (10, 10))
+        self.modes = {
+            'init': Mode()
+            }
+        self.current_mode = 'init'
 
-        self.groups = []
+    @property
+    def mode(self):
+        return self.modes[self.current_mode]
+    @property
+    def groups(self):
+        return self.mode.groups
+
+    def listen_arrows(self, *args, **kwargs):
+        return self.mode.listen_arrows(*args, **kwargs)
 
     def run(self):
         pygame.init()
         screen = self.screen
         quit = False
         while not quit:
+            mode = self.mode
             ticks = pygame.time.get_ticks()
-            background = self.background
+            background = mode.background
 
             for event in pygame.event.get():
                 if event.type == QUIT:
@@ -55,11 +75,11 @@ class ForeverMain(EventRouter):
                     import pdb
                     pdb.set_trace()
                 else:
-                    self.route(event)
+                    mode.route(event)
 
             rectlist = []
             rectlist.extend(background.update_and_draw(ticks))
-            for group in self.groups:
+            for group in mode.groups:
                 group.update(ticks)
                 rectlist.extend(group.draw(screen))
             pygame.display.update(rectlist)
