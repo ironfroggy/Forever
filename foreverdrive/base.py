@@ -12,24 +12,27 @@ class EventRouter(object):
     def listen(self, callback, type, key):
         self.listeners.setdefault((type, key), []).append(callback)
 
+    def listen_arrows(self, callback):
+        for event_type in (KEYUP, KEYDOWN):
+            for event_key in (K_UP, K_DOWN, K_LEFT, K_RIGHT):
+                self.listen(callback, event_type, event_key)
+
     def route(self, event):
         if hasattr(event, 'type') and hasattr(event, 'key'):
             for callback in self.listeners.get((event.type, event.key), []):
                 callback(event)
 
-class ForeverMain(object):
+class ForeverMain(EventRouter):
     """The ForeverMain instance represents the active game
     state. This manages the background, sprites, input,
     etc.
     """
 
     def __init__(self):
+        super(ForeverMain, self).__init__()
         self.screen = pygame.display.set_mode((500, 500))
         self.background = TileArea("default_tile.png",
                                    (10, 10))
-        self.events = EventRouter()
-        self.listen = self.events.listen
-        self.route = self.events.route
 
         self.groups = []
 
