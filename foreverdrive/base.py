@@ -39,10 +39,19 @@ class Mode(EventRouter):
 
         self.groups = []
 
+    new = True
     def entering(self):
+        if self.new:
+            self.new = False
+            self.first_entering()
         for group in self.groups:
             for sprite in group:
-                sprite.handle_event(PAUSE)
+                try:
+                    handle_event = sprite.handle_event
+                except AttributeError:
+                    pass
+                else:
+                    handle_event(PAUSE)
 
     def leaving(self):
         pass

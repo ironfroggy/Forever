@@ -16,18 +16,19 @@ class TestMode(Mode):
         self.area = BoundArea("default_tile.png", size=(5,5))
         self.area.top = 125
         self.area.left = 125
+        self.groups.append(self.area)
 
-    new = True
-    def entering(self):
-        if self.new:
-            self.new = False
-            self.game.groups.append(self.area)
+    def first_entering(self):
+        super(TestMode, self).entering()
 
-            sprite = Sprite()
-            self.game.listen_arrows(sprite.handle_event)
-            self.game.listen_arrows(report)
+        self.new = False
+        self.game.groups.append(self.area)
+
+        sprite = Sprite()
+        self.game.listen_arrows(sprite.handle_event)
+        self.game.listen_arrows(report)
             
-            self.area.add(sprite)
+        self.area.add(sprite)
 
 def main():
     game = ForeverMain(initmode=TestMode)
