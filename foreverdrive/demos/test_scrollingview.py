@@ -9,7 +9,7 @@ class ScrollingModeTest(TestMode, ScrollingMode):
         ScrollingMode.__init__(self, *args, **kwargs)
         area = BoundArea("default_tile.png",
                          size=self.area_size,
-                         topleft=(125, 175))
+                         topleft=(75, 175))
         self.areas.append(area)
         self.groups.append(area)
 
