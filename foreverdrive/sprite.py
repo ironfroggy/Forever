@@ -19,7 +19,7 @@ class Sprite(pygame.sprite.Sprite):
     speed = 2.0
     speed_multiplier = 2
 
-    def __init__(self, topleft=(100, 100), image_path="default_sprite.png"):
+    def __init__(self, topleft=(100, 100), image_path="default_sprite.png", area=None):
 
         # All sprite classes should extend pygame.sprite.Sprite. This
         # gives you several important internal methods that you probably
@@ -27,6 +27,7 @@ class Sprite(pygame.sprite.Sprite):
         # the internal methods, you should extend Sprite, so things like
         # isinstance(obj, pygame.sprite.Sprite) return true on it.
         pygame.sprite.Sprite.__init__(self)
+        self.area = area
       
         # Create the image that will be displayed and fill it with the
         # right color.
@@ -40,6 +41,15 @@ class Sprite(pygame.sprite.Sprite):
                                      self.rect.top + self.rect.height - 1,
                                      self.rect.width,
                                      1)
+        self.boundtop -= self.rect.height - 1
+        self.adjust_inside_area()
+
+    def adjust_inside_area(self):
+        try:
+            self.boundtop += self.area.top
+            self.boundleft += self.area.left
+        except AttributeError:
+            pass
 
     @property
     def bound(self):

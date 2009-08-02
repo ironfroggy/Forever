@@ -103,12 +103,8 @@ class TileArea(object):
         pass
 
     def create_sprite(self, cls, *args, **kwargs):
-        print cls, Sprite
+        kwargs['area'] = self
         sprite = cls(*args, **kwargs)
-        print sprite.rect
-        sprite.rect.top += self.top
-        sprite.rect.left += self.left
-        print sprite.rect
         self.add(sprite)
         return sprite
 
@@ -131,6 +127,12 @@ class Portal(Sprite):
             self.rect.height = height
             self.rect.width = width
 
+    def adjust_inside_area(self):
+        self.rect.top += self.area.top
+        self.rect.left += self.area.left
+        self.boundrect.top += self.area.top
+        self.boundrect.left += self.area.left
+
     def enter(self, leaving_area, sprite):
         # The sprite has to be moving in the same
         # direction as the offset
@@ -148,13 +150,13 @@ class Portal(Sprite):
     def _connect_vertical(cls, area1, area2):
         width = area2.width
         area1.create_sprite(Portal,
-                            topleft=(area2.top - area1.top - 1,
+                            topleft=(area2.top - area1.top,
                                      area2.left - area1.left),
                             to=area2,
                             offset=(1, 0),
                             height=1, width=width)
         area2.create_sprite(Portal,
-                            topleft=(0, 0),
+                            topleft=(1, 0),
                             to=area1,
                             offset=(-1, 0),
                             height=1, width=width)
@@ -260,6 +262,7 @@ class AreaManager(object):
         print dimensions
         for (topleft, size, reltype, children) in dimensions:
             area = self.new_area(topleft, size, relative_to=getattr(relative_to, reltype or "top_left", None))
+            areas.append(area)
             if children is not None:
-                self.new_areas(children, relative_to=area)
+                area.extend(self.new_areas(children, relative_to=area))
         return areas
