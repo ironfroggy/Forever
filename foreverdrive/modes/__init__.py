@@ -1,3 +1,6 @@
+import pygame
+from pygame.locals import *
+
 from foreverdrive.events import EventRouter
 from foreverdrive.area import TileArea
 from foreverdrive.events import Pause

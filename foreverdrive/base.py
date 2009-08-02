@@ -16,6 +16,8 @@ class ForeverMain(object):
     etc.
     """
 
+    delay = 25
+
     def __init__(self, initmode=None):
         if initmode is None:
             initmode = InitialMode
@@ -48,6 +50,8 @@ class ForeverMain(object):
         pygame.init()
         screen = self.screen
         quit = False
+        lastupdate = 0
+        delay = self.delay
         while not quit:
             mode = self.mode
             ticks = pygame.time.get_ticks()
@@ -68,7 +72,11 @@ class ForeverMain(object):
 
             rectlist = []
             rectlist.extend(background.update_and_draw(ticks))
+            update = ticks - lastupdate > delay
+            if update:
+                lastupdate = ticks
             for group in mode.groups:
-                group.update(ticks)
+                if update:
+                    group.update(ticks)
                 rectlist.extend(group.draw(screen))
             pygame.display.update(rectlist)

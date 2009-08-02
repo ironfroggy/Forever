@@ -43,15 +43,14 @@ class Sprite(pygame.sprite.Sprite):
         
 
     def update(self, current_time):
-        if (current_time - self.lastmove) > self.speed:
-            self.boundrect.top += self.vmove
-            self.boundrect.left += self.hmove
-            self.rect.top += self.vmove
-            self.rect.left += self.hmove
+        self.boundrect.top += self.vmove
+        self.boundrect.left += self.hmove
+        self.rect.top += self.vmove
+        self.rect.left += self.hmove
 
-            if self.vmove or self.hmove:
-                self.announce_movement()
-            self.lastmove = current_time
+        if self.vmove or self.hmove:
+            self.announce_movement()
+        self.lastmove = current_time
 
     game = None
     def announce_movement(self):
