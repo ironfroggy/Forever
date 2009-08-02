@@ -125,11 +125,11 @@ class Portal(Sprite):
         # The sprite has to be moving in the same
         # direction as the offset
         down, right = self.offset
-        if down == sprite.vmove and right == sprite.hmove:
+        if down == sprite.vmove and down or right == sprite.hmove and right:
             leaving_area.remove(sprite)
             self.to.add(sprite)
-            sprite.boundtop = sprite.boundrect.top + self.offset[0]
-            sprite.rect.left = sprite.boundrect.left + self.offset[1]
+            sprite.boundtop = sprite.boundrect.top + down
+            sprite.rect.left = sprite.boundrect.left + right
 
     def draw(self):
         pass
