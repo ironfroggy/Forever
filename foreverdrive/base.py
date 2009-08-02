@@ -4,7 +4,7 @@ import pygame
 from pygame.locals import *
 
 from foreverdrive.area import TileArea
-from foreverdrive.events import Movement, Scroll
+from foreverdrive.events import Movement, Scroll, EventRouter
 
 PAUSE = object()
 
