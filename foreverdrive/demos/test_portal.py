@@ -2,12 +2,13 @@ from foreverdrive.demos.test_scrollingview import *
 from foreverdrive.area import Portal
 
 class MultiAreaTest(ScrollingModeTest):
+    area_size = (5, 5)
     def __init__(self, *args, **kwargs):
         super(MultiAreaTest, self).__init__(*args, **kwargs)
         area = self.areas[0]
 
         area = BoundArea("default_tile.png",
-                         size=self.area_size,
+                         size=(3, 10),
                          topleft=(-50, 100),
                          relative_to=area.bottom_left)
         self.areas.append(area)
