@@ -72,11 +72,15 @@ class ForeverMain(object):
 
             rectlist = []
             rectlist.extend(background.update_and_draw(ticks))
+            drawlist = []
             update = ticks - lastupdate > delay
             if update:
                 lastupdate = ticks
             for group in mode.groups:
                 if update:
                     group.update(ticks)
+                drawlist.extend(group.get_groups())
+            drawlist.sort()
+            for (order, group) in drawlist:
                 rectlist.extend(group.draw(screen))
             pygame.display.update(rectlist)

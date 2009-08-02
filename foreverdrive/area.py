@@ -95,6 +95,9 @@ class TileArea(object):
     def update(self, ticks):
         self.tile_group.update(ticks)
 
+    def get_groups(self):
+        return [(10, self.tile_group)]
+
     def draw(self, screen):
         screen = self.screen
         return self.tile_group.draw(screen)
@@ -202,7 +205,7 @@ class BoundArea(TileArea):
     def __init__(self, *args, **kwargs):
         super(BoundArea, self).__init__(*args, **kwargs)
         self.bound_group = pygame.sprite.RenderUpdates()
-        self.portals = pygame.sprite.RenderUpdates()
+        self.portals = pygame.sprite.Group()
 
     def __iter__(self):
         return chain(self.tile_group, self.bound_group)
@@ -241,6 +244,10 @@ class BoundArea(TileArea):
         return chain(
             super(BoundArea, self).draw(surface) +
             self.bound_group.draw(surface))
+
+    def get_groups(self):
+        return chain(super(BoundArea, self).get_groups(),
+                [(50, self.bound_group)])
 
 class AreaManager(object):
     """Manages multiple areas and portals between them."""
