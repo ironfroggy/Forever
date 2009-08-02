@@ -1,5 +1,5 @@
 from foreverdrive.demos.test_boundarea import *
-from foreverdrive.base import ScrollingMode
+from foreverdrive.modes.scrolling import ScrollingMode
 
 
 class ScrollingModeTest(TestMode, ScrollingMode):
