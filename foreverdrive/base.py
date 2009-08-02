@@ -7,6 +7,11 @@ from foreverdrive.area import TileArea
 
 PAUSE = object()
 
+class Movement(object):
+    def __init__(self, player):
+        self.player = player
+        self.rect = player.rect
+
 class EventRouter(object):
     def __init__(self):
         self.listeners = {}
@@ -16,6 +21,9 @@ class EventRouter(object):
 
     def listen_pause(self, callback):
         self.listeners.setdefault("__PAUSE__", []).append(callback)
+
+    def listen_move(self, callback):
+        self.listeners.setdefault("__MOVE__", []).append(callback)
 
     def listen_arrows(self, callback):
         for event_type in (KEYUP, KEYDOWN):
@@ -28,6 +36,9 @@ class EventRouter(object):
                 callback(event)
         elif event is PAUSE:
             for callback in self.listeners.get("__PAUSE__", []):
+                callback(event)
+        elif isinstance(event, Movement):
+            for callback in self.listeners.get("__MOVE__", []):
                 callback(event)
 
 class Mode(EventRouter):

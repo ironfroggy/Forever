@@ -11,10 +11,12 @@ def report(*args, **kwargs):
 
 class TestMode(Mode):
 
+    area_size = (5, 10)
+
     def __init__(self, *args, **kwargs):
         super(TestMode, self).__init__(*args, **kwargs)
         self.area = BoundArea("default_tile.png",
-                              size=(5, 10),
+                              size=self.area_size,
                               initial_position=(125, 125))
         self.groups.append(self.area)
 
@@ -27,7 +29,8 @@ class TestMode(Mode):
         sprite = Sprite()
         self.game.listen_arrows(sprite.handle_event)
         self.game.listen_arrows(report)
-            
+        self.player = sprite
+    
         self.area.add(sprite)
 
 def main():
