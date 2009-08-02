@@ -2,6 +2,7 @@ from itertools import chain
 
 import pygame
 from foreverdrive import get_media_path
+from foreverdrive.sprite import Sprite
 
 class TileArea(object):
     def __init__(self, image_path, size, topleft=(0, 0), relative_to=None):
@@ -87,6 +88,23 @@ class TileArea(object):
 
     def update(self, ticks):
         pass
+
+    def create_sprite(self, cls, *args, **kwargs):
+        print cls, Sprite
+        sprite = cls(*args, **kwargs)
+        print sprite.rect
+        sprite.rect.top += self.top
+        sprite.rect.left += self.left
+        print sprite.rect
+        self.add(sprite)
+        return sprite
+
+class Portal(Sprite):
+
+    def __init__(self, *args, **kwargs):
+        self.to = kwargs.pop('to', None)
+        kwargs['image_path'] = "default_portal.png"
+        super(Portal, self).__init__(*args, **kwargs)
 
 class BoundArea(TileArea):
 
