@@ -5,6 +5,8 @@ from foreverdrive import get_media_path
 from foreverdrive.sprite import Sprite
 
 class TileArea(object):
+    name = None
+
     def __init__(self, image_path, size, topleft=(0, 0), relative_to=None):
         self.image = pygame.image.load(get_media_path(image_path)).convert()
         self.screen = pygame.display.get_surface()
@@ -218,16 +220,31 @@ class BoundArea(TileArea):
             super(BoundArea, self).draw(surface) +
             self.bound_group.draw(surface))
 
-
 class AreaManager(object):
     """Manages multiple areas and portals between them."""
 
-    def __init__(self):
+    def __init__(self, mode):
+        self.mode = mode
         self.areas = []
+        self.namedareas = {}
 
     def add(self, area):
         self.areas.append(area)
+        self.namedareas[area.name] = area
+        self.mode.groups.extend(self.areas)
         area.manager = self
 
-    def new_area(self, (top, left), (tiles_wide, tiles_tall)):
-        pass
+    def new_area(self,
+                 (top, left),
+                 (tiles_wide, tiles_tall),
+                 relative_to=None,
+                 ):
+        area = BoundArea("default_tile.png",
+                         size=(tiles_wide, tiles_tall),
+                         topleft=(top, left),
+                         relative_to=relative_to)
+        self.add(area)
+        return area
+        
+                  
+        
