@@ -20,6 +20,7 @@ class AreaManagingMode(Mode):
 
         sprite = area.create_sprite(Sprite,
                                     topleft=(100, 100),
+                                    bound_topleft=(80, 0),
                                     image_path="default_obstruction.png")
 
 

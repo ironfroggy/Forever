@@ -19,7 +19,11 @@ class Sprite(pygame.sprite.Sprite):
     speed = 2.0
     speed_multiplier = 2
 
-    def __init__(self, topleft=(100, 100), image_path="default_sprite.png", area=None):
+    def __init__(self,
+                 topleft=(100, 100),
+                 bound_topleft=None,
+                 image_path="default_sprite.png",
+                 area=None):
 
         # All sprite classes should extend pygame.sprite.Sprite. This
         # gives you several important internal methods that you probably
@@ -37,12 +41,24 @@ class Sprite(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.top, self.rect.left = topleft
 
-        self.boundrect = pygame.Rect(self.rect.left,
-                                     self.rect.top + self.rect.height - 1,
-                                     self.rect.width,
-                                     1)
-        self.boundtop -= self.rect.height - 1
+        if bound_topleft is None:
+            bound_top = self.rect.height - 1
+            bound_left = 0
+        else:
+            bound_top, bound_left = bound_topleft
+        self.bound_top = bound_top
+        self.bound_left = bound_left
+
+        self.boundrect = pygame.Rect(
+            self.rect.left,
+            self.rect.top,
+            self.rect.width,
+            1)
+
         self.adjust_inside_area()
+
+        self.boundtop += self.rect.height - bound_top
+        self.boundleft -= bound_left
 
     def adjust_inside_area(self):
         try:
@@ -61,7 +77,7 @@ class Sprite(pygame.sprite.Sprite):
     @boundtop.setter
     def boundtop(self, top):
         self.boundrect.top = top
-        self.rect.top = top - self.rect.height
+        self.rect.top = top
 
     @property
     def boundleft(self):
