@@ -89,6 +89,8 @@ class Sprite(pygame.sprite.Sprite):
         
 
     def update(self, current_time):
+        if current_time == self.lastmove and self.lastmove > 0:
+            return
         speed = self.speed
         self.boundrect.top += self.vmove * speed
         self.boundrect.left += self.hmove * speed
