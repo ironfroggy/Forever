@@ -25,7 +25,7 @@ class TestMode(Mode):
         self.game.groups.extend(self.areas)
 
         print self.areas[0].top, self.areas[0].left
-        sprite = Sprite(topleft=(self.areas[0].top, self.areas[0].left))
+        sprite = Sprite(topleft=(self.areas[0].top+50, self.areas[0].left))
         print sprite.rect.top, sprite.rect.left
         self.game.listen_arrows(sprite.handle_event)
         self.game.listen_arrows(report)
