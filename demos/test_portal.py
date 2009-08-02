@@ -1,12 +1,17 @@
-from foreverdrive.demos.test_scrollingview import *
-from foreverdrive.area import Portal
+from foreverdrive.base import ForeverMain
+from foreverdrive.modes.scrolling import ScrollingMode
+from foreverdrive.area import Portal, BoundArea
+from foreverdrive.sprite import FacingSprite
 
-class MultiAreaTest(ScrollingModeTest):
-    area_size = (5, 5)
+class PortalTest(ScrollingMode):
+
     def __init__(self, *args, **kwargs):
-        super(MultiAreaTest, self).__init__(*args, **kwargs)
-        self.area = self.areas[0]
-        area = self.areas[0]
+        super(PortalTest, self).__init__(*args, **kwargs)
+        area = self.area = BoundArea("default_tile.png",
+                              size=(5, 5),
+                              topleft=(125, 125))
+        self.groups.append(self.area)
+        self.areas.append(area)
 
         # Area below
         area = BoundArea("default_tile.png",
@@ -49,9 +54,19 @@ class MultiAreaTest(ScrollingModeTest):
 
         Portal._connect_horizontal(self.areas[0], self.areas[4])
 
+    def first_entering(self):
+        self.new = False
+        self.game.groups.append(self.area)
+
+        sprite = FacingSprite(topleft=(self.area.top+50, self.area.left+50), imagename="default_player")
+        sprite.register_listeners(self.game.mode)
+        self.player = sprite
+    
+        self.area.add(sprite)
+        super(PortalTest, self).first_entering()
 
 def main():
-    game = ForeverMain(initmode=MultiAreaTest)
+    game = ForeverMain(initmode=PortalTest)
     game.run()
 
 if __name__ == '__main__':
