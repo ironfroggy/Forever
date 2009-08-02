@@ -2,7 +2,7 @@ from itertools import chain
 
 import pygame
 from foreverdrive import get_media_path
-from foreverdrive.sprite import Sprite
+from foreverdrive.sprite import Sprite, Bound
 from foreverdrive.visual.filters import blur, dim
 
 class TileArea(object):
@@ -247,7 +247,10 @@ class BoundArea(TileArea):
             if isinstance(bound_sprite, Portal):
                 continue
 
-            rect = bound_sprite.boundrect
+            try:
+                rect = bound_sprite.boundrect
+            except AttributeError:
+                continue
 
             bound_sprite.boundrect = pygame.Rect(
                 min(max(self.left, rect.left),
@@ -260,8 +263,14 @@ class BoundArea(TileArea):
             bound_sprite.rect.top = rect.top - bound_sprite.rect.height - 1
             bound_sprite.rect.left = rect.left
 
-            for entered_portal in pygame.sprite.spritecollide(bound_sprite.lastmovebound, self.portals, False):
+            for entered_portal in pygame.sprite.spritecollide(
+                bound_sprite.lastmovebound,
+                [Bound(s) for s in self.portals],
+                False):
+                if entered_portal.sprite is bound_sprite:
+                    continue
                 entered_portal.enter(self, bound_sprite)
+            print
 
     def draw(self, surface):
         return chain(
@@ -291,7 +300,6 @@ class AreaManager(object):
                  (tiles_wide, tiles_tall),
                  relative_to=None,
                  ):
-        print (top, left), (tiles_wide, tiles_tall), relative_to
         area = BoundArea("default_tile.png",
                          size=(tiles_wide, tiles_tall),
                          topleft=(top, left),
@@ -301,7 +309,6 @@ class AreaManager(object):
 
     def new_areas(self, dimensions, relative_to=None):
         areas = []
-        print dimensions
         for (topleft, size, reltype, children) in dimensions:
             area = self.new_area(topleft, size, relative_to=getattr(relative_to, reltype or "top_left", None))
             areas.append(area)

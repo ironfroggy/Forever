@@ -2,7 +2,7 @@ import pygame
 from pygame.locals import *
 
 from foreverdrive import get_media_path
-from foreverdrive.events import Pause, Movement
+from foreverdrive.events import Pause, Movement, EventRouter, Entering
 
 class Bound(object):
     def __init__(self, sprite):
@@ -11,9 +11,13 @@ class Bound(object):
     def rect(self):
         return self.sprite.boundrect
 
+    def __getattr__(self, name):
+        return getattr(self.sprite, name)
+
 class RectHolder(object):
     def __init__(self, rect):
         self.rect = rect
+
 
 class Sprite(pygame.sprite.Sprite):
 
@@ -27,7 +31,9 @@ class Sprite(pygame.sprite.Sprite):
                  topleft=(100, 100),
                  bound_topleft=None,
                  image_path="default_sprite.png",
-                 area=None):
+                 area=None,
+                 height=1,
+                 name=None):
 
         # All sprite classes should extend pygame.sprite.Sprite. This
         # gives you several important internal methods that you probably
@@ -36,6 +42,7 @@ class Sprite(pygame.sprite.Sprite):
         # isinstance(obj, pygame.sprite.Sprite) return true on it.
         pygame.sprite.Sprite.__init__(self)
         self.area = area
+        self.name = name
       
         # Create the image that will be displayed and fill it with the
         # right color.
@@ -57,13 +64,23 @@ class Sprite(pygame.sprite.Sprite):
             self.rect.left,
             self.rect.top,
             self.rect.width,
-            1)
+            height)
         self.lastmovebound = RectHolder(self.boundrect)
 
         self.adjust_inside_area()
 
         self.boundtop += self.rect.height - bound_top
         self.boundleft -= bound_left
+
+        self.children = set()
+
+    def __iter__(self):
+        return iter(self.children)
+
+    def show_bounds(self):
+        sprite = BoundsShower(self)
+        self.area.add(sprite)
+        self.children.add(sprite)
 
     def adjust_inside_area(self):
         try:
@@ -98,6 +115,9 @@ class Sprite(pygame.sprite.Sprite):
             return
         self.move()
         self.lastmove = current_time
+
+        for child in self:
+            child.update(current_time)
 
     def move(self, M=1):
         speed = self.speed * M
@@ -183,4 +203,33 @@ class FacingSprite(Sprite):
         elif self.vmove < 0:
             self.image = self.image_up
         
+class PerimeterSensoringMixin(EventRouter):
+    """Mixin for sprites to watch other things in their area
+    and trigger an event when things enter and leave their
+    bounds.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(PerimeterSensoringMixin, self).__init__(*args, **kwargs)
         
+        self.area.portals.add(self)
+
+    def enter(self, area, sprite):
+        self.route(Entering(sprite, self))
+        
+class BoundsShower(pygame.sprite.Sprite):
+    def __init__(self, show_for):
+        super(BoundsShower, self).__init__()
+        self.image = pygame.Surface((show_for.boundrect.width,
+                                       show_for.boundrect.height))
+        self.show_for = show_for
+        self.update(0)
+
+    def update(self, update_time):
+        show_for = self.show_for
+        image = self.image
+
+        self.image.fill((128, 128, 128))
+        self.rect = self.image.get_rect()
+        self.rect.top = show_for.boundtop
+        self.rect.left = show_for.boundleft

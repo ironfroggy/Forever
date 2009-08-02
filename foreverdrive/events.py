@@ -8,6 +8,11 @@ class Movement(object):
         self.rect = player.rect
         self.movement = movement
 
+class Entering(object):
+    def __init__(self, sprite, entered):
+        self.sprite = sprite
+        self.entered = entered
+
 class Scroll(object):
     def __init__(self, window, movement):
         self.window = window
@@ -17,7 +22,8 @@ class Pause(object):
     pass
 
 class EventRouter(object):
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        super(EventRouter, self).__init__(*args, **kwargs)
         self.listeners = {}
 
     def listen(self, callback, *args, **kwargs):
