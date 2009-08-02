@@ -25,8 +25,7 @@ class TestMode(Mode):
         self.game.groups.extend(self.areas)
 
         sprite = FacingSprite(topleft=(self.areas[0].top+50, self.areas[0].left), imagename="default_player")
-        self.game.listen_arrows(sprite.handle_event)
-#        self.game.listen_arrows(report)
+        sprite.register_listeners(self.game.mode)
         self.player = sprite
     
         self.areas[0].add(sprite)

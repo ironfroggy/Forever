@@ -16,7 +16,8 @@ class Sprite(pygame.sprite.Sprite):
     hmove = 0
     vmove = 0
     lastmove = 0
-    speed = 10.0
+    speed = 2.0
+    speed_multiplier = 2
 
     def __init__(self, topleft=(100, 100), image_path="default_sprite.png"):
 
@@ -62,10 +63,11 @@ class Sprite(pygame.sprite.Sprite):
         
 
     def update(self, current_time):
-        self.boundrect.top += self.vmove
-        self.boundrect.left += self.hmove
-        self.rect.top += self.vmove
-        self.rect.left += self.hmove
+        speed = self.speed
+        self.boundrect.top += self.vmove * speed
+        self.boundrect.left += self.hmove * speed
+        self.rect.top += self.vmove * speed
+        self.rect.left += self.hmove * speed
 
         if self.vmove or self.hmove:
             self.announce_movement()
@@ -75,6 +77,11 @@ class Sprite(pygame.sprite.Sprite):
     def announce_movement(self):
         if self.game is not None:
             self.game.mode.route(Movement(self, (self.hmove, self.vmove)))
+
+    def register_listeners(self, router):
+        router.listen_arrows(self.handle_event)
+        router.listen(self.handle_event, KEYDOWN, K_RSHIFT)
+        router.listen(self.handle_event, KEYUP, K_RSHIFT)
 
     def handle_event(self, event):
         if isinstance(event, Pause):
@@ -95,6 +102,11 @@ class Sprite(pygame.sprite.Sprite):
             self.hmove -= change
         elif event.key == pygame.locals.K_RIGHT:
             self.hmove += change
+
+        elif event.key == pygame.locals.K_RSHIFT and event.type == pygame.locals.KEYDOWN:
+            self.speed *= self.speed_multiplier
+        elif event.key == pygame.locals.K_RSHIFT and event.type == pygame.locals.KEYUP:
+            self.speed = type(self).speed
 
 class FacingSprite(Sprite):
 
