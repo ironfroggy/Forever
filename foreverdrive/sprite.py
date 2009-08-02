@@ -40,6 +40,14 @@ class Sprite(pygame.sprite.Sprite):
     def boundtop(self, top):
         self.boundrect.top = top
         self.rect.top = top - self.rect.height
+
+    @property
+    def boundleft(self):
+        return self.boundrect.left
+    @boundleft.setter
+    def boundleft(self, left):
+        self.boundrect.left = left
+        self.rect.left = left
         
 
     def update(self, current_time):
