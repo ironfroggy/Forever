@@ -106,6 +106,10 @@ class Portal(Sprite):
         kwargs['image_path'] = "default_portal.png"
         super(Portal, self).__init__(*args, **kwargs)
 
+    def enter(self, leaving_area, sprite):
+        leaving_area.remove(sprite)
+        self.to.add(sprite)
+
 class BoundArea(TileArea):
 
     def __init__(self, *args, **kwargs):
@@ -119,12 +123,16 @@ class BoundArea(TileArea):
     def add(self, sprite):
         if isinstance(sprite, Portal):
             self.portals.add(sprite)
-
         self.bound_group.add(sprite)
+
+    def remove(self, sprite):
+        self.bound_group.remove(sprite)
 
     def update(self, ticks):
         self.bound_group.update(ticks)
         for bound_sprite in self.bound_group:
+            if isinstance(bound_sprite, Portal):
+                continue
 
             rect = bound_sprite.rect
             bound_sprite.rect = pygame.Rect(
@@ -132,6 +140,9 @@ class BoundArea(TileArea):
                 min(max(self.top, rect.top), self.top + self.height - rect.height),
                 rect.width,
                 rect.height)
+
+            for entered_portal in pygame.sprite.spritecollide(bound_sprite, self.portals, False):
+                entered_portal.enter(self, bound_sprite)
 
     def draw(self, surface):
         return chain(
