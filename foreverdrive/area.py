@@ -4,11 +4,19 @@ import pygame
 from foreverdrive import get_media_path
 
 class TileArea(object):
-    def __init__(self, image_path, size, topleft=(0, 0)):
+    def __init__(self, image_path, size, topleft=(0, 0), relative_to=None):
         self.image = pygame.image.load(get_media_path(image_path)).convert()
         self.screen = pygame.display.get_surface()
 
         self._top, self._left = topleft
+        if relative_to is not None:
+            try:
+                rel_top = relative_to.top
+                rel_left = relative_to.left
+            except AttributeError:
+                rel_top, rel_left = relative_to
+            self._top += rel_top
+            self._left += rel_left
         self.width = self.image.get_width() * size[0]
         self.height = self.image.get_height() * size[1]
 
@@ -52,6 +60,19 @@ class TileArea(object):
         for sprite in self:
             sprite.rect.left += change
         self.update_rect()
+
+    @property
+    def top_left(self):
+        return (self.top, self.left)
+    @property
+    def top_right(self):
+        return (self.top, self.right)
+    @property
+    def bottom_left(self):
+        return (self.top + self.height, self.left)
+    @property
+    def bottom_right(self):
+        return (self.top, self.left + self.width)
 
     def update_and_draw(self, ticks):
         self.update(ticks)
