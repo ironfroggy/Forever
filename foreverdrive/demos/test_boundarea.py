@@ -17,7 +17,7 @@ class TestMode(Mode):
         super(TestMode, self).__init__(*args, **kwargs)
         self.area = BoundArea("default_tile.png",
                               size=self.area_size,
-                              topleft=(125, 125))
+                              topleft=(2.5, 2.5), name="main")
         self.groups.append(self.area)
 
     def first_entering(self):

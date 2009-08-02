@@ -5,11 +5,17 @@ from foreverdrive import get_media_path
 from foreverdrive.sprite import Sprite
 
 class TileArea(object):
-    def __init__(self, image_path, size, topleft=(0, 0), relative_to=None):
+    def __init__(self, image_path, size, topleft=(0, 0), relative_to=None, name=None):
+        self.name = name
         self.image = pygame.image.load(get_media_path(image_path)).convert()
+        self.tilewidth = self.image.get_width()
+        self.tileheight = self.image.get_height()
         self.screen = pygame.display.get_surface()
 
         self._top, self._left = topleft
+        self._top *= self.tileheight
+        self._left *= self.tilewidth
+
         if relative_to is not None:
             try:
                 rel_top = relative_to.top
@@ -156,14 +162,14 @@ class Portal(Sprite):
         # When connecting horizontal areas, the right area needs
         # to overlap this area to make room for the sprite. The
         # overlap will be invisible.
-        area2.left -= 50
-        area2.width += 50
+        area2.left -= area2.tilewidth
+        area2.width += area2.tilewidth
         for sprite in area2:
-            sprite.rect.left += 50
+            sprite.rect.left += area2.tilewidth
 
         area1.create_sprite(Portal,
                             topleft=(area2.top - area1.top,
-                                     area2.left - area1.left + 49),
+                                     area2.left - area1.left + area1.tilewidth - 1),
                             to=area2,
                             offset=(0, 1),
                             height=height, width=1)
@@ -222,12 +228,27 @@ class BoundArea(TileArea):
 class AreaManager(object):
     """Manages multiple areas and portals between them."""
 
-    def __init__(self):
+    def __init__(self, mode):
+        self.mode = mode
         self.areas = []
+        self.namedareas = {}
 
     def add(self, area):
         self.areas.append(area)
+        self.namedareas[area.name] = area
+        self.mode.groups.extend(self.areas)
         area.manager = self
 
-    def new_area(self, (top, left), (tiles_wide, tiles_tall)):
-        pass
+    def new_area(self,
+                 (top, left),
+                 (tiles_wide, tiles_tall),
+                 relative_to=None,
+                 ):
+        area = BoundArea("default_tile.png",
+                         size=(tiles_wide, tiles_tall),
+                         topleft=(top, left),
+                         relative_to=relative_to)
+        self.add(area)
+        
+                  
+        

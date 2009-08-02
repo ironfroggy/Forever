@@ -9,7 +9,7 @@ class MultiAreaTest(ScrollingModeTest):
 
         area = BoundArea("default_tile.png",
                          size=(3, 10),
-                         topleft=(0, 100),
+                         topleft=(0, 2),
                          relative_to=area.bottom_left)
         self.areas.append(area)
         self.groups.append(area)
@@ -18,7 +18,7 @@ class MultiAreaTest(ScrollingModeTest):
 
         area = BoundArea("default_tile.png",
                          size=(10, 3),
-                         topleft=(100, 0),
+                         topleft=(2, 0),
                          relative_to=self.areas[0].top_right)
         self.areas.append(area)
         self.groups.append(area)
