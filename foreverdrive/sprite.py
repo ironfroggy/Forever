@@ -2,7 +2,7 @@ import pygame
 from pygame.locals import *
 
 from foreverdrive import get_media_path
-from foreverdrive.base import PAUSE, Movement
+from foreverdrive.events import Pause, Movement
 
 class Sprite(pygame.sprite.Sprite):
 
@@ -42,7 +42,7 @@ class Sprite(pygame.sprite.Sprite):
             self.game.mode.route(Movement(self, (self.hmove, self.vmove)))
 
     def handle_event(self, event):
-        if event is PAUSE:
+        if isinstance(event, Pause):
             self.hmove = 0
             self.vmove = 0
             return

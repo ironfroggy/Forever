@@ -1,3 +1,7 @@
+import pygame
+from pygame.locals import *
+
+
 class Movement(object):
     def __init__(self, player, movement):
         self.player = player
@@ -9,6 +13,9 @@ class Scroll(object):
         self.window = window
         self.x, self.y = movement
         print "scroll", movement
+
+class Pause(object):
+    pass
 
 class EventRouter(object):
     def __init__(self):
@@ -29,12 +36,10 @@ class EventRouter(object):
 
     def route(self, event):
         if hasattr(event, 'type') and hasattr(event, 'key'):
-            for callback in self.listeners.get((event.type, event.key), []):
-                callback(event)
-        elif event is PAUSE:
-            for callback in self.listeners.get("__PAUSE__", []):
-                callback(event)
-        elif isinstance(event, Movement):
-            for callback in self.listeners.get("__MOVE__", []):
-                callback(event)
+            key = (event.type, event.key)
+        else:
+            key = type(event)
+
+        for callback in self.listeners.get(key, []):
+            callback(event)
 

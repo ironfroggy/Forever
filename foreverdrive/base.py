@@ -4,9 +4,7 @@ import pygame
 from pygame.locals import *
 
 from foreverdrive.area import TileArea
-from foreverdrive.events import Movement, Scroll, EventRouter
-
-PAUSE = object()
+from foreverdrive.events import Movement, Scroll, EventRouter, Pause
 
 class Window(object):
     rect = pygame.Rect(100, 100, 300, 300)
@@ -35,7 +33,7 @@ class Mode(EventRouter):
                 except AttributeError:
                     pass
                 else:
-                    handle_event(PAUSE)
+                    handle_event(Pause())
 
     def leaving(self):
         pass
@@ -56,7 +54,7 @@ class ScrollingMode(Mode):
         super(ScrollingMode, self).first_entering()
 
         self.player.game = self.game
-        self.listen_move(self.player_moved)
+        self.listen(self.player_moved, Movement)
 
     def player_moved(self, event):
         rect = event.rect

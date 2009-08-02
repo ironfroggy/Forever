@@ -1,7 +1,7 @@
 import pygame
 from pygame.locals import *
 
-from foreverdrive.base import ForeverMain, Mode, PAUSE
+from foreverdrive.base import ForeverMain, Mode
 from foreverdrive.sprite import Sprite
 from foreverdrive.area import BoundArea
 
