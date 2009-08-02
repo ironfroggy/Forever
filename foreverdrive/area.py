@@ -110,13 +110,16 @@ class Portal(Sprite):
     def __init__(self, *args, **kwargs):
         self.to = kwargs.pop('to', None)
         self.offset = kwargs.pop('offset', None)
+        height = kwargs.pop('height', 100)
+        width = kwargs.pop('width', 1)
+
         kwargs['image_path'] = "default_portal.png"
         super(Portal, self).__init__(*args, **kwargs)
 
         top, left = self.offset
         if left:
-            self.rect.height = 100
-            self.rect.width = 1
+            self.rect.height = height
+            self.rect.width = width
 
     def enter(self, leaving_area, sprite):
         # The sprite has to be moving in the same
@@ -130,6 +133,37 @@ class Portal(Sprite):
 
     def draw(self):
         pass
+
+    @classmethod
+    def _connect_vertical(cls, area1, area2):
+        width = area2.width
+        area1.create_sprite(Portal,
+                            topleft=(area2.top - area1.top - 1,
+                                     area2.left - area1.left),
+                            to=area2,
+                            offset=(1, 0),
+                            height=1, width=width)
+        area2.create_sprite(Portal,
+                            topleft=(0, 0),
+                            to=area1,
+                            offset=(-1, 0),
+                            height=1, width=width)
+
+    @classmethod
+    def _connect_horizontal(cls, area1, area2):
+        height = area2.height
+        print area2.left, area1.left
+        area1.create_sprite(Portal,
+                            topleft=(area2.top - area1.top,
+                                     area2.left - area1.left + 49),
+                            to=area2,
+                            offset=(0, 1),
+                            height=height, width=1)
+        area2.create_sprite(Portal,
+                            topleft=(0, 0),
+                            to=area1,
+                            offset=(0, -1),
+                            height=height, width=1)
 
 class BoundArea(TileArea):
 
