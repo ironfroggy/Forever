@@ -152,7 +152,15 @@ class Portal(Sprite):
     @classmethod
     def _connect_horizontal(cls, area1, area2):
         height = area2.height
-        print area2.left, area1.left
+
+        # When connecting horizontal areas, the right area needs
+        # to overlap this area to make room for the sprite. The
+        # overlap will be invisible.
+        area2.left -= 50
+        area2.width += 50
+        for sprite in area2:
+            sprite.rect.left += 50
+
         area1.create_sprite(Portal,
                             topleft=(area2.top - area1.top,
                                      area2.left - area1.left + 49),
