@@ -38,6 +38,15 @@ class MultiAreaTest(ScrollingModeTest):
 
         Portal._connect_vertical(self.areas[0], self.areas[3])
 
+        # Area left
+        area = BoundArea("default_tile.png",
+                         size=(2, 2),
+                         topleft=(0, -100),
+                         relative_to=self.areas[0].top_left)
+        self.areas.append(area)
+        self.groups.append(area)
+
+        Portal._connect_horizontal(self.areas[0], self.areas[4])
 
 
 def main():
