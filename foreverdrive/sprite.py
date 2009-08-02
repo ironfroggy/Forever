@@ -95,3 +95,29 @@ class Sprite(pygame.sprite.Sprite):
             self.hmove -= change
         elif event.key == pygame.locals.K_RIGHT:
             self.hmove += change
+
+class FacingSprite(Sprite):
+
+    def __init__(self, *args, **kwargs):
+        imagename = kwargs.pop('imagename')
+        kwargs['image_path'] = "%s_down.png" % (imagename,)
+        super(FacingSprite, self).__init__(*args, **kwargs)
+
+        self.image_down = self.image
+        self.image_up = pygame.image.load(get_media_path(imagename + "_up.png")).convert_alpha()
+        self.image_right = pygame.image.load(get_media_path(imagename + "_right.png")).convert_alpha()
+        self.image_left = pygame.image.load(get_media_path(imagename + "_left.png")).convert_alpha()
+
+    def update(self, current_time):
+        super(FacingSprite, self).update(current_time)
+        if self.hmove > 0:
+            self.image = self.image_right
+        elif self.hmove < 0:
+            self.image = self.image_left
+
+        if self.vmove > 0:
+            self.image = self.image_down
+        elif self.vmove < 0:
+            self.image = self.image_up
+        
+        
