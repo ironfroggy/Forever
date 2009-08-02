@@ -11,7 +11,7 @@ class Sprite(pygame.sprite.Sprite):
     lastmove = 0
     speed = 10.0
 
-    def __init__(self, initial_position=(100, 100), image_path="default_sprite.png"):
+    def __init__(self, topleft=(100, 100), image_path="default_sprite.png"):
 
         # All sprite classes should extend pygame.sprite.Sprite. This
         # gives you several important internal methods that you probably
@@ -26,7 +26,7 @@ class Sprite(pygame.sprite.Sprite):
 
         # Make our top-left corner the passed-in location.
         self.rect = self.image.get_rect()
-        self.rect.topleft = initial_position
+        self.rect.top, self.rect.left = topleft
 
     def update(self, current_time):
         if (current_time - self.lastmove) > self.speed:

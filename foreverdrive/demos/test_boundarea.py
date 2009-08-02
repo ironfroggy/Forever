@@ -17,14 +17,16 @@ class TestMode(Mode):
         super(TestMode, self).__init__(*args, **kwargs)
         self.area = BoundArea("default_tile.png",
                               size=self.area_size,
-                              initial_position=(125, 125))
+                              topleft=(125, 125))
         self.groups.append(self.area)
 
     def first_entering(self):
         self.new = False
         self.game.groups.extend(self.areas)
 
-        sprite = Sprite()
+        print self.areas[0].top, self.areas[0].left
+        sprite = Sprite(topleft=(self.areas[0].top, self.areas[0].left))
+        print sprite.rect.top, sprite.rect.left
         self.game.listen_arrows(sprite.handle_event)
         self.game.listen_arrows(report)
         self.player = sprite
