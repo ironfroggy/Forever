@@ -5,32 +5,10 @@ from pygame.locals import *
 
 from foreverdrive.area import TileArea
 from foreverdrive.events import Movement, Scroll, EventRouter, Pause
-from foreverdrive.modes import Mode
+from foreverdrive.modes import Mode, InitialMode, PauseMode
 
 class Window(object):
     rect = pygame.Rect(100, 100, 300, 300)
-
-
-class InitialMode(Mode):
-
-    def __init__(self, game):
-        super(InitialMode, self).__init__(game)
-        self.listen(self.enter_pause, KEYUP, K_p)
-
-    def enter_pause(self, event):
-        self.route(PAUSE)
-        self.game.set_mode('pause')
-
-
-
-class PauseMode(Mode):
-
-    def __init__(self, game):
-        super(PauseMode, self).__init__(game)
-        self.listen(self.leave_pause, KEYUP, K_p)
-
-    def leave_pause(self, event):
-        self.game.set_mode('init')
 
 class ForeverMain(object):
     """The ForeverMain instance represents the active game
