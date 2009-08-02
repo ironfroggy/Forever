@@ -13,6 +13,12 @@ class ScrollingModeTest(TestMode, ScrollingMode):
         self.areas.append(area)
         self.groups.append(area)
 
+        area = BoundArea("default_tile.png",
+                         size=(10, 4),
+                         initial_position=(125+500, 125+300))
+        self.areas.append(area)
+        self.groups.append(area)
+
 
 def main():
     game = ForeverMain(initmode=ScrollingModeTest)
