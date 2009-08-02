@@ -117,6 +117,9 @@ class Portal(Sprite):
             sprite.boundtop = sprite.boundrect.top + self.offset[0]
             sprite.rect.left = sprite.boundrect.left + self.offset[1]
 
+    def draw(self):
+        pass
+
 class BoundArea(TileArea):
 
     def __init__(self, *args, **kwargs):
@@ -152,7 +155,7 @@ class BoundArea(TileArea):
             bound_sprite.rect.top = rect.top - bound_sprite.rect.height - 1
             bound_sprite.rect.left = rect.left
 
-            for entered_portal in pygame.sprite.spritecollide(bound_sprite, self.portals, False):
+            for entered_portal in pygame.sprite.spritecollide(bound_sprite.bound, self.portals, False):
                 entered_portal.enter(self, bound_sprite)
 
     def draw(self, surface):
@@ -161,3 +164,15 @@ class BoundArea(TileArea):
             self.bound_group.draw(surface))
 
 
+class AreaManager(object):
+    """Manages multiple areas and portals between them."""
+
+    def __init__(self):
+        self.areas = []
+
+    def add(self, area):
+        self.areas.append(area)
+        area.manager = self
+
+    def new_area(self, (top, left), (tiles_wide, tiles_tall)):
+        pass

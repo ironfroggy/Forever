@@ -4,6 +4,13 @@ from pygame.locals import *
 from foreverdrive import get_media_path
 from foreverdrive.events import Pause, Movement
 
+class Bound(object):
+    def __init__(self, sprite):
+        self.sprite = sprite
+    @property
+    def rect(self):
+        return self.sprite.boundrect
+
 class Sprite(pygame.sprite.Sprite):
 
     hmove = 0
@@ -22,7 +29,7 @@ class Sprite(pygame.sprite.Sprite):
       
         # Create the image that will be displayed and fill it with the
         # right color.
-        self.image = pygame.image.load(get_media_path(image_path)).convert()
+        self.image = pygame.image.load(get_media_path(image_path)).convert_alpha()
 
         # Make our top-left corner the passed-in location.
         self.rect = self.image.get_rect()
@@ -32,6 +39,10 @@ class Sprite(pygame.sprite.Sprite):
                                      self.rect.top + self.rect.height - 1,
                                      self.rect.width,
                                      1)
+
+    @property
+    def bound(self):
+        return Bound(self)
 
     @property
     def boundtop(self):
