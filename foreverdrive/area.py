@@ -111,11 +111,15 @@ class BoundArea(TileArea):
     def __init__(self, *args, **kwargs):
         super(BoundArea, self).__init__(*args, **kwargs)
         self.bound_group = pygame.sprite.RenderUpdates()
+        self.portals = pygame.sprite.RenderUpdates()
 
     def __iter__(self):
         return chain(self.tile_group, self.bound_group)
 
     def add(self, sprite):
+        if isinstance(sprite, Portal):
+            self.portals.add(sprite)
+
         self.bound_group.add(sprite)
 
     def update(self, ticks):
