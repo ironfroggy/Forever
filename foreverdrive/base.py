@@ -72,14 +72,18 @@ class ForeverMain(object):
     etc.
     """
 
-    def __init__(self):
+    def __init__(self, initmode=None):
+        if initmode is None:
+            initmode = InitialMode
+
         super(ForeverMain, self).__init__()
         self.screen = pygame.display.set_mode((500, 500))
         self.modes = {
-            'init': InitialMode(self),
+            'init': initmode(self),
             'pause': PauseMode(self),
             }
         self.current_mode = 'init'
+        self.mode.entering()
 
     def set_mode(self, modename):
         self.mode.leaving()

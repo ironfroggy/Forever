@@ -10,6 +10,8 @@ class TileArea(object):
 
         self._top = 0
         self._left = 0
+        self.width = self.image.get_width() * size[0]
+        self.height = self.image.get_height() * size[1]
 
         tg = self.tile_group = pygame.sprite.RenderUpdates()
         for x in xrange(size[0]):
@@ -21,6 +23,11 @@ class TileArea(object):
                 sprite.rect.left = self.image.get_width() * x
                 tg.add(sprite)
 
+        self.update_rect()
+
+    def update_rect(self):
+        self.rect = pygame.Rect((self.left, self.top), (self.width, self.height))
+
     def __iter__(self):
         return iter(self.tile_group)
 
@@ -31,8 +38,10 @@ class TileArea(object):
     @top.setter
     def top(self, new_top):
         change = new_top - self._top
+        self._top = new_top
         for sprite in self:
             sprite.rect.top += change
+        self.update_rect()
 
     @property
     def left(self):
@@ -40,15 +49,24 @@ class TileArea(object):
     @left.setter
     def left(self, new_left):
         change = new_left - self._left
+        self._left = new_left
         for sprite in self:
             sprite.rect.left += change
+        self.update_rect()
 
     def update_and_draw(self, ticks):
-        tg = self.tile_group
-        screen = self.screen
+        self.update(ticks)
+        return self.draw(self.screen)
 
-        tg.update(ticks)
-        return tg.draw(screen)
+    def update(self, ticks):
+        self.tile_group.update(ticks)
+
+    def draw(self, screen):
+        screen = self.screen
+        return self.tile_group.draw(screen)
+
+    def update(self, ticks):
+        pass
 
 class BoundArea(TileArea):
 
@@ -62,9 +80,20 @@ class BoundArea(TileArea):
     def add(self, sprite):
         self.bound_group.add(sprite)
 
-    def update_and_draw(self, ticks):
-        super(BoundArea, self).update_and_draw(ticks)
+    def update(self, ticks):
         self.bound_group.update(ticks)
         for bound_sprite in self.bound_group:
-            if bound_sprite.top < self.top:
-                bound_sprite.top = self.top
+
+            rect = bound_sprite.rect
+            bound_sprite.rect = pygame.Rect(
+                min(max(self.left, rect.left), self.left + self.width - rect.width),
+                min(max(self.top, rect.top), self.top + self.width - rect.width),
+                rect.width,
+                rect.height)
+
+    def draw(self, surface):
+        return chain(
+            super(BoundArea, self).draw(surface) +
+            self.bound_group.draw(surface))
+
+

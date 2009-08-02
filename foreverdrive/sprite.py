@@ -53,4 +53,3 @@ class Sprite(pygame.sprite.Sprite):
             self.hmove -= change
         elif event.key == pygame.locals.K_RIGHT:
             self.hmove += change
-
