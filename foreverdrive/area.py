@@ -189,7 +189,7 @@ class Portal(Sprite):
             sprite.rect.left += 50
 
         portal_top = max(area1.top, area2.top)
-        portal_height = min(area1.top + area1.height, area2.top + area2.height)
+        portal_height = min(area1.top + area1.height, area2.top + area2.height) - portal_top
 
         area1.create_sprite(Portal,
                             topleft=(portal_top - area1.top,
