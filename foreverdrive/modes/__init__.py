@@ -3,15 +3,16 @@ from pygame.locals import *
 
 from foreverdrive.events import EventRouter
 from foreverdrive.area import BlurredBackground
-from foreverdrive.events import Pause
+from foreverdrive.events import Pause, Scroll
 
 class Mode(EventRouter):
     def __init__(self, game):
         super(Mode, self).__init__()
         self.game = game
         self.background = BlurredBackground("default_tile.png",
-                                   (10, 10))
+                                   (30, 30), (-250, -250))
 
+        self.listen(self.background.on_scroll, Scroll)
         self.groups = []
 
     def first_entering(self):

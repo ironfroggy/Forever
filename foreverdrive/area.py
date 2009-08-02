@@ -55,6 +55,7 @@ class TileArea(object):
         change = new_top - self._top
         self._top = new_top
         for sprite in self:
+            t = sprite.rect.top
             sprite.rect.top += change
         self.update_rect()
     @property
@@ -113,6 +114,24 @@ class TileArea(object):
 
 class BlurredBackground(TileArea):
     filters = [blur, blur, blur, blur]
+
+    scroll_rollover_top = 0
+    scroll_rollover_left = 0
+
+    parallax_multiplier = 0.8
+
+    def on_scroll(self, event):
+        p = self.parallax_multiplier
+        top = event.y * p + self.scroll_rollover_top
+        left = event.x * p + self.scroll_rollover_left
+
+        if top >= 1 or top <= -1:
+            self.top += int(top)
+        self.scroll_rollover_top = top % 1
+
+        if left >= 1 or left <= -1:
+            self.left += int(left)
+        self.scroll_rollover_left = left % 1
 
 class Portal(Sprite):
 
@@ -287,5 +306,5 @@ class AreaManager(object):
             area = self.new_area(topleft, size, relative_to=getattr(relative_to, reltype or "top_left", None))
             areas.append(area)
             if children is not None:
-                area.extend(self.new_areas(children, relative_to=area))
+                areas.extend(self.new_areas(children, relative_to=area))
         return areas
