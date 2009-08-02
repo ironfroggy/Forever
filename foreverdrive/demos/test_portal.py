@@ -17,6 +17,22 @@ class MultiAreaTest(ScrollingModeTest):
         self.areas[0].create_sprite(Portal, topleft=(249, 125), to=area, offset=(1, 0))
         self.areas[1].create_sprite(Portal, topleft=(0, 25), to=self.areas[0], offset=(-1, 0))
 
+        area = BoundArea("default_tile.png",
+                         size=(10, 3),
+                         topleft=(100, -50),
+                         relative_to=self.areas[0].top_right)
+        self.areas.append(area)
+        self.groups.append(area)
+
+        self.areas[0].create_sprite(Portal,
+                                    topleft=(125, 249),
+                                    to=self.areas[2],
+                                    offset=(0, 1))
+        self.areas[2].create_sprite(Portal,
+                                    topleft=(25, 0),
+                                    to=self.areas[0],
+                                    offset=(0, -1))
+
 def main():
     game = ForeverMain(initmode=MultiAreaTest)
     game.run()

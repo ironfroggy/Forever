@@ -50,6 +50,9 @@ class TileArea(object):
         for sprite in self:
             sprite.rect.top += change
         self.update_rect()
+    @property
+    def bottom(self):
+        return self.top + self.height
 
     @property
     def left(self):
@@ -61,6 +64,9 @@ class TileArea(object):
         for sprite in self:
             sprite.rect.left += change
         self.update_rect()
+    @property
+    def right(self):
+        return self.left + self.width
 
     @property
     def top_left(self):
@@ -107,6 +113,11 @@ class Portal(Sprite):
         kwargs['image_path'] = "default_portal.png"
         super(Portal, self).__init__(*args, **kwargs)
 
+        top, left = self.offset
+        if left:
+            self.rect.height = 100
+            self.rect.width = 1
+
     def enter(self, leaving_area, sprite):
         # The sprite has to be moving in the same
         # direction as the offset
@@ -145,6 +156,7 @@ class BoundArea(TileArea):
                 continue
 
             rect = bound_sprite.boundrect
+
             bound_sprite.boundrect = pygame.Rect(
                 min(max(self.left, rect.left),
                     self.left + self.width - rect.width),
@@ -152,6 +164,7 @@ class BoundArea(TileArea):
                     self.top + self.height - rect.height),
                 rect.width,
                 rect.height)
+
             bound_sprite.rect.top = rect.top - bound_sprite.rect.height - 1
             bound_sprite.rect.left = rect.left
 
