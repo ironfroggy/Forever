@@ -39,7 +39,7 @@ class Sprite(pygame.sprite.Sprite):
     game = None
     def announce_movement(self):
         if self.game is not None:
-            self.game.mode.route(Movement(self))
+            self.game.mode.route(Movement(self, (self.hmove, self.vmove)))
 
     def handle_event(self, event):
         if event is PAUSE:

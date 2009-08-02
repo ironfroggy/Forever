@@ -4,17 +4,12 @@ import pygame
 from pygame.locals import *
 
 from foreverdrive.area import TileArea
+from foreverdrive.events import Movement, Scroll
 
 PAUSE = object()
 
 class Window(object):
     rect = pygame.Rect(100, 100, 300, 300)
-
-
-class Movement(object):
-    def __init__(self, player):
-        self.player = player
-        self.rect = player.rect
 
 class EventRouter(object):
     def __init__(self):
@@ -96,21 +91,31 @@ class ScrollingMode(Mode):
         rect = event.rect
         window = Window()
 
+        x = 0
+        y = 0
+
         bottom_over = (rect.top + rect.height) - (window.rect.top + window.rect.height)
         if bottom_over > 0:
             self.area.top -= bottom_over
+            y = -bottom_over
         else:
             top_under = window.rect.top - rect.top
             if top_under > 0:
                 self.area.top += top_under
+                y = top_under
 
         right_over = (rect.left + rect.width) - (window.rect.left + window.rect.width)
         if right_over > 0:
             self.area.left -= right_over
+            x = -right_over
         else:
             left_under = window.rect.left - rect.left
             if left_under > 0:
                 self.area.left += left_under
+                x = left_under
+
+        if x or y:
+            self.route(Scroll(window, (x, y)))
 
 
 class PauseMode(Mode):
