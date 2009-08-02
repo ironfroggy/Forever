@@ -5,6 +5,7 @@ class MultiAreaTest(ScrollingModeTest):
     area_size = (5, 5)
     def __init__(self, *args, **kwargs):
         super(MultiAreaTest, self).__init__(*args, **kwargs)
+        self.area = self.areas[0]
         area = self.areas[0]
 
         # Area below
