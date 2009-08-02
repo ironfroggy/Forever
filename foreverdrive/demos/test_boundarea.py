@@ -22,14 +22,14 @@ class TestMode(Mode):
 
     def first_entering(self):
         self.new = False
-        self.game.groups.append(self.area)
+        self.game.groups.extend(self.areas)
 
         sprite = Sprite()
         self.game.listen_arrows(sprite.handle_event)
         self.game.listen_arrows(report)
         self.player = sprite
     
-        self.area.add(sprite)
+        self.areas[0].add(sprite)
         super(TestMode, self).first_entering()
 
 def main():
