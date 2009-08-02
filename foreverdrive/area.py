@@ -103,12 +103,16 @@ class Portal(Sprite):
 
     def __init__(self, *args, **kwargs):
         self.to = kwargs.pop('to', None)
+        self.offset = kwargs.pop('offset', None)
         kwargs['image_path'] = "default_portal.png"
         super(Portal, self).__init__(*args, **kwargs)
 
     def enter(self, leaving_area, sprite):
+        print "Leaving", leaving_area
         leaving_area.remove(sprite)
         self.to.add(sprite)
+        sprite.rect.top += self.offset[0]
+        sprite.rect.left += self.offset[1]
 
 class BoundArea(TileArea):
 
