@@ -148,21 +148,33 @@ class Portal(Sprite):
 
     @classmethod
     def _connect_vertical(cls, area1, area2):
-        width = area2.width
+        # area1 has to be on top
+        assert area1.top != area2.top
+        if area1.top > area2.top:
+            return cls._connect_vertical(area2, area1)
+
+        portal_left = max(area1.left, area2.left)
+        portal_width = min(area1.left + area1.width, area2.left + area2.width)
+
         area1.create_sprite(Portal,
                             topleft=(area2.top - area1.top - 2,
-                                     area2.left - area1.left),
+                                     portal_left - area1.left),
                             to=area2,
                             offset=(1, 0),
-                            height=1, width=width)
+                            height=1, width=portal_width)
         area2.create_sprite(Portal,
-                            topleft=(1, 0),
+                            topleft=(1, portal_left - area2.left),
                             to=area1,
                             offset=(-1, 0),
-                            height=1, width=width)
+                            height=1, width=portal_width)
 
     @classmethod
     def _connect_horizontal(cls, area1, area2):
+        # area1 has to be on left
+        assert area1.left != area2.left
+        if area1.left > area2.left:
+            return cls._connect_horizontal(area2, area1)
+
         height = area2.height
 
         # When connecting horizontal areas, the right area needs

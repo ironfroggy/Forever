@@ -7,6 +7,7 @@ class MultiAreaTest(ScrollingModeTest):
         super(MultiAreaTest, self).__init__(*args, **kwargs)
         area = self.areas[0]
 
+        # Area below
         area = BoundArea("default_tile.png",
                          size=(3, 10),
                          topleft=(0, 100),
@@ -16,6 +17,7 @@ class MultiAreaTest(ScrollingModeTest):
 
         Portal._connect_vertical(*self.areas)
 
+        # Area right
         area = BoundArea("default_tile.png",
                          size=(10, 3),
                          topleft=(100, 0),
@@ -24,6 +26,19 @@ class MultiAreaTest(ScrollingModeTest):
         self.groups.append(area)
 
         Portal._connect_horizontal(self.areas[0], self.areas[2])
+
+        # Area above
+        print "above"
+        area = BoundArea("default_tile.png",
+                         size=(4, 4),
+                         topleft=(-200, 100),
+                         relative_to=self.areas[0].top_left)
+        self.areas.append(area)
+        self.groups.append(area)
+
+        Portal._connect_vertical(self.areas[0], self.areas[3])
+
+
 
 def main():
     game = ForeverMain(initmode=MultiAreaTest)
