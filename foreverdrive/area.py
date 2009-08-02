@@ -86,7 +86,7 @@ class TileArea(object):
         return (self.top + self.height, self.left)
     @property
     def bottom_right(self):
-        return (self.top, self.left + self.width)
+        return (self.top + self.height, self.left + self.width)
 
     def update_and_draw(self, ticks):
         self.update(ticks)
@@ -247,12 +247,19 @@ class AreaManager(object):
                  (tiles_wide, tiles_tall),
                  relative_to=None,
                  ):
+        print (top, left), (tiles_wide, tiles_tall), relative_to
         area = BoundArea("default_tile.png",
                          size=(tiles_wide, tiles_tall),
                          topleft=(top, left),
                          relative_to=relative_to)
         self.add(area)
         return area
-        
-                  
-        
+
+    def new_areas(self, dimensions, relative_to=None):
+        areas = []
+        print dimensions
+        for (topleft, size, reltype, children) in dimensions:
+            area = self.new_area(topleft, size, relative_to=getattr(relative_to, reltype or "top_left", None))
+            if children is not None:
+                self.new_areas(children, relative_to=area)
+        return areas
