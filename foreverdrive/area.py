@@ -150,7 +150,7 @@ class Portal(Sprite):
     def _connect_vertical(cls, area1, area2):
         width = area2.width
         area1.create_sprite(Portal,
-                            topleft=(area2.top - area1.top,
+                            topleft=(area2.top - area1.top - 2,
                                      area2.left - area1.left),
                             to=area2,
                             offset=(1, 0),
