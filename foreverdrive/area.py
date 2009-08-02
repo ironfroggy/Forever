@@ -4,12 +4,11 @@ import pygame
 from foreverdrive import get_media_path
 
 class TileArea(object):
-    def __init__(self, image_path, size):
+    def __init__(self, image_path, size, initial_position=(0, 0)):
         self.image = pygame.image.load(get_media_path(image_path)).convert()
         self.screen = pygame.display.get_surface()
 
-        self._top = 0
-        self._left = 0
+        self._left, self._top = initial_position
         self.width = self.image.get_width() * size[0]
         self.height = self.image.get_height() * size[1]
 
@@ -19,8 +18,8 @@ class TileArea(object):
                 sprite = pygame.sprite.Sprite()
                 sprite.image = self.image
                 sprite.rect = self.image.get_rect()
-                sprite.rect.top = self.image.get_height() * y
-                sprite.rect.left = self.image.get_width() * x
+                sprite.rect.top = self._top + self.image.get_height() * y
+                sprite.rect.left = self._top + self.image.get_width() * x
                 tg.add(sprite)
 
         self.update_rect()
@@ -87,7 +86,7 @@ class BoundArea(TileArea):
             rect = bound_sprite.rect
             bound_sprite.rect = pygame.Rect(
                 min(max(self.left, rect.left), self.left + self.width - rect.width),
-                min(max(self.top, rect.top), self.top + self.width - rect.width),
+                min(max(self.top, rect.top), self.top + self.height - rect.height),
                 rect.width,
                 rect.height)
 
