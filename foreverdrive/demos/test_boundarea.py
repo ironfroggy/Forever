@@ -22,13 +22,13 @@ class TestMode(Mode):
 
     def first_entering(self):
         self.new = False
-        self.game.groups.extend(self.areas)
+        self.game.groups.append(self.area)
 
-        sprite = FacingSprite(topleft=(self.areas[0].top+50, self.areas[0].left+50), imagename="default_player")
+        sprite = FacingSprite(topleft=(self.area.top+50, self.area.left+50), imagename="default_player")
         sprite.register_listeners(self.game.mode)
         self.player = sprite
     
-        self.areas[0].add(sprite)
+        self.area.add(sprite)
         super(TestMode, self).first_entering()
 
 def main():

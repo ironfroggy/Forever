@@ -237,7 +237,7 @@ class BoundArea(TileArea):
                 rect.width,
                 rect.height)
 
-            bound_sprite.rect.top = rect.top - bound_sprite.rect.height - 1
+            bound_sprite.rect.top = rect.top - bound_sprite.rect.height
             bound_sprite.rect.left = rect.left
 
             for entered_portal in pygame.sprite.spritecollide(bound_sprite.bound, self.portals, False):
