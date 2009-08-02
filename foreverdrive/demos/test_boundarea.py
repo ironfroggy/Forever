@@ -2,7 +2,7 @@ import pygame
 from pygame.locals import *
 
 from foreverdrive.base import ForeverMain, Mode
-from foreverdrive.sprite import Sprite
+from foreverdrive.sprite import FacingSprite
 from foreverdrive.area import BoundArea
 
 def report(*args, **kwargs):
@@ -24,7 +24,7 @@ class TestMode(Mode):
         self.new = False
         self.game.groups.extend(self.areas)
 
-        sprite = Sprite(topleft=(self.areas[0].top+50, self.areas[0].left))
+        sprite = FacingSprite(topleft=(self.areas[0].top+50, self.areas[0].left), imagename="default_player")
         self.game.listen_arrows(sprite.handle_event)
 #        self.game.listen_arrows(report)
         self.player = sprite

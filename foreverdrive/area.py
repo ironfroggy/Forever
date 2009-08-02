@@ -3,12 +3,17 @@ from itertools import chain
 import pygame
 from foreverdrive import get_media_path
 from foreverdrive.sprite import Sprite
+from foreverdrive.visual.filters import blur, dim
 
 class TileArea(object):
     name = None
+    filters = []
 
     def __init__(self, image_path, size, topleft=(0, 0), relative_to=None):
         self.image = pygame.image.load(get_media_path(image_path)).convert()
+        for filter in self.filters:
+            filter(self.image)
+
         self.screen = pygame.display.get_surface()
 
         self._top, self._left = topleft
@@ -106,6 +111,9 @@ class TileArea(object):
         print sprite.rect
         self.add(sprite)
         return sprite
+
+class BlurredBackground(TileArea):
+    filters = [blur, blur, blur, blur]
 
 class Portal(Sprite):
 

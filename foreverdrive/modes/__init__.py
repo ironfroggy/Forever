@@ -2,14 +2,14 @@ import pygame
 from pygame.locals import *
 
 from foreverdrive.events import EventRouter
-from foreverdrive.area import TileArea
+from foreverdrive.area import BlurredBackground
 from foreverdrive.events import Pause
 
 class Mode(EventRouter):
     def __init__(self, game):
         super(Mode, self).__init__()
         self.game = game
-        self.background = TileArea("default_tile.png",
+        self.background = BlurredBackground("default_tile.png",
                                    (10, 10))
 
         self.groups = []
