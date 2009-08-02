@@ -58,7 +58,7 @@ class PortalTest(ScrollingMode):
         self.new = False
         self.game.groups.append(self.area)
 
-        sprite = FacingSprite(topleft=(self.area.top+50, self.area.left+50), imagename="default_player")
+        sprite = FacingSprite(topleft=(self.area.top+50, self.area.left+50), imagename="default_player", area=self.area)
         sprite.register_listeners(self.game.mode)
         self.player = sprite
     

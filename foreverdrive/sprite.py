@@ -11,13 +11,17 @@ class Bound(object):
     def rect(self):
         return self.sprite.boundrect
 
+class RectHolder(object):
+    def __init__(self, rect):
+        self.rect = rect
+
 class Sprite(pygame.sprite.Sprite):
 
     hmove = 0
     vmove = 0
     lastmove = 0
-    speed = 2.0
-    speed_multiplier = 2
+    speed = 4.0
+    speed_multiplier = 2.5
 
     def __init__(self,
                  topleft=(100, 100),
@@ -54,6 +58,7 @@ class Sprite(pygame.sprite.Sprite):
             self.rect.top,
             self.rect.width,
             1)
+        self.lastmovebound = RectHolder(self.boundrect)
 
         self.adjust_inside_area()
 
@@ -91,25 +96,38 @@ class Sprite(pygame.sprite.Sprite):
     def update(self, current_time):
         if current_time == self.lastmove and self.lastmove > 0:
             return
-        speed = self.speed
-        self.boundrect.top += self.vmove * speed
-        self.boundrect.left += self.hmove * speed
-        self.rect.top += self.vmove * speed
-        self.rect.left += self.hmove * speed
-
-        if self.vmove or self.hmove:
-            self.announce_movement()
+        self.move()
         self.lastmove = current_time
 
+    def move(self, M=1):
+        speed = self.speed * M
+        vmove = self.vmove * speed
+        hmove = self.hmove * speed
+        self.boundrect.top += vmove
+        self.boundrect.left += hmove
+        self.rect.top += vmove
+        self.rect.left += hmove
+
+        if vmove or hmove:
+            self.lastmovebound = RectHolder(pygame.Rect(
+                self.boundrect.left - hmove,
+                self.boundrect.top - vmove,
+                self.boundrect.width + abs(hmove),
+                self.boundrect.height + abs(vmove)
+                ))
+            self.announce_movement(hmove, vmove)
+
     game = None
-    def announce_movement(self):
+    def announce_movement(self, hmove, vmove):
         if self.game is not None:
-            self.game.mode.route(Movement(self, (self.hmove, self.vmove)))
+            self.game.mode.route(Movement(self, (hmove, vmove)))
 
     def register_listeners(self, router):
         router.listen_arrows(self.handle_event)
         router.listen(self.handle_event, KEYDOWN, K_RSHIFT)
         router.listen(self.handle_event, KEYUP, K_RSHIFT)
+        router.listen(self.handle_event, KEYDOWN, K_LSHIFT)
+        router.listen(self.handle_event, KEYUP, K_LSHIFT)
 
     def handle_event(self, event):
         if isinstance(event, Pause):
@@ -134,6 +152,11 @@ class Sprite(pygame.sprite.Sprite):
         elif event.key == pygame.locals.K_RSHIFT and event.type == pygame.locals.KEYDOWN:
             self.speed *= self.speed_multiplier
         elif event.key == pygame.locals.K_RSHIFT and event.type == pygame.locals.KEYUP:
+            self.speed = type(self).speed
+
+        elif event.key == pygame.locals.K_LSHIFT and event.type == pygame.locals.KEYDOWN:
+            self.speed = 1
+        elif event.key == pygame.locals.K_LSHIFT and event.type == pygame.locals.KEYUP:
             self.speed = type(self).speed
 
 class FacingSprite(Sprite):

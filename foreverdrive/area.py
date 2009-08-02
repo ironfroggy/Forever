@@ -146,8 +146,9 @@ class Portal(Sprite):
             sprite.boundtop = sprite.boundrect.top + down
             sprite.rect.left = sprite.boundrect.left + right
 
-    def draw(self):
-        pass
+    def update(self, t):
+        r = super(Portal, self).update(t)
+        return r
 
     @classmethod
     def _connect_vertical(cls, area1, area2):
@@ -160,13 +161,13 @@ class Portal(Sprite):
         portal_width = min(area1.left + area1.width, area2.left + area2.width)
 
         area1.create_sprite(Portal,
-                            topleft=(area2.top - area1.top - 2,
+                            topleft=(area1.height - 2,
                                      portal_left - area1.left),
                             to=area2,
                             offset=(1, 0),
                             height=1, width=portal_width)
         area2.create_sprite(Portal,
-                            topleft=(1, portal_left - area2.left),
+                            topleft=(2, portal_left - area2.left),
                             to=area1,
                             offset=(-1, 0),
                             height=1, width=portal_width)
@@ -240,7 +241,7 @@ class BoundArea(TileArea):
             bound_sprite.rect.top = rect.top - bound_sprite.rect.height - 1
             bound_sprite.rect.left = rect.left
 
-            for entered_portal in pygame.sprite.spritecollide(bound_sprite.bound, self.portals, False):
+            for entered_portal in pygame.sprite.spritecollide(bound_sprite.lastmovebound, self.portals, False):
                 entered_portal.enter(self, bound_sprite)
 
     def draw(self, surface):
