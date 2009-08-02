@@ -188,17 +188,20 @@ class Portal(Sprite):
         for sprite in area2:
             sprite.rect.left += 50
 
+        portal_top = max(area1.top, area2.top)
+        portal_height = min(area1.top + area1.height, area2.top + area2.height)
+
         area1.create_sprite(Portal,
-                            topleft=(area2.top - area1.top,
+                            topleft=(portal_top - area1.top,
                                      area2.left - area1.left + 49),
                             to=area2,
                             offset=(0, 1),
-                            height=height, width=1)
+                            height=portal_height, width=1)
         area2.create_sprite(Portal,
-                            topleft=(0, 0),
+                            topleft=(portal_top - area2.top, 0),
                             to=area1,
                             offset=(0, -1),
-                            height=height, width=1)
+                            height=portal_height, width=1)
 
 class BoundArea(TileArea):
 
