@@ -3,7 +3,7 @@ from foreverdrive.modes.scrolling import ScrollingMode
 
 
 class ScrollingModeTest(TestMode, ScrollingMode):
-    area_size = (5, 5)
+    area_size = (10, 10)
 
     def __init__(self, *args, **kwargs):
         ScrollingMode.__init__(self, *args, **kwargs)

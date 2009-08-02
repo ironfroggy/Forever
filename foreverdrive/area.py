@@ -108,11 +108,14 @@ class Portal(Sprite):
         super(Portal, self).__init__(*args, **kwargs)
 
     def enter(self, leaving_area, sprite):
-        print "Leaving", leaving_area
-        leaving_area.remove(sprite)
-        self.to.add(sprite)
-        sprite.rect.top += self.offset[0]
-        sprite.rect.left += self.offset[1]
+        # The sprite has to be moving in the same
+        # direction as the offset
+        down, right = self.offset
+        if down == sprite.vmove and right == sprite.hmove:
+            leaving_area.remove(sprite)
+            self.to.add(sprite)
+            sprite.boundtop = sprite.boundrect.top + self.offset[0]
+            sprite.rect.left = sprite.boundrect.left + self.offset[1]
 
 class BoundArea(TileArea):
 
@@ -138,12 +141,16 @@ class BoundArea(TileArea):
             if isinstance(bound_sprite, Portal):
                 continue
 
-            rect = bound_sprite.rect
-            bound_sprite.rect = pygame.Rect(
-                min(max(self.left, rect.left), self.left + self.width - rect.width),
-                min(max(self.top, rect.top), self.top + self.height - rect.height),
+            rect = bound_sprite.boundrect
+            bound_sprite.boundrect = pygame.Rect(
+                min(max(self.left, rect.left),
+                    self.left + self.width - rect.width),
+                min(max(self.top, rect.top),
+                    self.top + self.height - rect.height),
                 rect.width,
                 rect.height)
+            bound_sprite.rect.top = rect.top - bound_sprite.rect.height - 1
+            bound_sprite.rect.left = rect.left
 
             for entered_portal in pygame.sprite.spritecollide(bound_sprite, self.portals, False):
                 entered_portal.enter(self, bound_sprite)

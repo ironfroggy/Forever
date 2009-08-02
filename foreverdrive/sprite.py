@@ -28,10 +28,27 @@ class Sprite(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.top, self.rect.left = topleft
 
+        self.boundrect = pygame.Rect(self.rect.left,
+                                     self.rect.top + self.rect.height - 1,
+                                     self.rect.width,
+                                     1)
+
+    @property
+    def boundtop(self):
+        return self.boundrect.top
+    @boundtop.setter
+    def boundtop(self, top):
+        self.boundrect.top = top
+        self.rect.top = top - self.rect.height
+        
+
     def update(self, current_time):
         if (current_time - self.lastmove) > self.speed:
+            self.boundrect.top += self.vmove
+            self.boundrect.left += self.hmove
             self.rect.top += self.vmove
             self.rect.left += self.hmove
+
             if self.vmove or self.hmove:
                 self.announce_movement()
             self.lastmove = current_time

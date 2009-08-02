@@ -12,7 +12,6 @@ class Scroll(object):
     def __init__(self, window, movement):
         self.window = window
         self.x, self.y = movement
-        print "scroll", movement
 
 class Pause(object):
     pass

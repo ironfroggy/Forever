@@ -13,8 +13,8 @@ class MultiAreaTest(ScrollingModeTest):
         self.areas.append(area)
         self.groups.append(area)
 
-        self.areas[0].create_sprite(Portal, topleft=(249, 150), to=area, offset=(1, 0))
-        self.areas[1].create_sprite(Portal, topleft=(-49, 50), to=self.areas[0], offset=(-1, 0))
+        self.areas[0].create_sprite(Portal, topleft=(200, 150), to=area, offset=(1, 0))
+        self.areas[1].create_sprite(Portal, topleft=(0, 50), to=self.areas[0], offset=(-1, 0))
 
 def main():
     game = ForeverMain(initmode=MultiAreaTest)
