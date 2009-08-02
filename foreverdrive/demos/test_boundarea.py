@@ -21,8 +21,6 @@ class TestMode(Mode):
         self.groups.append(self.area)
 
     def first_entering(self):
-        super(TestMode, self).entering()
-
         self.new = False
         self.game.groups.append(self.area)
 
@@ -32,6 +30,7 @@ class TestMode(Mode):
         self.player = sprite
     
         self.area.add(sprite)
+        super(TestMode, self).first_entering()
 
 def main():
     game = ForeverMain(initmode=TestMode)
