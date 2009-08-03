@@ -277,13 +277,13 @@ class BoundArea(TileArea):
         group.empty()
         group.add(sprites)
 
-
-    def check_collision(self, bound_sprite):
+    def keep_inside(self, bound_sprite):
         try:
             rect = bound_sprite.boundrect
         except AttributeError:
             return
 
+        topleft = bound_sprite.boundtop, bound_sprite.boundleft
         bound_sprite.boundrect = pygame.Rect(
             min(max(self.left, rect.left),
                 self.left + self.width - rect.width),
@@ -294,9 +294,18 @@ class BoundArea(TileArea):
 
         bound_sprite.rect.top = rect.top - bound_sprite.rect.height + bound_sprite.height
         bound_sprite.rect.left = rect.left
+        
+        return topleft != (bound_sprite.boundtop, bound_sprite.boundleft)
+
+    def check_collision(self, bound_sprite):
+        self.keep_inside(bound_sprite)
+        try:
+            lastmovebound = bound_sprite.lastmovebound
+        except AttributeError:
+            return
 
         for entered_portal in pygame.sprite.spritecollide(
-            bound_sprite.lastmovebound,
+            lastmovebound,
             [Bound(s) for s in self.portals],
             False):
 

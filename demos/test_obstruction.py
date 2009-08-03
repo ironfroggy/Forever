@@ -15,7 +15,7 @@ class AreaManagingMode(Mode):
 
     def first_entering(self):
         area = self.areas.new_areas([
-            ((75, 75), (10, 10), None, None)
+            ((75, 75), (6, 6), None, None)
             ])[0]
         self.area = area
 
@@ -39,7 +39,7 @@ class AreaManagingMode(Mode):
                 image_path="default_obstruction.png",
                 name="block")
 
-            #obstruction.show_bounds()
+            obstruction.show_bounds()
 
 
 def main():

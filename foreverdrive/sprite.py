@@ -239,6 +239,9 @@ class SolidSprite(PerimeterSensoringMixin, Sprite):
         raise CancelEvent
 
 class PushableSprite(PerimeterSensoringMixin, Sprite):
+
+    lastpushedby = None
+
     def enter(self, area, sprite):
         super(PushableSprite, self).enter(area, sprite)
 
@@ -251,25 +254,47 @@ class PushableSprite(PerimeterSensoringMixin, Sprite):
                 if isinstance(sprite, PushableSprite):
                     self.vmove = 0
                     self.boundtop = sprite.boundtop - self.height
-                    # Stop sprite from pushing self if sprite was JUST pushed by us
-                print "pushing up"
+
         elif (self.boundtop > sprite.boundtop + sprite.height - 1 - (sprite.vmove * sprite.speed) and sprite.vmove > 0):
             self.vmove = sprite.vmove
-            print "pushing down"
-
-        if self.vmove:
-            print sprite.boundrect, id(sprite), "pushing", self.boundrect, id(self), (sprite.hmove, sprite.vmove)
 
         if (self.boundleft > sprite.boundleft and sprite.hmove > 0) or\
            (self.boundleft < sprite.boundleft and sprite.hmove < 0):
             self.hmove = sprite.hmove
 
+        if self.hmove or self.vmove:
+            self.lastpushedby = sprite
+
     def update(self, ticks):
         if self.hmove or self.vmove:
+            topleft = self.boundtop, self.boundleft
             self.move()
+            if topleft == (self.boundtop, self.boundleft):
+                self.pushback()
             self.hmove = 0
             self.vmove = 0
             self.speed = type(self).speed
+
+    def pushback(self, hmove=None, vmove=None):
+        print id(self), "----->", id(self.lastpushedby), "(%s)" % (getattr(self.lastpushedby, 'lastpushedby', None),)
+        topleft = self.boundtop, self.boundleft
+        lastpushedby = self.lastpushedby
+        hmove = hmove or self.hmove
+        vmove = vmove or self.vmove
+
+        if vmove < 0:
+            lastpushedby.boundtop = self.boundtop + self.height
+        elif vmove > 0:
+            lastpushedby.boundtop = self.boundtop - lastpushedby.height
+        if hmove < 0:
+            lastpushedby.boundleft = self.boundleft + self.width
+        elif hmove > 0:
+            lastpushedby.boundleft = self.boundleft - lastpushedby.width
+
+        self.lastpushedby = None
+        if getattr(lastpushedby, 'lastpushedby', None) is not None:
+            lastpushedby.pushback()
+
 
 class RectShower(pygame.sprite.Sprite):
     def __init__(self, show_for, color=(128, 128, 128)):
