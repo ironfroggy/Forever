@@ -22,7 +22,11 @@ class AreaManagingMode(Mode):
             ])[0]
         self.area = area
 
-        sprite = area.create_sprite(FacingSprite, topleft=(self.area.top+50, self.area.left+50), imagename="default_player", name="player")
+        sprite = area.create_sprite(
+            FacingSprite,
+            topleft=(self.area.top+50, self.area.left),
+            imagename="default_player",
+            name="player")
         sprite.register_listeners(self.game.mode)
         self.player = sprite
         sprite.show_bounds()
@@ -41,18 +45,19 @@ class AreaManagingMode(Mode):
             height = 50,
             image_path="default_obstruction.png")
 
-        for topleft in ((150, 150),
+        for i, topleft in enumerate([(150, 150),
+                        (150, 200),
                         (50, 250),
                         (50, 50),
-                        (300, 100), (300, 150), (300, 200),
-                        (320, 250), (340, 300), (360, 350)
-                        ):
+#                        (300, 100), (300, 150), (300, 200),
+#                        (320, 250), (340, 300), (360, 350)
+                        ]):
             obstruction = area.create_sprite(
                 PushableSprite,
                 topleft=topleft,
                 height=50,
                 image_path="default_obstruction.png",
-                name="block")
+                name="block " + str(i))
             obstruction.image.fill(color())
 
             #obstruction.show_bounds()

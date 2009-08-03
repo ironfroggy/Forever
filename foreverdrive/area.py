@@ -284,17 +284,14 @@ class BoundArea(TileArea):
             return
 
         topleft = bound_sprite.boundtop, bound_sprite.boundleft
-        import pdb
-        try:
-            bound_sprite.boundrect = pygame.Rect(
-                min(max(self.left, rect.left),
-                    self.left + self.width - rect.width),
-                min(max(self.top, rect.top),
-                    self.top + self.height - rect.height),
-                rect.width,
-                rect.height)
-        except TypeError:
-            pdb.set_trace()
+
+        bound_sprite.boundrect = pygame.Rect(
+            min(max(self.left, rect.left),
+                self.left + self.width - rect.width),
+            min(max(self.top, rect.top),
+                self.top + self.height - rect.height),
+            rect.width,
+            rect.height)
 
         bound_sprite.rect.top = rect.top - bound_sprite.rect.height + bound_sprite.height
         bound_sprite.rect.left = rect.left
