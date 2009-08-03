@@ -276,20 +276,11 @@ class PushableSprite(PerimeterSensoringMixin, Sprite):
             self.speed = type(self).speed
 
     def pushback(self, hmove=None, vmove=None):
-        print id(self), "----->", id(self.lastpushedby), "(%s)" % (getattr(self.lastpushedby, 'lastpushedby', None),)
-        topleft = self.boundtop, self.boundleft
         lastpushedby = self.lastpushedby
-        hmove = hmove or self.hmove
-        vmove = vmove or self.vmove
 
-        if vmove < 0:
-            lastpushedby.boundtop = self.boundtop + self.height
-        elif vmove > 0:
-            lastpushedby.boundtop = self.boundtop - lastpushedby.height
-        if hmove < 0:
-            lastpushedby.boundleft = self.boundleft + self.width
-        elif hmove > 0:
-            lastpushedby.boundleft = self.boundleft - lastpushedby.width
+        top_diff = lastpushedby.boundtop - self.boundtop
+        if top_diff > 0:
+            lastpushedby.boundtop += top_diff
 
         self.lastpushedby = None
         if getattr(lastpushedby, 'lastpushedby', None) is not None:
