@@ -22,7 +22,7 @@ class AreaManagingMode(Mode):
 
     def first_entering(self):
         area = self.areas.new_areas([
-            ((125, 125), (6, 6), None, None)
+            ((75, 75), (10, 10), None, None)
             ])[0]
         self.area = area
 
@@ -35,7 +35,10 @@ class AreaManagingMode(Mode):
 
         for topleft in ((150, 150),
                         (50, 250),
-                        (50, 50)):
+                        (50, 50),
+                        (300, 100), (300, 150), (300, 200),
+                        (320, 250), (340, 300), (360, 350)
+                        ):
             obstruction = area.create_sprite(
                 PerimeterSprite,
                 topleft=topleft,
