@@ -166,19 +166,17 @@ class Sprite(pygame.sprite.Sprite):
             self.vmove = 0
             return
 
-        if event.type == pygame.locals.KEYDOWN:
-            change = 1
-        elif event.type == pygame.locals.KEYUP:
-            change = -1
+        if event.type in (KEYDOWN, KEYUP):
+            go = int(event.type == KEYDOWN)
 
-        if event.key == pygame.locals.K_UP:
-            self.vmove -= change
-        elif event.key == pygame.locals.K_DOWN:
-            self.vmove += change
-        elif event.key == pygame.locals.K_LEFT:
-            self.hmove -= change
-        elif event.key == pygame.locals.K_RIGHT:
-            self.hmove += change
+            if event.key == K_UP:
+                self.vmove = -go
+            elif event.key == K_DOWN:
+                self.vmove = go
+            elif event.key == K_LEFT:
+                self.hmove = -go
+            elif event.key == K_RIGHT:
+                self.hmove = go
 
         elif event.key == pygame.locals.K_RSHIFT and event.type == pygame.locals.KEYDOWN:
             self.speed *= self.speed_multiplier
