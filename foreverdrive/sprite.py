@@ -241,16 +241,24 @@ class SolidSprite(PerimeterSensoringMixin, Sprite):
 class PushableSprite(PerimeterSensoringMixin, Sprite):
     def enter(self, area, sprite):
         super(PushableSprite, self).enter(area, sprite)
+
+        if sprite.hmove == 0 and sprite.vmove == 0:
+            return
+
         if (self.boundtop + self.height > sprite.boundtop - sprite.vmove and sprite.vmove < 0):
             if not sprite.boundtop + sprite.height < self.boundtop:
                 self.vmove = sprite.vmove
+                if isinstance(sprite, PushableSprite):
+                    self.vmove = 0
+                    self.boundtop = sprite.boundtop - self.height
+                    # Stop sprite from pushing self if sprite was JUST pushed by us
                 print "pushing up"
         elif (self.boundtop > sprite.boundtop + sprite.height - 1 - (sprite.vmove * sprite.speed) and sprite.vmove > 0):
             self.vmove = sprite.vmove
             print "pushing down"
 
         if self.vmove:
-            print sprite.boundrect, "pushing", self.boundrect
+            print sprite.boundrect, id(sprite), "pushing", self.boundrect, id(self), (sprite.hmove, sprite.vmove)
 
         if (self.boundleft > sprite.boundleft and sprite.hmove > 0) or\
            (self.boundleft < sprite.boundleft and sprite.hmove < 0):

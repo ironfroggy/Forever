@@ -35,7 +35,7 @@ class AreaManagingMode(Mode):
             obstruction = area.create_sprite(
                 SolidSprite,
                 topleft=topleft,
-                height=25,
+                height=15,
                 image_path="default_obstruction.png",
                 name="block")
 
