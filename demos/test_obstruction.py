@@ -45,15 +45,17 @@ class AreaManagingMode(Mode):
     
         self.area.add(sprite)
 
-        obstruction = area.create_sprite(
-            PerimeterSprite,
-            topleft=(150, 150),
-            height=25,
-            image_path="default_obstruction.png",
-            name="block")
+        for topleft in ((150, 150),
+                        (50, 250),
+                        (50, 50)):
+            obstruction = area.create_sprite(
+                PerimeterSprite,
+                topleft=topleft,
+                height=25,
+                image_path="default_obstruction.png",
+                name="block")
 
-#        obstruction.listen(report, Entering)
-        obstruction.show_bounds()
+            #obstruction.show_bounds()
 
 
 def main():
