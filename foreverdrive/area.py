@@ -267,6 +267,19 @@ class BoundArea(TileArea):
             except CancelEvent:
                 pass
 
+        def sprite_key(sprite):
+            try:
+                return sprite.boundtop
+            except:
+                return sprite.rect.top
+
+        group = self.bound_group
+        sprites = list(group)
+        sprites.sort(key=sprite_key)
+        group.empty()
+        group.add(sprites)
+
+
     def check_collision(self, bound_sprite):
         try:
             rect = bound_sprite.boundrect
