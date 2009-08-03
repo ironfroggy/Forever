@@ -282,14 +282,19 @@ class PushableSprite(PerimeterSensoringMixin, Sprite):
         hmove = hmove or self.hmove
         vmove = vmove or self.vmove
 
+        other_tl = (lastpushedby.boundtop, lastpushedby.boundleft)
         if vmove < 0:
             lastpushedby.boundtop = self.boundtop + self.height
         elif vmove > 0:
-            lastpushedby.boundtop = self.boundtop - lastpushedby.height
+            lastpushedby.boundtop = self.boundtop - lastpushedby.lastmovebound.rect.height
         if hmove < 0:
             lastpushedby.boundleft = self.boundleft + self.width
         elif hmove > 0:
-            lastpushedby.boundleft = self.boundleft - lastpushedby.width
+            lastpushedby.boundleft = self.boundleft - lastpushedby.lastmovebound.rect.width
+        print (other_tl[0] - lastpushedby.boundtop, other_tl[1] - lastpushedby.boundleft)
+        if other_tl[1] - lastpushedby.boundleft < -50:
+            import pdb
+            pdb.set_trace()
 
         self.lastpushedby = None
         if getattr(lastpushedby, 'lastpushedby', None) is not None:
