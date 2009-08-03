@@ -38,7 +38,7 @@ class TileArea(object):
         self.width = self.image.get_width() * size[0]
         self.height = self.image.get_height() * size[1]
 
-        tg = self.tile_group = pygame.sprite.RenderUpdates()
+        tg = self.tile_group = pygame.sprite.OrderedUpdates()
         for x in xrange(size[0]):
             for y in xrange(size[1]):
                 sprite = pygame.sprite.Sprite()
@@ -237,12 +237,10 @@ class Portal(Sprite):
 class BoundArea(TileArea):
 
     def __init__(self, *args, **kwargs):
-        print "BoundArea"
         super(BoundArea, self).__init__(*args, **kwargs)
-        self.bound_group = pygame.sprite.RenderUpdates()
+        self.bound_group = pygame.sprite.OrderedUpdates()
         self.portals = pygame.sprite.Group()
         if self.mode:
-            print "listen to movement"
             self.mode.listen(self.on_movement, Movement)
 
     def __iter__(self):
