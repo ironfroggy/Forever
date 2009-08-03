@@ -143,8 +143,8 @@ class Sprite(pygame.sprite.Sprite):
             try:
                 self.announce_movement(hmove, vmove)
             except CancelEvent:
-                self.boundtop = previous_top - (vmove * 2)
-                self.boundleft = previous_left - (hmove * 2)
+                self.boundtop = previous_top - vmove
+                self.boundleft = previous_left - hmove
                 self.lastmovebound = last_lastmovebound
 
     mode = None
@@ -230,6 +230,11 @@ class PerimeterSensoringMixin(EventRouter):
 class SolidSprite(PerimeterSensoringMixin, Sprite):
     def enter(self, area, sprite):
         super(SolidSprite, self).enter(area, sprite)
+
+        if self.boundtop + self.height > sprite.boundtop:
+            sprite.hmove = 0
+        if self.boundleft + self.width > sprite.boundleft:
+            sprite.vmove = 0
 
         raise CancelEvent
 
