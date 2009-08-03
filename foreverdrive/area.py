@@ -2,6 +2,7 @@ from itertools import chain
 
 import pygame
 from foreverdrive import get_media_path
+from foreverdrive.events import Movement, CancelEvent
 from foreverdrive.sprite import Sprite, Bound
 from foreverdrive.visual.filters import blur, dim
 
@@ -9,7 +10,16 @@ class TileArea(object):
     name = None
     filters = []
 
-    def __init__(self, image_path, size, topleft=(0, 0), relative_to=None):
+    def __init__(self,
+                 image_path,
+                 size,
+                 topleft=(0, 0),
+                 relative_to=None,
+                 mode=None):
+
+        self.mode = mode
+        print mode
+
         self.image = pygame.image.load(get_media_path(image_path)).convert()
         for filter in self.filters:
             filter(self.image)
@@ -110,6 +120,7 @@ class TileArea(object):
         kwargs['area'] = self
         sprite = cls(*args, **kwargs)
         self.add(sprite)
+        sprite.mode = self.mode
         return sprite
 
 class BlurredBackground(TileArea):
@@ -226,9 +237,13 @@ class Portal(Sprite):
 class BoundArea(TileArea):
 
     def __init__(self, *args, **kwargs):
+        print "BoundArea"
         super(BoundArea, self).__init__(*args, **kwargs)
         self.bound_group = pygame.sprite.RenderUpdates()
         self.portals = pygame.sprite.Group()
+        if self.mode:
+            print "listen to movement"
+            self.mode.listen(self.on_movement, Movement)
 
     def __iter__(self):
         return chain(self.tile_group, self.bound_group)
@@ -248,28 +263,38 @@ class BoundArea(TileArea):
                 continue
 
             try:
-                rect = bound_sprite.boundrect
-            except AttributeError:
+                self.check_collision(bound_sprite)
+            except CancelEvent:
+                pass
+
+    def check_collision(self, bound_sprite):
+        try:
+            rect = bound_sprite.boundrect
+        except AttributeError:
+            return
+
+        bound_sprite.boundrect = pygame.Rect(
+            min(max(self.left, rect.left),
+                self.left + self.width - rect.width),
+            min(max(self.top, rect.top),
+                self.top + self.height - rect.height),
+            rect.width,
+            rect.height)
+
+        bound_sprite.rect.top = rect.top - bound_sprite.rect.height + bound_sprite.height
+        bound_sprite.rect.left = rect.left
+
+        for entered_portal in pygame.sprite.spritecollide(
+            bound_sprite.lastmovebound,
+            [Bound(s) for s in self.portals],
+            False):
+
+            if entered_portal.sprite is bound_sprite:
                 continue
+            entered_portal.enter(self, bound_sprite)            
 
-            bound_sprite.boundrect = pygame.Rect(
-                min(max(self.left, rect.left),
-                    self.left + self.width - rect.width),
-                min(max(self.top, rect.top),
-                    self.top + self.height - rect.height),
-                rect.width,
-                rect.height)
-
-            bound_sprite.rect.top = rect.top - bound_sprite.rect.height + bound_sprite.height
-            bound_sprite.rect.left = rect.left
-
-            for entered_portal in pygame.sprite.spritecollide(
-                bound_sprite.lastmovebound,
-                [Bound(s) for s in self.portals],
-                False):
-                if entered_portal.sprite is bound_sprite:
-                    continue
-                entered_portal.enter(self, bound_sprite)
+    def on_movement(self, event):
+        self.check_collision(event.sprite)
 
     def draw(self, surface):
         return chain(
@@ -302,7 +327,8 @@ class AreaManager(object):
         area = BoundArea("default_tile.png",
                          size=(tiles_wide, tiles_tall),
                          topleft=(top, left),
-                         relative_to=relative_to)
+                         relative_to=relative_to,
+                         mode=self.mode)
         self.add(area)
         return area
 

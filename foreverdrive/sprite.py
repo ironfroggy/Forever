@@ -2,7 +2,7 @@ import pygame
 from pygame.locals import *
 
 from foreverdrive import get_media_path
-from foreverdrive.events import Pause, Movement, EventRouter, Entering
+from foreverdrive.events import Pause, Movement, EventRouter, Entering, CancelEvent
 
 class Bound(object):
     def __init__(self, sprite):
@@ -118,24 +118,40 @@ class Sprite(pygame.sprite.Sprite):
         speed = self.speed * M
         vmove = self.vmove * speed
         hmove = self.hmove * speed
-        self.boundrect.top += vmove
-        self.boundrect.left += hmove
-        self.rect.top += vmove
-        self.rect.left += hmove
+
+        previous_top = self.boundtop
+        previous_left = self.boundleft
 
         if vmove or hmove:
-            self.lastmovebound = RectHolder(pygame.Rect(
-                self.boundrect.left - hmove,
-                self.boundrect.top - vmove,
-                self.boundrect.width + abs(hmove),
-                self.boundrect.height + abs(vmove)
-                ))
-            self.announce_movement(hmove, vmove)
+            last_lastmovebound = RectHolder(pygame.Rect(
+                    self.boundrect.left,
+                    self.boundrect.top,
+                    self.boundrect.width,
+                    self.boundrect.height))
 
-    game = None
+            self.boundrect.top += vmove
+            self.boundrect.left += hmove
+            self.rect.top += vmove
+            self.rect.left += hmove
+
+            self.lastmovebound = RectHolder(pygame.Rect(
+                    self.boundrect.left - hmove,
+                    self.boundrect.top - vmove,
+                    self.boundrect.width + abs(hmove),
+                    self.boundrect.height + abs(vmove)
+                    ))
+            try:
+                self.announce_movement(hmove, vmove)
+            except CancelEvent:
+                self.boundtop = previous_top - (vmove * 2)
+                self.boundleft = previous_left - (hmove * 2)
+                self.lastmovebound = last_lastmovebound
+
+    mode = None
     def announce_movement(self, hmove, vmove):
-        if self.game is not None:
-            self.game.mode.route(Movement(self, (hmove, vmove)))
+        if self.mode is not None:
+            self.mode.route(Movement(self, (hmove, vmove)))
+            
 
     def register_listeners(self, router):
         router.listen_arrows(self.handle_event)
@@ -173,6 +189,7 @@ class Sprite(pygame.sprite.Sprite):
             self.speed = 1
         elif event.key == pygame.locals.K_LSHIFT and event.type == pygame.locals.KEYUP:
             self.speed = type(self).speed
+
 
 class FacingSprite(Sprite):
 

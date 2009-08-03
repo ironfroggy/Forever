@@ -2,9 +2,14 @@ import pygame
 from pygame.locals import *
 
 
+class CancelEvent(Exception):
+    pass
+
+
 class Movement(object):
     def __init__(self, player, movement):
         self.player = player
+        self.sprite = player
         self.rect = player.rect
         self.movement = movement
 

@@ -2,7 +2,7 @@ from foreverdrive.base import ForeverMain
 from foreverdrive.modes import Mode
 from foreverdrive.area import AreaManager
 from foreverdrive.sprite import Sprite, PerimeterSensoringMixin, FacingSprite
-from foreverdrive.events import Entering
+from foreverdrive.events import Entering, CancelEvent
 
 def report(event):
     print event.sprite.name, "entered", event.entered.name
@@ -10,20 +10,8 @@ def report(event):
 class PerimeterSprite(PerimeterSensoringMixin, Sprite):
     def enter(self, area, sprite):
         super(PerimeterSprite, self).enter(area, sprite)
-        boundtop = self.boundtop
 
-        vmove = sprite.vmove
-        hmove = sprite.hmove
-
-        if sprite.vmove < 0:
-            sprite.boundrect.top = self.boundrect.top + abs(vmove) + self.height + 1
-        elif sprite.vmove > 0:
-            sprite.boundrect.top = self.boundrect.top - abs(vmove) - 1
-
-        if sprite.hmove < 0:
-            sprite.boundrect.left = self.boundrect.left + abs(hmove) + self.width + 2
-        elif sprite.hmove > 0:
-            sprite.boundrect.left = self.boundrect.left - abs(hmove) - self.width - 2
+        raise CancelEvent
             
 
 class AreaManagingMode(Mode):
@@ -38,7 +26,7 @@ class AreaManagingMode(Mode):
             ])[0]
         self.area = area
 
-        sprite = FacingSprite(topleft=(self.area.top+50, self.area.left+50), imagename="default_player", area=self.area, name="player")
+        sprite = area.create_sprite(FacingSprite, topleft=(self.area.top+50, self.area.left+50), imagename="default_player", name="player")
         sprite.register_listeners(self.game.mode)
         self.player = sprite
         sprite.show_bounds()
