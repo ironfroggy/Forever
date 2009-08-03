@@ -242,13 +242,20 @@ class PushableSprite(PerimeterSensoringMixin, Sprite):
     def enter(self, area, sprite):
         super(PushableSprite, self).enter(area, sprite)
         if (self.boundtop + self.height > sprite.boundtop - sprite.vmove and sprite.vmove < 0):
+            if not sprite.boundtop + sprite.height < self.boundtop:
+                self.vmove = sprite.vmove
+                print "pushing up"
+        elif (self.boundtop > sprite.boundtop + sprite.height - 1 - (sprite.vmove * sprite.speed) and sprite.vmove > 0):
             self.vmove = sprite.vmove
-        elif (self.boundtop > sprite.boundtop - (sprite.vmove * sprite.speed) and sprite.vmove > 0):
-            self.speed *= 2
-            self.vmove = sprite.vmove
+            print "pushing down"
+
+        if self.vmove:
+            print sprite.boundrect, "pushing", self.boundrect
+
         if (self.boundleft > sprite.boundleft and sprite.hmove > 0) or\
            (self.boundleft < sprite.boundleft and sprite.hmove < 0):
             self.hmove = sprite.hmove
+
     def update(self, ticks):
         if self.hmove or self.vmove:
             self.move()
