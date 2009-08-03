@@ -10,10 +10,20 @@ def report(event):
 class PerimeterSprite(PerimeterSensoringMixin, Sprite):
     def enter(self, area, sprite):
         super(PerimeterSprite, self).enter(area, sprite)
+        boundtop = self.boundtop
+
+        vmove = sprite.vmove
+        hmove = sprite.hmove
+
         if sprite.vmove < 0:
-            sprite.move(-1)
+            sprite.boundrect.top = self.boundrect.top + abs(vmove) + self.height + 1
         elif sprite.vmove > 0:
-            sprite.move(-1)
+            sprite.boundrect.top = self.boundrect.top - abs(vmove) - 1
+
+        if sprite.hmove < 0:
+            sprite.boundrect.left = self.boundrect.left + abs(hmove) + self.width + 2
+        elif sprite.hmove > 0:
+            sprite.boundrect.left = self.boundrect.left - abs(hmove) - self.width - 2
             
 
 class AreaManagingMode(Mode):

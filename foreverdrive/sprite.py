@@ -57,6 +57,7 @@ class Sprite(pygame.sprite.Sprite):
             self.rect.top,
             self.rect.width,
             height)
+        self.width = self.rect.width
         self.lastmovebound = RectHolder(self.boundrect)
 
         self.adjust_inside_area()
@@ -91,9 +92,9 @@ class Sprite(pygame.sprite.Sprite):
         return self.boundrect.top
     @boundtop.setter
     def boundtop(self, top):
-        diff = self.boundrect.top - self.rect.top
-        self.boundrect.top = top + diff
-        self.rect.top = top - diff
+#        diff = self.boundrect.top - self.rect.top
+        self.boundrect.top = top# + diff
+        self.rect.top = top# - diff
 
     @property
     def boundleft(self):
