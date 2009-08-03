@@ -29,7 +29,6 @@ class Sprite(pygame.sprite.Sprite):
 
     def __init__(self,
                  topleft=(100, 100),
-                 bound_topleft=None,
                  image_path="default_sprite.png",
                  area=None,
                  height=1,
@@ -43,6 +42,7 @@ class Sprite(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.area = area
         self.name = name
+        self.height = height
       
         # Create the image that will be displayed and fill it with the
         # right color.
@@ -51,14 +51,6 @@ class Sprite(pygame.sprite.Sprite):
         # Make our top-left corner the passed-in location.
         self.rect = self.image.get_rect()
         self.rect.top, self.rect.left = topleft
-
-        if bound_topleft is None:
-            bound_top = self.rect.height - 1
-            bound_left = 0
-        else:
-            bound_top, bound_left = bound_topleft
-        self.bound_top = bound_top
-        self.bound_left = bound_left
 
         self.boundrect = pygame.Rect(
             self.rect.left,
@@ -69,22 +61,23 @@ class Sprite(pygame.sprite.Sprite):
 
         self.adjust_inside_area()
 
-        self.boundtop += self.rect.height - bound_top
-        self.boundleft -= bound_left
-
         self.children = set()
 
     def __iter__(self):
         return iter(self.children)
 
     def show_bounds(self):
-        sprite = BoundsShower(self)
+        sprite = RectShower(self.boundrect)
         self.area.add(sprite)
         self.children.add(sprite)
 
+        #sprite = RectShower(self.rect, (50, 50, 50))
+        #self.area.add(sprite)
+        #self.children.add(sprite)
+
     def adjust_inside_area(self):
         try:
-            self.boundtop += self.area.top
+            self.boundtop += self.area.top - self.height
             self.boundleft += self.area.left
         except AttributeError:
             pass
@@ -98,8 +91,9 @@ class Sprite(pygame.sprite.Sprite):
         return self.boundrect.top
     @boundtop.setter
     def boundtop(self, top):
-        self.boundrect.top = top
-        self.rect.top = top
+        diff = self.boundrect.top - self.rect.top
+        self.boundrect.top = top + diff
+        self.rect.top = top - diff
 
     @property
     def boundleft(self):
@@ -217,11 +211,12 @@ class PerimeterSensoringMixin(EventRouter):
     def enter(self, area, sprite):
         self.route(Entering(sprite, self))
         
-class BoundsShower(pygame.sprite.Sprite):
-    def __init__(self, show_for):
-        super(BoundsShower, self).__init__()
-        self.image = pygame.Surface((show_for.boundrect.width,
-                                       show_for.boundrect.height))
+class RectShower(pygame.sprite.Sprite):
+    def __init__(self, show_for, color=(128, 128, 128)):
+        super(RectShower, self).__init__()
+        self.color = color
+        self.image = pygame.Surface((show_for.width,
+                                       show_for.height))
         self.show_for = show_for
         self.update(0)
 
@@ -229,7 +224,7 @@ class BoundsShower(pygame.sprite.Sprite):
         show_for = self.show_for
         image = self.image
 
-        self.image.fill((128, 128, 128))
+        self.image.fill(self.color)
         self.rect = self.image.get_rect()
-        self.rect.top = show_for.boundtop
-        self.rect.left = show_for.boundleft
+        self.rect.top = show_for.top
+        self.rect.left = show_for.left

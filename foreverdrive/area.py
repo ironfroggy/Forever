@@ -260,7 +260,7 @@ class BoundArea(TileArea):
                 rect.width,
                 rect.height)
 
-            bound_sprite.rect.top = rect.top - bound_sprite.rect.height - 1
+            bound_sprite.rect.top = rect.top - bound_sprite.rect.height + bound_sprite.height
             bound_sprite.rect.left = rect.left
 
             for entered_portal in pygame.sprite.spritecollide(
@@ -270,7 +270,6 @@ class BoundArea(TileArea):
                 if entered_portal.sprite is bound_sprite:
                     continue
                 entered_portal.enter(self, bound_sprite)
-            print
 
     def draw(self, surface):
         return chain(

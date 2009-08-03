@@ -37,13 +37,12 @@ class AreaManagingMode(Mode):
 
         obstruction = area.create_sprite(
             PerimeterSprite,
-            topleft=(200, 100),
-            bound_topleft=(80, 0),
+            topleft=(150, 150),
             height=25,
             image_path="default_obstruction.png",
             name="block")
 
-        obstruction.listen(report, Entering)
+#        obstruction.listen(report, Entering)
         obstruction.show_bounds()
 
 
