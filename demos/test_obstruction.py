@@ -1,18 +1,11 @@
 from foreverdrive.base import ForeverMain
 from foreverdrive.modes import Mode
 from foreverdrive.area import AreaManager
-from foreverdrive.sprite import Sprite, PerimeterSensoringMixin, FacingSprite
+from foreverdrive.sprite import Sprite, SolidSprite, FacingSprite
 from foreverdrive.events import Entering, CancelEvent
 
 def report(event):
-    print event.sprite.name, "entered", event.entered.name
-
-class PerimeterSprite(PerimeterSensoringMixin, Sprite):
-    def enter(self, area, sprite):
-        super(PerimeterSprite, self).enter(area, sprite)
-
-        raise CancelEvent
-            
+    print event.sprite.name, "entered", event.entered.name            
 
 class AreaManagingMode(Mode):
 
@@ -40,7 +33,7 @@ class AreaManagingMode(Mode):
                         (320, 250), (340, 300), (360, 350)
                         ):
             obstruction = area.create_sprite(
-                PerimeterSprite,
+                SolidSprite,
                 topleft=topleft,
                 height=25,
                 image_path="default_obstruction.png",

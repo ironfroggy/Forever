@@ -228,6 +228,12 @@ class PerimeterSensoringMixin(EventRouter):
 
     def enter(self, area, sprite):
         self.route(Entering(sprite, self))
+
+class SolidSprite(PerimeterSensoringMixin, Sprite):
+    def enter(self, area, sprite):
+        super(SolidSprite, self).enter(area, sprite)
+
+        raise CancelEvent
         
 class RectShower(pygame.sprite.Sprite):
     def __init__(self, show_for, color=(128, 128, 128)):
