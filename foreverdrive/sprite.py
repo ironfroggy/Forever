@@ -262,43 +262,94 @@ class PushableSprite(PerimeterSensoringMixin, Sprite):
            (self.boundleft < sprite.boundleft and sprite.hmove < 0):
             self.hmove = sprite.hmove
 
+        # OK. We have the direction we're being pushed.
+        # Does it push us into something else? If we wait
+        # for update to find out, the pusher will already
+        # be in our way! Going to look for collisions in
+        # our future direction.
+        rh = self.get_movebounds()
+        try:
+            hit = self.area.check_collision(rh)
+            if isinstance(hit, basestring):
+                return
+            else:
+                hit = [h for h in hit
+                       if h.sprite is not sprite and h.sprite is not self]
+                if hit:
+                    raise CancelEvent()
+        except CancelEvent:
+            print "cant be pushed"
+            self.hmove = 0
+            self.vmove = 0
+
         if self.hmove or self.vmove:
             self.lastpushedby = sprite
+
+    def get_movebounds(self):
+        H = self.hmove*self.speed
+        V = self.vmove*self.speed
+        try:
+            movebounds = self.movebounds
+        except AttributeError:
+            self.movebounds = pygame.Rect(
+                self.boundrect.left + H,
+                self.boundrect.top +  V,
+                self.boundrect.width + H,
+                self.boundrect.height + V)
+            movebounds = self.movebounds
+
+        try:
+            rh = self.rh
+        except AttributeError:
+            self.rh = RectHolder(movebounds)
+            rh = self.rh
+        rh.lastmovebound = RectHolder(movebounds)
+        rh.hmove = self.hmove
+        rh.vmove = self.vmove
+        rh.boundtop = self.boundtop - self.speed
+        rh.boundleft = self.boundleft - self.speed
+        rh.height = self.height + self.speed
+        rh.width = self.width + self.speed
+        rh.speed = self.speed
+
+        return rh
+
 
     def update(self, ticks):
         if self.hmove or self.vmove:
             topleft = self.boundtop, self.boundleft
             self.move()
             if topleft == (self.boundtop, self.boundleft):
-                self.pushback()
+                pass#self.pushback()
             self.hmove = 0
             self.vmove = 0
             self.speed = type(self).speed
 
-    def pushback(self, hmove=None, vmove=None):
+    def pushback(self, hmove=None, vmove=None, M=1):
         print id(self), "----->", id(self.lastpushedby), "(%s)" % (getattr(self.lastpushedby, 'lastpushedby', None),)
         topleft = self.boundtop, self.boundleft
         lastpushedby = self.lastpushedby
         hmove = hmove or self.hmove
         vmove = vmove or self.vmove
-
+        print self.lastmovebound.rect.width - self.width
         other_tl = (lastpushedby.boundtop, lastpushedby.boundleft)
         if vmove < 0:
             lastpushedby.boundtop = self.boundtop + self.height
         elif vmove > 0:
             lastpushedby.boundtop = self.boundtop - lastpushedby.lastmovebound.rect.height
         if hmove < 0:
+            # TODO: dont fuck this up
             lastpushedby.boundleft = self.boundleft + self.width
         elif hmove > 0:
             lastpushedby.boundleft = self.boundleft - lastpushedby.lastmovebound.rect.width
+        if abs(other_tl[1] - lastpushedby.boundleft) > 50:
+            lastpushedby.boundleft = other_tl[1]
+
         print (other_tl[0] - lastpushedby.boundtop, other_tl[1] - lastpushedby.boundleft)
-        if other_tl[1] - lastpushedby.boundleft < -50:
-            import pdb
-            pdb.set_trace()
 
         self.lastpushedby = None
         if getattr(lastpushedby, 'lastpushedby', None) is not None:
-            lastpushedby.pushback()
+            lastpushedby.pushback(M=M+1)
 
 
 class RectShower(pygame.sprite.Sprite):

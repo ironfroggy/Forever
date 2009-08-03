@@ -1,7 +1,10 @@
+from itertools import cycle
+
 from foreverdrive.base import ForeverMain
 from foreverdrive.modes import Mode
 from foreverdrive.area import AreaManager
-from foreverdrive.sprite import Sprite, PushableSprite, FacingSprite
+from foreverdrive.sprite import Sprite, PushableSprite, FacingSprite, SolidSprite
+
 from foreverdrive.events import Entering, CancelEvent
 
 def report(event):
@@ -26,6 +29,18 @@ class AreaManagingMode(Mode):
     
         self.area.add(sprite)
 
+        color = iter(cycle([(128, 128, 250, 128),
+                            (128, 250, 128, 128),
+                            (250, 128, 128, 128),
+                            (50, 100, 200, 128),
+                            (100, 50, 200, 128),
+                            ])).next
+        obstruction = area.create_sprite(
+            SolidSprite,
+            (100, 50),
+            height = 50,
+            image_path="default_obstruction.png")
+
         for topleft in ((150, 150),
                         (50, 250),
                         (50, 50),
@@ -38,6 +53,7 @@ class AreaManagingMode(Mode):
                 height=50,
                 image_path="default_obstruction.png",
                 name="block")
+            obstruction.image.fill(color())
 
             #obstruction.show_bounds()
 

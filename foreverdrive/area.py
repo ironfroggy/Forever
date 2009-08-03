@@ -284,13 +284,17 @@ class BoundArea(TileArea):
             return
 
         topleft = bound_sprite.boundtop, bound_sprite.boundleft
-        bound_sprite.boundrect = pygame.Rect(
-            min(max(self.left, rect.left),
-                self.left + self.width - rect.width),
-            min(max(self.top, rect.top),
-                self.top + self.height - rect.height),
-            rect.width,
-            rect.height)
+        import pdb
+        try:
+            bound_sprite.boundrect = pygame.Rect(
+                min(max(self.left, rect.left),
+                    self.left + self.width - rect.width),
+                min(max(self.top, rect.top),
+                    self.top + self.height - rect.height),
+                rect.width,
+                rect.height)
+        except TypeError:
+            pdb.set_trace()
 
         bound_sprite.rect.top = rect.top - bound_sprite.rect.height + bound_sprite.height
         bound_sprite.rect.left = rect.left
@@ -302,16 +306,30 @@ class BoundArea(TileArea):
         try:
             lastmovebound = bound_sprite.lastmovebound
         except AttributeError:
-            return
+            return "not applicable"
 
-        for entered_portal in pygame.sprite.spritecollide(
-            lastmovebound,
-            [Bound(s) for s in self.portals],
-            False):
+        try:
+            if bound_sprite.__checking_collisions:
+                return "already checked"
+        except AttributeError:
+            bound_sprite.__checking_collisions = 0
+            print "new"
 
-            if entered_portal.sprite is bound_sprite:
-                continue
-            entered_portal.enter(self, bound_sprite)            
+        try:
+            bound_sprite.__checking_collisions += 1
+            hit = []
+            for entered_portal in pygame.sprite.spritecollide(
+                lastmovebound,
+                [Bound(s) for s in self.portals],
+                False):
+
+                if entered_portal.sprite is bound_sprite:
+                    continue
+                entered_portal.enter(self, bound_sprite)
+                hit.append(entered_portal)
+            return hit
+        finally:
+            bound_sprite.__checking_collisions -= 1
 
     def on_movement(self, event):
         self.check_collision(event.sprite)
