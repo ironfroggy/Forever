@@ -175,6 +175,7 @@ class Sprite(pygame.sprite.Sprite):
             try:
                 self.announce_movement(hmove, vmove)
             except CancelEvent:
+                print "  couldn't move."
                 self.boundtop = previous_top - vmove
                 self.boundleft = previous_left - hmove
                 self.lastmovebound = last_lastmovebound
@@ -258,14 +259,14 @@ class PerimeterSensoringMixin(EventRouter):
         self.sprites_inside = set()
 
     def enter(self, area, sprite):
-        self.route(Entering(sprite, self))
         self.sprites_inside.add(sprite)
 
         if not pygame.sprite.collide_rect(Bound(self), Bound(sprite)):
             self.sprites_inside.remove(sprite)
             return False
-
-        return True
+        else:
+            self.route(Entering(sprite, self))
+            return True
 
 class SolidSprite(PerimeterSensoringMixin, Sprite):
 

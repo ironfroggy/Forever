@@ -255,7 +255,6 @@ class BoundArea(TileArea):
         self.bound_group.remove(sprite)
 
     def _sprite_key(self, sprite):
-        pushedby_count = 0
         if getattr(sprite, 'pushedby', None) is None:
             return 0
         else:
@@ -268,10 +267,7 @@ class BoundArea(TileArea):
             if isinstance(bound_sprite, Portal):
                 continue
 
-            try:
-                self.check_collision(bound_sprite)
-            except CancelEvent:
-                pass
+            self.check_collision(bound_sprite)
 
         def sprite_key(sprite):
             try:
