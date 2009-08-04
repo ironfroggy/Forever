@@ -310,9 +310,9 @@ class SolidSprite(PerimeterSensoringMixin, Sprite):
 
     def slow_down(self):
         if self.vmove:
-            self.vmove = 0
+            self.vmove *= 0.8
         if self.hmove:
-            self.hmove = 0
+            self.hmove *= 0.8
 
 
 class FacingSprite(SolidSprite):
