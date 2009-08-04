@@ -254,7 +254,11 @@ class BoundArea(TileArea):
     def remove(self, sprite):
         self.bound_group.remove(sprite)
 
+    def _sprite_key(self, sprite):
+        order = getattr(sprite, 'pushedby', None) is None
+
     def update(self, ticks):
+        self.bound_group._spritelist.sort(key=self._sprite_key)
         self.bound_group.update(ticks)
         for bound_sprite in self.bound_group:
             if isinstance(bound_sprite, Portal):

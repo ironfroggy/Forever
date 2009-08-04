@@ -48,6 +48,8 @@ class Sprite(pygame.sprite.Sprite):
     speed = 4.0
     speed_multiplier = 2.5
 
+    pushedby = None
+
     def __init__(self,
                  topleft=(100, 100),
                  image_path="default_sprite.png",
@@ -128,12 +130,15 @@ class Sprite(pygame.sprite.Sprite):
 
     def update(self, current_time):
         if current_time == self.lastmove and self.lastmove > 0:
-            return
+            return False
+
         self.move()
         self.lastmove = current_time
 
         for child in self:
             child.update(current_time)
+
+        return True
 
     def move(self, M=1):
         speed = self.speed * M
@@ -264,9 +269,10 @@ class SolidSprite(PerimeterSensoringMixin, Sprite):
 
     def enter(self, area, sprite):
         entering = super(SolidSprite, self).enter(area, sprite)
-        if not entering:
-            return
+        if entering:
+            self.pushed_by(sprite)
 
+    def pushed_by(self, sprite):
         up, down, left, right = self.can_move
         cancel = True
 
@@ -283,12 +289,31 @@ class SolidSprite(PerimeterSensoringMixin, Sprite):
             sprite.hmove = 0
 
         if cancel:
+            print "cant be moved"
             raise CancelEvent
+        elif getattr(sprite, 'pushedby', None) is self:
+            print "already moved?"
+            raise CancelEvent
+        else:
+            print self.name, (self.hmove, self.vmove), "pushed by", sprite.name, (sprite.hmove, sprite.vmove)
+            try:
+                sprite_pushedby = sprite.pushedby.name
+                print "which was pushed by", sprite_pushedby, (sprite.pushedby.hmove, sprite.pushedby.vmove)
+            except AttributeError:
+                print
+
+            self.speed = sprite.speed
+            self.pushedby = sprite
 
     def update(self, tick):
-        super(SolidSprite, self).update(tick)
+        if not super(SolidSprite, self).update(tick):
+            return False
+        if self.hmove or self.vmove:
+            print self.name, "moved", (self.boundleft, self.boundtop)
         self.vmove = 0
         self.hmove = 0
+        self.speed = type(self).speed
+        self.pushedby = None
 
 
 class RectShower(pygame.sprite.Sprite):
