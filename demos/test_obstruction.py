@@ -23,7 +23,7 @@ class AreaManagingMode(Mode):
             FacingSprite,
             topleft=(self.area.top+50,
                      self.area.left+50),
-            height=15,
+            height=25,
             imagename="default_player",
             name="player")
         sprite.register_listeners(self.game.mode)
@@ -41,7 +41,7 @@ class AreaManagingMode(Mode):
             obstruction = area.create_sprite(
                 SolidSprite,
                 topleft=topleft,
-                height=15,
+                height=40,
                 image_path="default_obstruction.png",
                 name="block %d" % (i,))
 
