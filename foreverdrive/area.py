@@ -256,6 +256,7 @@ class BoundArea(TileArea):
 
     def _sprite_key(self, sprite):
         order = getattr(sprite, 'pushedby', None) is None
+        return order
 
     def update(self, ticks):
         self.bound_group._spritelist.sort(key=self._sprite_key)
