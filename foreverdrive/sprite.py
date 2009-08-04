@@ -140,6 +140,12 @@ class Sprite(pygame.sprite.Sprite):
 
         return True
 
+    def pushedby_all(self):
+        if self.pushedby is not None:
+            return [self.pushedby] + self.pushedby.pushedby_all()
+        else:
+            return []
+
     def move(self, M=1):
         speed = self.speed * M
         vmove = self.vmove * speed
@@ -270,9 +276,12 @@ class SolidSprite(PerimeterSensoringMixin, Sprite):
     def enter(self, area, sprite):
         entering = super(SolidSprite, self).enter(area, sprite)
         if entering:
-            self.pushed_by(sprite)
+            self.push(sprite)
 
-    def pushed_by(self, sprite):
+    def push(self, sprite):
+        if self in sprite.pushedby_all():
+            return
+
         up, down, left, right = self.can_move
         cancel = True
 

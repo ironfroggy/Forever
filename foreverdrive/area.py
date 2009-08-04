@@ -255,8 +255,11 @@ class BoundArea(TileArea):
         self.bound_group.remove(sprite)
 
     def _sprite_key(self, sprite):
-        order = getattr(sprite, 'pushedby', None) is None
-        return order
+        pushedby_count = 0
+        if getattr(sprite, 'pushedby', None) is None:
+            return 0
+        else:
+            return self._sprite_key(sprite.pushedby) - 1
 
     def update(self, ticks):
         self.bound_group._spritelist.sort(key=self._sprite_key)
