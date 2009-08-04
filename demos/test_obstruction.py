@@ -7,6 +7,8 @@ from foreverdrive.events import Entering, CancelEvent
 def report(event):
     print event.sprite.name, "entered", event.entered.name            
 
+objects = []
+
 class AreaManagingMode(Mode):
 
     def __init__(self, *args, **kwargs):
@@ -38,12 +40,17 @@ class AreaManagingMode(Mode):
                 height=15,
                 image_path="default_obstruction.png",
                 name="block %d" % (i,))
+            objects.append(obstruction)
 
             obstruction.show_bounds()
 
 
+class TestMain(ForeverMain):
+    def tick(self, tick):
+        objects[1].hmove = -1
+
 def main():
-    game = ForeverMain(initmode=AreaManagingMode)
+    game = TestMain(initmode=AreaManagingMode)
     game.run()
 
 if __name__ == '__main__':

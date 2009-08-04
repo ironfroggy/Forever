@@ -46,6 +46,9 @@ class ForeverMain(object):
     def listen_arrows(self, *args, **kwargs):
         return self.mode.listen_arrows(*args, **kwargs)
 
+    def tick(self, tick):
+        pass
+
     def run(self):
         pygame.init()
         screen = self.screen
@@ -53,6 +56,7 @@ class ForeverMain(object):
         lastupdate = 0
         delay = self.delay
         while not quit:
+            self.tick(lastupdate)
             mode = self.mode
             ticks = pygame.time.get_ticks()
             background = mode.background
