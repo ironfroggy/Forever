@@ -45,7 +45,7 @@ class AreaManagingMode(Mode):
                 image_path="default_obstruction.png",
                 name="block %d" % (i,))
 
-            obstruction.show_bounds()
+            #obstruction.show_bounds()
 
 
 def main():
