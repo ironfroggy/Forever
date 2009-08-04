@@ -19,7 +19,13 @@ class AreaManagingMode(Mode):
             ])[0]
         self.area = area
 
-        sprite = area.create_sprite(FacingSprite, topleft=(self.area.top+50, self.area.left+50), imagename="default_player", name="player")
+        sprite = area.create_sprite(
+            FacingSprite,
+            topleft=(self.area.top+50,
+                     self.area.left+50),
+            height=15,
+            imagename="default_player",
+            name="player")
         sprite.register_listeners(self.game.mode)
         self.player = sprite
         sprite.show_bounds()
