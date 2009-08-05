@@ -295,8 +295,8 @@ class SolidSprite(PerimeterSensoringMixin, Sprite):
             self.move(x=mx)
         elif abs(dx) > abs(dy) and (ly or not lx or cy):
             self.move(y=my)
-
-        self.move(x=randint(-1, 1), y=randint(-1, 1))
+        else:
+            self.move(x=randint(-1, 1), y=randint(-1, 1))
 
     def update(self, tick):
         sprites_inside = list(self.sprites_inside)

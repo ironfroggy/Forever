@@ -17,7 +17,7 @@ class AreaManagingMode(Mode):
 
     def first_entering(self):
         area = self.areas.new_areas([
-            ((0, 0), (10, 10), None, None)
+            ((50, 50), (8, 8), None, None)
             ])[0]
         self.area = area
 
@@ -41,14 +41,14 @@ class AreaManagingMode(Mode):
                         (300, 100), (300, 150), (300, 200),
                         (320, 250), (340, 300), (360, 350)
                         )):
-            cls = (SolidSprite, ImmovableSprite)[i % 2]
+            cls = (SolidSprite, ImmovableSprite)[0]
             obstruction = area.create_sprite(
                 cls,
                 topleft=topleft,
                 height=50,
-                image_path="default_tile",
+                image_path="default_oildrum",
                 name="block %d" % (i,))
-            obstruction.image.fill((i*(20+(i%5)), i*(20+(i%3)), i*(20+(i%4)), 128))
+            #obstruction.image.fill((i*(20+(i%5)), i*(20+(i%3)), i*(20+(i%4)), 128))
             objects.append(obstruction)
 
             #obstruction.show_bounds()
