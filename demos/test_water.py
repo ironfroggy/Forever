@@ -44,10 +44,10 @@ class AreaManagingMode(ScrollingMode):
                     name="water %d" % (x,))
                 #obstruction.image.fill((x*(20+(y%5)), x*(20+(y%3)), x*(20+(y%4)), 100))
                 objects.append(obstruction)
-                obstruction.boundrect.top += 15
-                obstruction.boundrect.left += 15
-                obstruction.boundrect.width -= 15
-                obstruction.boundrect.height -= 15
+                obstruction.boundrect.top += 10
+                obstruction.boundrect.left += 10
+                obstruction.boundrect.width -= 10
+                obstruction.boundrect.height -= 10
                 obstruction.pressure = 0.0005
 
         self.make_cylinder(100, 50)

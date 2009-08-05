@@ -118,17 +118,18 @@ class Sprite(pygame.sprite.Sprite):
         return self.boundrect.top
     @boundtop.setter
     def boundtop(self, top):
-#        diff = self.boundrect.top - self.rect.top
-        self.boundrect.top = top# + diff
-        self.rect.top = top# - diff
+        diff = top - self.boundrect.top
+        self.boundrect.top = top + diff
+        self.rect.top = top - diff
 
     @property
     def boundleft(self):
         return self.boundrect.left
     @boundleft.setter
     def boundleft(self, left):
-        self.boundrect.left = left
-        self.rect.left = left
+        diff = left - self.boundrect.left
+        self.boundrect.left = left + diff
+        self.rect.left = left - diff
         
 
     def update(self, current_time):
@@ -320,7 +321,7 @@ class SolidSprite(PerimeterSensoringMixin, Sprite):
         if not super(SolidSprite, self).update(tick):
             return False
 
-        self.speed = type(self).speed
+        self.speed = (self.speed + type(self).speed) * 0.95
         self.pushedby = None
 
 
