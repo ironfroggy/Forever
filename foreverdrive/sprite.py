@@ -286,15 +286,18 @@ class SolidSprite(PerimeterSensoringMixin, Sprite):
         dy = (dy2, -dy1)[abs(dy1) < abs(dy2)] / 2.0
 
         lx, ly = sprite.last_hv
+        cx, cy = sprite.hmove, sprite.vmove
 
         mx = (floor(dx+1) if dx > 0 else ceil(dx)-1)
         my = (floor(dy+1) if dy > 0 else ceil(dy)-1)
 
-        if dx < dy and (lx or not ly):
+        # Move on the shortest axis
+        # Which is also the direction the pusher is moving
+        if abs(dx) < abs(dy) and (lx or not ly or cx):
             self.move(x=mx)
-        if dx > dy and (ly or not lx):
+        elif abs(dx) > abs(dy) and (ly or not lx or cy):
             self.move(y=my)
-
+            
         self.sprites_inside.remove(sprite)
         self.pushedby = sprite
 

@@ -28,6 +28,7 @@ class AreaManagingMode(Mode):
             height=50,
             imagename="default_player",
             name="player")
+        sprite.speed *= 3
         sprite.register_listeners(self.game.mode)
         self.player = sprite
         #sprite.show_bounds()
