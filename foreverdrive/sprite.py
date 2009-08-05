@@ -227,6 +227,7 @@ class Sprite(pygame.sprite.Sprite):
         elif event.key == pygame.locals.K_LSHIFT and event.type == pygame.locals.KEYUP:
             self.speed = type(self).speed
 
+        print self.speed
 
 #        if self.hmove or self.vmove:
 #            print "player moved", (self.hmove, self.vmove)
@@ -269,7 +270,7 @@ class SolidSprite(PerimeterSensoringMixin, Sprite):
         super(SolidSprite, self).__init__(*args, **kwargs)
 
     def push_apart(self, sprite):
-        P = (sprite.pressure + self.pressure) / 2.0
+        P = min(sprite.pressure, self.pressure)
 
         sx = self.boundleft
         sy = self.boundtop
@@ -289,6 +290,12 @@ class SolidSprite(PerimeterSensoringMixin, Sprite):
         dy2 = oy + sh - sy
         dy = (dy2, -dy1)[abs(dy1) < abs(dy2)] / 2.0 * P
 
+        self._push_apart_xy(sprite, dx, dy)
+
+        self.sprites_inside.remove(sprite)
+        self.pushedby = sprite
+
+    def _push_apart_xy(self, sprite, dx, dy):
         lx, ly = sprite.last_hv
         cx, cy = sprite.hmove, sprite.vmove
 
@@ -302,9 +309,6 @@ class SolidSprite(PerimeterSensoringMixin, Sprite):
         elif abs(dx) > abs(dy) and (ly or not lx or cy):
             self.move(y=my)
 
-        self.sprites_inside.remove(sprite)
-        self.pushedby = sprite
-
     def update(self, tick):
         sprites_inside = list(self.sprites_inside)
         for sprite in sprites_inside:
@@ -315,6 +319,17 @@ class SolidSprite(PerimeterSensoringMixin, Sprite):
 
         self.speed = type(self).speed
         self.pushedby = None
+
+
+class CloudSprite(SolidSprite):
+    def _push_apart_xy(self, sprite, dx, dy):
+        lx, ly = sprite.last_hv
+        cx, cy = sprite.hmove, sprite.vmove
+
+        mx = (floor(dx+1) if dx > 0 else ceil(dx)-1)
+        my = (floor(dy+1) if dy > 0 else ceil(dy)-1)
+
+        self.move(x=mx, y=my)
 
 
 class FacingSprite(SolidSprite):
@@ -330,7 +345,9 @@ class FacingSprite(SolidSprite):
         self.image_left = pygame.image.load(get_media_path(imagename + "_left.png")).convert_alpha()
 
     def update(self, current_time):
+        speed = self.speed
         super(FacingSprite, self).update(current_time)
+        self.speed = speed
 
         if self.hmove > 0:
             self.image = self.image_right
