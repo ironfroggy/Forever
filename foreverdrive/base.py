@@ -16,7 +16,7 @@ class ForeverMain(object):
     etc.
     """
 
-    delay = 25
+    delay = 0
 
     def __init__(self, initmode=None):
         if initmode is None:

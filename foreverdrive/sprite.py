@@ -245,19 +245,33 @@ class PerimeterSensoringMixin(EventRouter):
         self.area.portals.add(self)
         self.sprites_inside = set()
 
-    def enter(self, area, sprite):
+    def check_overlap(self, sprite):
+        return pygame.sprite.collide_rect(Bound(self), Bound(sprite))
+
+    def on_overlap(self, area, sprite):
+        """`sprite` is in the bounds of `self`."""
+
         if sprite in self.sprites_inside:
-            if pygame.sprite.collide_rect(Bound(self), Bound(sprite)):
-                return False
+            if self.check_overlap(sprite):
+                return self.on_stillin(area, sprite)
             else:
                 self.sprites_inside.remove(sprite)
-                return False
+                return self.on_leave(area, sprite)
 
-        if not pygame.sprite.collide_rect(Bound(self), Bound(sprite)):
+        if not self.check_overlap(sprite):
             return False
         else:
             self.sprites_inside.add(sprite)
-            return True
+            return self.on_enter(area, sprite)
+
+    def on_enter(self, area, sprite):
+        pass
+
+    def on_leave(self, area, sprite):
+        pass
+
+    def on_stillin(self, area, sprite):
+        pass
 
 class SolidSprite(PerimeterSensoringMixin, Sprite):
 
@@ -331,6 +345,12 @@ class ImmovableSprite(SolidSprite):
 
 
 class CloudSprite(SolidSprite):
+
+    radius = 25
+    def check_overlap(self, sprite):
+        """Cloud-like things aren't rectangles!"""
+        return pygame.sprite.collide_circle(Bound(self), Bound(sprite))
+
     def _push_apart_xy(self, sprite, dx, dy):
         lx, ly = sprite.last_hv
         cx, cy = sprite.hmove, sprite.vmove

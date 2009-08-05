@@ -325,7 +325,7 @@ class BoundArea(TileArea):
 
                 if entered_portal.sprite is bound_sprite:
                     continue
-                entered_portal.enter(self, bound_sprite)
+                entered_portal.on_overlap(self, bound_sprite)
                 hit.append(entered_portal)
             return hit
         finally:
