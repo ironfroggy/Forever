@@ -1,3 +1,4 @@
+from random import randint
 from math import ceil, floor
 
 import pygame
@@ -37,7 +38,6 @@ class BoundSprite(pygame.sprite.Sprite):
 class MovingSpriteMixin(object):
     """Anything that can be in motion will use this to
     """
-
     def __init__(self, *args, **kwargs):
         pass 
 
@@ -327,6 +327,8 @@ class SolidSprite(PerimeterSensoringMixin, Sprite):
         elif abs(dx) > abs(dy) and (ly or not lx or cy):
             self.move(y=my)
 
+        self.move(x=randint(-1, 1), y=randint(-1, 1))
+
     def update(self, tick):
         sprites_inside = list(self.sprites_inside)
         for sprite in sprites_inside:
@@ -351,7 +353,7 @@ class CloudSprite(SolidSprite):
         """Cloud-like things aren't rectangles!"""
         return pygame.sprite.collide_circle(Bound(self), Bound(sprite))
 
-    def _push_apart_xy(self, sprite, dx, dy):
+    def _xxxpush_apart_xy(self, sprite, dx, dy):
         lx, ly = sprite.last_hv
         cx, cy = sprite.hmove, sprite.vmove
 
@@ -359,7 +361,7 @@ class CloudSprite(SolidSprite):
         my = (floor(dy+1) if dy > 0 else ceil(dy)-1)
 
         self.move(x=mx, y=my)
-    def _get_pushing_bound(self, sprite):
+    def _xxxget_pushing_bound(self, sprite):
         sx, sy, sh, sw = self.boundleft, self.boundtop, self.height, self.width
 
         ox = sprite.boundleft
