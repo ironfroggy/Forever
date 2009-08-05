@@ -9,13 +9,6 @@ from foreverdrive.events import Pause, Movement, EventRouter, Entering, CancelEv
 from foreverdrive.sprite.util import Bound, RectHolder
 
 
-class MovingSpriteMixin(object):
-    """Anything that can be in motion will use this to
-    """
-    def __init__(self, *args, **kwargs):
-        pass 
-
-
 class Sprite(pygame.sprite.Sprite):
 
     last_hv = (0, 0)
