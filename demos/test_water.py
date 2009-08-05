@@ -40,7 +40,7 @@ class AreaManagingMode(ScrollingMode):
                     CloudSprite,
                     topleft=(0, 0),
                     height=50,
-                    image_path="default_cloud.png",
+                    image_path="default_cloud",
                     name="water %d" % (x,))
                 #obstruction.image.fill((x*(20+(y%5)), x*(20+(y%3)), x*(20+(y%4)), 100))
                 objects.append(obstruction)
@@ -59,7 +59,7 @@ class AreaManagingMode(ScrollingMode):
             SolidSprite,
             topleft=(150, 0),
             height=50,
-            image_path="default_obstruction.png",
+            image_path="default_obstruction",
             name="block")
             #obstruction.show_bounds()
 
@@ -68,7 +68,7 @@ class AreaManagingMode(ScrollingMode):
             ImmovableSprite,
             topleft=(x, y),
             height=50,
-            image_path="default_obstruction.png",
+            image_path="default_obstruction",
             name="block")
             #obstruction.show_bounds()
 

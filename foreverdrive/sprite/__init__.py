@@ -7,7 +7,9 @@ from pygame.locals import *
 from foreverdrive import get_media_path
 from foreverdrive.events import Pause, Movement, EventRouter, Entering, CancelEvent
 from foreverdrive.sprite.util import Bound, RectHolder
+from foreverdrive.media import Media
 
+media_manager = Media()
 
 class Sprite(pygame.sprite.Sprite):
 
@@ -22,7 +24,7 @@ class Sprite(pygame.sprite.Sprite):
 
     def __init__(self,
                  topleft=(100, 100),
-                 image_path="default_sprite.png",
+                 image_path="sprite",
                  area=None,
                  height=1,
                  name=None):
@@ -39,7 +41,7 @@ class Sprite(pygame.sprite.Sprite):
       
         # Create the image that will be displayed and fill it with the
         # right color.
-        self.image = pygame.image.load(get_media_path(image_path)).convert_alpha()
+        self.image = pygame.image.load(media_manager.open('sprite', 'defaults', image_path)).convert_alpha()
 
         # Make our top-left corner the passed-in location.
         self.rect = self.image.get_rect()
@@ -325,13 +327,13 @@ class FacingSprite(SolidSprite):
 
     def __init__(self, *args, **kwargs):
         imagename = kwargs.pop('imagename')
-        kwargs['image_path'] = "%s_down.png" % (imagename,)
+        kwargs['image_path'] = imagename + '_down'
         super(FacingSprite, self).__init__(*args, **kwargs)
 
         self.image_down = self.image
-        self.image_up = pygame.image.load(get_media_path(imagename + "_up.png")).convert_alpha()
-        self.image_right = pygame.image.load(get_media_path(imagename + "_right.png")).convert_alpha()
-        self.image_left = pygame.image.load(get_media_path(imagename + "_left.png")).convert_alpha()
+        self.image_up = pygame.image.load(media_manager.open('sprite', 'defaults', imagename, "up")).convert_alpha()
+        self.image_right = pygame.image.load(media_manager.open('sprite', 'defaults', imagename, "right")).convert_alpha()
+        self.image_left = pygame.image.load(media_manager.open('sprite', 'defaults', imagename, "left")).convert_alpha()
 
     def update(self, current_time):
         speed = self.speed
