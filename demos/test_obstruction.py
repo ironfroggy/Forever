@@ -28,7 +28,7 @@ class AreaManagingMode(Mode):
             name="player")
         sprite.register_listeners(self.game.mode)
         self.player = sprite
-        sprite.show_bounds()
+        #sprite.show_bounds()
     
         self.area.add(sprite)
 
@@ -41,7 +41,7 @@ class AreaManagingMode(Mode):
             obstruction = area.create_sprite(
                 SolidSprite,
                 topleft=topleft,
-                height=40,
+                height=25,
                 image_path="default_obstruction.png",
                 name="block %d" % (i,))
 

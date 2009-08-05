@@ -44,6 +44,7 @@ class MovingSpriteMixin(object):
 
 class Sprite(pygame.sprite.Sprite):
 
+    last_hv = (0, 0)
     hmove = 0
     vmove = 0
     lastmove = 0
@@ -170,6 +171,7 @@ class Sprite(pygame.sprite.Sprite):
             self.rect.top += vmove
             self.rect.left += hmove
 
+            self.last_hv = (hmove, vmove)
             self.lastmovebound = RectHolder(pygame.Rect(
                     self.boundrect.left - hmove,
                     self.boundrect.top - vmove,
@@ -287,14 +289,12 @@ class SolidSprite(PerimeterSensoringMixin, Sprite):
         dy2 = oy + sh - sy
         dy = (dy2, -dy1)[abs(dy1) < abs(dy2)] / 2.0
 
-        if dx < dy:
-            #print "x", dx
+        lx, ly = sprite.last_hv
+
+        if dx < dy and (lx or not ly):
             self.move(x=(floor(dx+1) if dx > 0 else ceil(dx)-1))
-            #sprite.move(x=(floor(dx) if dx < 0 else ceil(dx))+1)
-        elif dx > dy:
-            #print "y", dy
+        if dx > dy and (ly or not lx):
             self.move(y=(floor(dy+1) if dy > 0 else ceil(dy)-1))
-            #sprite.move(floor(-dy))
         self.sprites_inside.remove(sprite)
 
     def update(self, tick):
@@ -306,13 +306,6 @@ class SolidSprite(PerimeterSensoringMixin, Sprite):
 
         self.speed = type(self).speed
         self.pushedby = None
-        self.slow_down()
-
-    def slow_down(self):
-        if self.vmove:
-            self.vmove *= 0.8
-        if self.hmove:
-            self.hmove *= 0.8
 
 
 class FacingSprite(SolidSprite):
@@ -339,9 +332,6 @@ class FacingSprite(SolidSprite):
             self.image = self.image_down
         elif self.vmove < 0:
             self.image = self.image_up
-
-    def slow_down(self):
-        pass
 
 
 class RectShower(pygame.sprite.Sprite):
