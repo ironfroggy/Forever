@@ -353,34 +353,6 @@ class CloudSprite(SolidSprite):
         """Cloud-like things aren't rectangles!"""
         return pygame.sprite.collide_circle(Bound(self), Bound(sprite))
 
-    def _push_apart_xy(self, sprite, dx, dy):
-        lx, ly = sprite.last_hv
-        cx, cy = sprite.hmove, sprite.vmove
-
-        mx = (floor(dx+1) if dx > 0 else ceil(dx)-1)
-        my = (floor(dy+1) if dy > 0 else ceil(dy)-1)
-
-        self.move(x=mx, y=my)
-    def _get_pushing_bound(self, sprite):
-        sx, sy, sh, sw = self.boundleft, self.boundtop, self.height, self.width
-
-        ox = sprite.boundleft
-        oy = sprite.boundtop
-        oh = sprite.height
-        ow = sprite.width
-
-        ohm, ovm = sprite.hmove, sprite.vmove
-
-        if ohm < 0 and sx < ox:
-            sx += ow
-        if ohm > 0 and sx > ox:
-            sx -= ow
-        if ovm < 0 and sy < oy:
-            sx += ow
-        if ovm > 0 and sy > oy:
-            sy -= oh
-
-        return sx, sy, sh, sw
 
 class FacingSprite(SolidSprite):
 
