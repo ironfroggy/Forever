@@ -246,10 +246,8 @@ class PerimeterSensoringMixin(EventRouter):
     def enter(self, area, sprite):
         if sprite in self.sprites_inside:
             if pygame.sprite.collide_rect(Bound(self), Bound(sprite)):
-                #print sprite.name, "still in", self.name, (sprite.boundrect, self.boundrect)
                 return False
             else:
-                #print sprite.name, "leaving", self.name
                 self.sprites_inside.remove(sprite)
                 return False
 
@@ -257,8 +255,6 @@ class PerimeterSensoringMixin(EventRouter):
             return False
         else:
             self.sprites_inside.add(sprite)
-            #print sprite.name, "entering", self.name, (sprite.boundrect, self.boundrect)
-            self.route(Entering(sprite, self))
             return True
 
 class SolidSprite(PerimeterSensoringMixin, Sprite):
@@ -291,11 +287,19 @@ class SolidSprite(PerimeterSensoringMixin, Sprite):
 
         lx, ly = sprite.last_hv
 
+        mx = (floor(dx+1) if dx > 0 else ceil(dx)-1)
+        my = (floor(dy+1) if dy > 0 else ceil(dy)-1)
+
         if dx < dy and (lx or not ly):
-            self.move(x=(floor(dx+1) if dx > 0 else ceil(dx)-1))
+            print sprite.name, "pushed", self.name, "x", mx
+            self.move(x=mx)
         if dx > dy and (ly or not lx):
-            self.move(y=(floor(dy+1) if dy > 0 else ceil(dy)-1))
+            print sprite.name, "pushed", self.name, "y", my
+            self.move(y=my)
+
+        print sprite.name, "leaving", self.name
         self.sprites_inside.remove(sprite)
+        self.pushedby = sprite
 
     def update(self, tick):
         for sprite in list(self.sprites_inside):
