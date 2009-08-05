@@ -290,19 +290,19 @@ class SolidSprite(PerimeterSensoringMixin, Sprite):
         mx = (floor(dx+1) if dx > 0 else ceil(dx)-1)
         my = (floor(dy+1) if dy > 0 else ceil(dy)-1)
 
-        if dx < dy and (lx or not ly):
-            print sprite.name, "pushed", self.name, "x", mx
+        if dx < dy:# and (lx or not ly):
+            print "mx", mx
             self.move(x=mx)
-        if dx > dy and (ly or not lx):
-            print sprite.name, "pushed", self.name, "y", my
+        if dx > dy:# and (ly or not lx):
+            print "my", my
             self.move(y=my)
 
-        print sprite.name, "leaving", self.name
         self.sprites_inside.remove(sprite)
         self.pushedby = sprite
 
     def update(self, tick):
-        for sprite in list(self.sprites_inside):
+        sprites_inside = list(self.sprites_inside)
+        for sprite in sprites_inside:
             self.push_apart(sprite)
 
         if not super(SolidSprite, self).update(tick):
