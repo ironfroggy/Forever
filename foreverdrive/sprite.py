@@ -262,11 +262,15 @@ class SolidSprite(PerimeterSensoringMixin, Sprite):
     hmove = 0
     vmove = 0
 
+    pressure = 1.0
+
     def __init__(self, *args, **kwargs):
         self.can_move = kwargs.pop('can_move', (1, 1, 1, 1))
         super(SolidSprite, self).__init__(*args, **kwargs)
 
     def push_apart(self, sprite):
+        P = self.pressure
+
         sx = self.boundleft
         sy = self.boundtop
         sh = self.height
@@ -279,11 +283,11 @@ class SolidSprite(PerimeterSensoringMixin, Sprite):
 
         dx1 = sx + ow - ox
         dx2 = ox + ow - sx
-        dx = (dx2, -dx1)[abs(dx1) < abs(dx2)] / 2.0
+        dx = (dx2, -dx1)[abs(dx1) < abs(dx2)] / 2.0 * P
 
         dy1 = sy + sh - oy
         dy2 = oy + sh - sy
-        dy = (dy2, -dy1)[abs(dy1) < abs(dy2)] / 2.0
+        dy = (dy2, -dy1)[abs(dy1) < abs(dy2)] / 2.0 * P
 
         lx, ly = sprite.last_hv
         cx, cy = sprite.hmove, sprite.vmove
@@ -294,10 +298,11 @@ class SolidSprite(PerimeterSensoringMixin, Sprite):
         # Move on the shortest axis
         # Which is also the direction the pusher is moving
         if abs(dx) < abs(dy) and (lx or not ly or cx):
+            print sprite.name, mx*P
             self.move(x=mx)
         elif abs(dx) > abs(dy) and (ly or not lx or cy):
             self.move(y=my)
-            
+
         self.sprites_inside.remove(sprite)
         self.pushedby = sprite
 
