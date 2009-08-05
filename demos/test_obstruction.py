@@ -25,12 +25,12 @@ class AreaManagingMode(Mode):
             FacingSprite,
             topleft=(self.area.top+50,
                      self.area.left+50),
-            height=25,
+            height=50,
             imagename="default_player",
             name="player")
         sprite.register_listeners(self.game.mode)
         self.player = sprite
-        sprite.show_bounds()
+        #sprite.show_bounds()
     
         self.area.add(sprite)
 
@@ -44,8 +44,9 @@ class AreaManagingMode(Mode):
                 SolidSprite,
                 topleft=topleft,
                 height=40,
-                image_path="default_obstruction.png",
+                image_path="default_tile.png",
                 name="block %d" % (i,))
+            obstruction.image.fill((i*(20+(i%5)), i*(20+(i%3)), i*(20+(i%4)), 128))
             objects.append(obstruction)
 
             #obstruction.show_bounds()
