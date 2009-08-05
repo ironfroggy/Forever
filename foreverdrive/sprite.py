@@ -1,3 +1,5 @@
+from math import ceil, floor
+
 import pygame
 from pygame.locals import *
 
@@ -146,15 +148,16 @@ class Sprite(pygame.sprite.Sprite):
         else:
             return []
 
-    def move(self, M=1):
+    def move(self, M=1, x=None, y=None):
         speed = self.speed * M
-        vmove = self.vmove * speed
-        hmove = self.hmove * speed
+        vmove = self.vmove * speed if y is None else y
+        hmove = self.hmove * speed if x is None else x
 
         previous_top = self.boundtop
         previous_left = self.boundleft
 
         if vmove or hmove:
+            #print self.name, (hmove, vmove), self.speed,
             last_lastmovebound = RectHolder(pygame.Rect(
                     self.boundrect.left,
                     self.boundrect.top,
@@ -163,6 +166,7 @@ class Sprite(pygame.sprite.Sprite):
 
             self.boundrect.top += vmove
             self.boundrect.left += hmove
+            #print self.boundrect
             self.rect.top += vmove
             self.rect.left += hmove
 
@@ -175,7 +179,7 @@ class Sprite(pygame.sprite.Sprite):
             try:
                 self.announce_movement(hmove, vmove)
             except CancelEvent:
-                print "  couldn't move."
+#                print "  couldn't move."
                 self.boundtop = previous_top - vmove
                 self.boundleft = previous_left - hmove
                 self.lastmovebound = last_lastmovebound
@@ -211,7 +215,7 @@ class Sprite(pygame.sprite.Sprite):
             elif event.key == K_RIGHT:
                 self.hmove = go
 
-        elif event.key == pygame.locals.K_RSHIFT and event.type == pygame.locals.KEYDOWN:
+        if event.key == pygame.locals.K_RSHIFT and event.type == pygame.locals.KEYDOWN:
             self.speed *= self.speed_multiplier
         elif event.key == pygame.locals.K_RSHIFT and event.type == pygame.locals.KEYUP:
             self.speed = type(self).speed
@@ -222,29 +226,8 @@ class Sprite(pygame.sprite.Sprite):
             self.speed = type(self).speed
 
 
-class FacingSprite(Sprite):
-
-    def __init__(self, *args, **kwargs):
-        imagename = kwargs.pop('imagename')
-        kwargs['image_path'] = "%s_down.png" % (imagename,)
-        super(FacingSprite, self).__init__(*args, **kwargs)
-
-        self.image_down = self.image
-        self.image_up = pygame.image.load(get_media_path(imagename + "_up.png")).convert_alpha()
-        self.image_right = pygame.image.load(get_media_path(imagename + "_right.png")).convert_alpha()
-        self.image_left = pygame.image.load(get_media_path(imagename + "_left.png")).convert_alpha()
-
-    def update(self, current_time):
-        super(FacingSprite, self).update(current_time)
-        if self.hmove > 0:
-            self.image = self.image_right
-        elif self.hmove < 0:
-            self.image = self.image_left
-
-        if self.vmove > 0:
-            self.image = self.image_down
-        elif self.vmove < 0:
-            self.image = self.image_up
+#        if self.hmove or self.vmove:
+#            print "player moved", (self.hmove, self.vmove)
         
 class PerimeterSensoringMixin(EventRouter):
     """Mixin for sprites to watch other things in their area
@@ -259,71 +242,106 @@ class PerimeterSensoringMixin(EventRouter):
         self.sprites_inside = set()
 
     def enter(self, area, sprite):
-        self.sprites_inside.add(sprite)
+        if sprite in self.sprites_inside:
+            if pygame.sprite.collide_rect(Bound(self), Bound(sprite)):
+                #print sprite.name, "still in", self.name, (sprite.boundrect, self.boundrect)
+                return False
+            else:
+                #print sprite.name, "leaving", self.name
+                self.sprites_inside.remove(sprite)
+                return False
 
         if not pygame.sprite.collide_rect(Bound(self), Bound(sprite)):
-            self.sprites_inside.remove(sprite)
             return False
         else:
+            self.sprites_inside.add(sprite)
+            #print sprite.name, "entering", self.name, (sprite.boundrect, self.boundrect)
             self.route(Entering(sprite, self))
             return True
 
 class SolidSprite(PerimeterSensoringMixin, Sprite):
 
+    hmove = 0
+    vmove = 0
+
     def __init__(self, *args, **kwargs):
         self.can_move = kwargs.pop('can_move', (1, 1, 1, 1))
         super(SolidSprite, self).__init__(*args, **kwargs)
 
-    def enter(self, area, sprite):
-        entering = super(SolidSprite, self).enter(area, sprite)
-        if entering:
-            self.push(sprite)
+    def push_apart(self, sprite):
+        sx = self.boundleft
+        sy = self.boundtop
+        sh = self.height
+        sw = self.width
 
-    def push(self, sprite):
-        if self in sprite.pushedby_all():
-            return
+        ox = sprite.boundleft
+        oy = sprite.boundtop
+        oh = sprite.height
+        ow = sprite.width
 
-        up, down, left, right = self.can_move
-        cancel = True
+        dx1 = sx + ow - ox
+        dx2 = ox + ow - sx
+        dx = (dx2, -dx1)[abs(dx1) < abs(dx2)] / 2.0
 
-        if up and sprite.vmove < 0 or down and sprite.vmove > 0:
-            cancel = False
-            self.vmove = sprite.vmove
-        elif self.boundtop + self.height > sprite.boundtop:
-            sprite.vmove = 0
+        dy1 = sy + sh - oy
+        dy2 = oy + sh - sy
+        dy = (dy2, -dy1)[abs(dy1) < abs(dy2)] / 2.0
 
-        if left and sprite.hmove < 0 or right and sprite.hmove > 0:
-            cancel = False
-            self.hmove = sprite.hmove
-        elif self.boundleft + self.width > sprite.boundleft:
-            sprite.hmove = 0
-
-        if cancel:
-            print "cant be moved"
-            raise CancelEvent
-        elif getattr(sprite, 'pushedby', None) is self:
-            print "already moved?"
-            raise CancelEvent
-        else:
-            print self.name, (self.hmove, self.vmove), "pushed by", sprite.name, (sprite.hmove, sprite.vmove)
-            try:
-                sprite_pushedby = sprite.pushedby.name
-                print "which was pushed by", sprite_pushedby, (sprite.pushedby.hmove, sprite.pushedby.vmove)
-            except AttributeError:
-                print
-
-            self.speed = sprite.speed
-            self.pushedby = sprite
+        if dx < dy:
+            #print "x", dx
+            self.move(x=(floor(dx+1) if dx > 0 else ceil(dx)-1))
+            #sprite.move(x=(floor(dx) if dx < 0 else ceil(dx))+1)
+        elif dx > dy:
+            #print "y", dy
+            self.move(y=(floor(dy+1) if dy > 0 else ceil(dy)-1))
+            #sprite.move(floor(-dy))
+        self.sprites_inside.remove(sprite)
 
     def update(self, tick):
+        for sprite in list(self.sprites_inside):
+            self.push_apart(sprite)
+
         if not super(SolidSprite, self).update(tick):
             return False
-        if self.hmove or self.vmove:
-            print self.name, "moved", (self.boundleft, self.boundtop)
-        self.vmove = 0
-        self.hmove = 0
+
         self.speed = type(self).speed
         self.pushedby = None
+        self.slow_down()
+
+    def slow_down(self):
+        if self.vmove:
+            self.vmove *= 0.8
+        if self.hmove:
+            self.hmove *= 0.8
+
+
+class FacingSprite(SolidSprite):
+
+    def __init__(self, *args, **kwargs):
+        imagename = kwargs.pop('imagename')
+        kwargs['image_path'] = "%s_down.png" % (imagename,)
+        super(FacingSprite, self).__init__(*args, **kwargs)
+
+        self.image_down = self.image
+        self.image_up = pygame.image.load(get_media_path(imagename + "_up.png")).convert_alpha()
+        self.image_right = pygame.image.load(get_media_path(imagename + "_right.png")).convert_alpha()
+        self.image_left = pygame.image.load(get_media_path(imagename + "_left.png")).convert_alpha()
+
+    def update(self, current_time):
+        super(FacingSprite, self).update(current_time)
+
+        if self.hmove > 0:
+            self.image = self.image_right
+        elif self.hmove < 0:
+            self.image = self.image_left
+
+        if self.vmove > 0:
+            self.image = self.image_down
+        elif self.vmove < 0:
+            self.image = self.image_up
+
+    def slow_down(self):
+        pass
 
 
 class RectShower(pygame.sprite.Sprite):

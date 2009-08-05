@@ -26,6 +26,7 @@ class AreaManagingMode(Mode):
             FacingSprite,
             topleft=(self.area.top+50, self.area.left),
             imagename="default_player",
+            height=25,
             name="player")
         sprite.register_listeners(self.game.mode)
         self.player = sprite
