@@ -269,13 +269,16 @@ class SolidSprite(PerimeterSensoringMixin, Sprite):
         self.can_move = kwargs.pop('can_move', (1, 1, 1, 1))
         super(SolidSprite, self).__init__(*args, **kwargs)
 
-    def push_apart(self, sprite):
-        P = min(sprite.pressure, self.pressure)
+    def _get_pushing_bound(self, sprite):
+        return self.boundleft, self.boundtop, self.height, self.width
 
-        sx = self.boundleft
-        sy = self.boundtop
-        sh = self.height
-        sw = self.width
+    def push_apart(self, sprite):
+        if isinstance(sprite, ImmovableSprite):
+            P = 1.0
+        else:
+            P = min(sprite.pressure, self.pressure)
+
+        sx, sy, sh, sw = self._get_pushing_bound(sprite)
 
         ox = sprite.boundleft
         oy = sprite.boundtop
@@ -335,7 +338,26 @@ class CloudSprite(SolidSprite):
         my = (floor(dy+1) if dy > 0 else ceil(dy)-1)
 
         self.move(x=mx, y=my)
+    def _get_pushing_bound(self, sprite):
+        sx, sy, sh, sw = self.boundleft, self.boundtop, self.height, self.width
 
+        ox = sprite.boundleft
+        oy = sprite.boundtop
+        oh = sprite.height
+        ow = sprite.width
+
+        ohm, ovm = sprite.hmove, sprite.vmove
+
+        if ohm < 0 and sx < ox:
+            sx += ow
+        if ohm > 0 and sx > ox:
+            sx -= ow
+        if ovm < 0 and sy < oy:
+            sx += ow
+        if ovm > 0 and sy > oy:
+            sy -= oh
+
+        return sx, sy, sh, sw
 
 class FacingSprite(SolidSprite):
 
