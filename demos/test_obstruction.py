@@ -43,7 +43,7 @@ class AreaManagingMode(Mode):
             obstruction = area.create_sprite(
                 SolidSprite,
                 topleft=topleft,
-                height=40,
+                height=50,
                 image_path="default_tile.png",
                 name="block %d" % (i,))
             obstruction.image.fill((i*(20+(i%5)), i*(20+(i%3)), i*(20+(i%4)), 128))
@@ -54,7 +54,7 @@ class AreaManagingMode(Mode):
 
 class TestMain(ForeverMain):
     def tick(self, tick):
-        objects[1].hmove = -1
+        pass#objects[1].hmove = 0
 
 def main():
     game = TestMain(initmode=AreaManagingMode)

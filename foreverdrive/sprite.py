@@ -290,11 +290,9 @@ class SolidSprite(PerimeterSensoringMixin, Sprite):
         mx = (floor(dx+1) if dx > 0 else ceil(dx)-1)
         my = (floor(dy+1) if dy > 0 else ceil(dy)-1)
 
-        if dx < dy:# and (lx or not ly):
-            print "mx", mx
+        if dx < dy and (lx or not ly):
             self.move(x=mx)
-        if dx > dy:# and (ly or not lx):
-            print "my", my
+        if dx > dy and (ly or not lx):
             self.move(y=my)
 
         self.sprites_inside.remove(sprite)
