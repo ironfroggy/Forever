@@ -1,7 +1,7 @@
 from foreverdrive.base import ForeverMain
 from foreverdrive.modes import Mode
 from foreverdrive.area import AreaManager
-from foreverdrive.sprite import Sprite, SolidSprite, FacingSprite
+from foreverdrive.sprite import Sprite, SolidSprite, ImmovableSprite, FacingSprite
 from foreverdrive.events import Entering, CancelEvent
 
 def report(event):
@@ -41,8 +41,9 @@ class AreaManagingMode(Mode):
                         (300, 100), (300, 150), (300, 200),
                         (320, 250), (340, 300), (360, 350)
                         )):
+            cls = (SolidSprite, ImmovableSprite)[i % 2]
             obstruction = area.create_sprite(
-                SolidSprite,
+                cls,
                 topleft=topleft,
                 height=50,
                 image_path="default_tile.png",

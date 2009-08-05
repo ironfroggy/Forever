@@ -321,6 +321,11 @@ class SolidSprite(PerimeterSensoringMixin, Sprite):
         self.pushedby = None
 
 
+class ImmovableSprite(SolidSprite):
+    def push_apart(self, sprite):
+        return
+
+
 class CloudSprite(SolidSprite):
     def _push_apart_xy(self, sprite, dx, dy):
         lx, ly = sprite.last_hv
