@@ -44,6 +44,7 @@ class MovingSpriteMixin(object):
 
 class Sprite(pygame.sprite.Sprite):
 
+    last_hv = (0, 0)
     hmove = 0
     vmove = 0
     lastmove = 0
@@ -170,6 +171,7 @@ class Sprite(pygame.sprite.Sprite):
             self.rect.top += vmove
             self.rect.left += hmove
 
+            self.last_hv = (hmove, vmove)
             self.lastmovebound = RectHolder(pygame.Rect(
                     self.boundrect.left - hmove,
                     self.boundrect.top - vmove,
@@ -244,10 +246,8 @@ class PerimeterSensoringMixin(EventRouter):
     def enter(self, area, sprite):
         if sprite in self.sprites_inside:
             if pygame.sprite.collide_rect(Bound(self), Bound(sprite)):
-                #print sprite.name, "still in", self.name, (sprite.boundrect, self.boundrect)
                 return False
             else:
-                #print sprite.name, "leaving", self.name
                 self.sprites_inside.remove(sprite)
                 return False
 
@@ -255,8 +255,6 @@ class PerimeterSensoringMixin(EventRouter):
             return False
         else:
             self.sprites_inside.add(sprite)
-            #print sprite.name, "entering", self.name, (sprite.boundrect, self.boundrect)
-            self.route(Entering(sprite, self))
             return True
 
 class SolidSprite(PerimeterSensoringMixin, Sprite):
@@ -287,18 +285,24 @@ class SolidSprite(PerimeterSensoringMixin, Sprite):
         dy2 = oy + sh - sy
         dy = (dy2, -dy1)[abs(dy1) < abs(dy2)] / 2.0
 
-        if dx < dy:
-            #print "x", dx
-            self.move(x=(floor(dx+1) if dx > 0 else ceil(dx)-1))
-            #sprite.move(x=(floor(dx) if dx < 0 else ceil(dx))+1)
-        elif dx > dy:
-            #print "y", dy
-            self.move(y=(floor(dy+1) if dy > 0 else ceil(dy)-1))
-            #sprite.move(floor(-dy))
+        lx, ly = sprite.last_hv
+
+        mx = (floor(dx+1) if dx > 0 else ceil(dx)-1)
+        my = (floor(dy+1) if dy > 0 else ceil(dy)-1)
+
+        if dx < dy:# and (lx or not ly):
+            print "mx", mx
+            self.move(x=mx)
+        if dx > dy:# and (ly or not lx):
+            print "my", my
+            self.move(y=my)
+
         self.sprites_inside.remove(sprite)
+        self.pushedby = sprite
 
     def update(self, tick):
-        for sprite in list(self.sprites_inside):
+        sprites_inside = list(self.sprites_inside)
+        for sprite in sprites_inside:
             self.push_apart(sprite)
 
         if not super(SolidSprite, self).update(tick):
@@ -306,13 +310,6 @@ class SolidSprite(PerimeterSensoringMixin, Sprite):
 
         self.speed = type(self).speed
         self.pushedby = None
-        self.slow_down()
-
-    def slow_down(self):
-        if self.vmove:
-            self.vmove *= 0.8
-        if self.hmove:
-            self.hmove *= 0.8
 
 
 class FacingSprite(SolidSprite):
@@ -339,9 +336,6 @@ class FacingSprite(SolidSprite):
             self.image = self.image_down
         elif self.vmove < 0:
             self.image = self.image_up
-
-    def slow_down(self):
-        pass
 
 
 class RectShower(pygame.sprite.Sprite):

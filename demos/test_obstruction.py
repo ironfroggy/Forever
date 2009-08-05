@@ -17,7 +17,7 @@ class AreaManagingMode(Mode):
 
     def first_entering(self):
         area = self.areas.new_areas([
-            ((75, 75), (6, 6), None, None)
+            ((0, 0), (10, 10), None, None)
             ])[0]
         self.area = area
 

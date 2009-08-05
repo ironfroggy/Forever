@@ -261,7 +261,6 @@ class BoundArea(TileArea):
             return self._sprite_key(sprite.pushedby) - 1
 
     def update(self, ticks):
-        self.bound_group._spritelist.sort(key=self._sprite_key)
         self.bound_group.update(ticks)
         for bound_sprite in self.bound_group:
             if isinstance(bound_sprite, Portal):
