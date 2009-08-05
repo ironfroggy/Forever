@@ -6,33 +6,7 @@ from pygame.locals import *
 
 from foreverdrive import get_media_path
 from foreverdrive.events import Pause, Movement, EventRouter, Entering, CancelEvent
-
-class Bound(object):
-    def __init__(self, sprite):
-        self.sprite = sprite
-    @property
-    def rect(self):
-        return self.sprite.boundrect
-
-    def __getattr__(self, name):
-        return getattr(self.sprite, name)
-
-class RectHolder(object):
-    def __init__(self, rect):
-        self.rect = rect
-
-
-class BoundSprite(pygame.sprite.Sprite):
-
-    def __init__(self, bound_to, down_right):
-        self.bound_to = to
-        self.bound_offset = down_right
-
-    def update(self, ticks):
-        bound_to = self.bound_to.rect
-        down, right = self.bound_offset
-        self.rect.top = bound_to.top + down
-        self.rect.left = bound_to.left + right
+from foreverdrive.sprite.util import Bound, RectHolder
 
 
 class MovingSpriteMixin(object):
