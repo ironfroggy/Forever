@@ -46,7 +46,7 @@ class AreaManagingMode(Mode):
                 cls,
                 topleft=topleft,
                 height=50,
-                image_path="default_tile.png",
+                image_path="default_tile",
                 name="block %d" % (i,))
             obstruction.image.fill((i*(20+(i%5)), i*(20+(i%3)), i*(20+(i%4)), 128))
             objects.append(obstruction)
