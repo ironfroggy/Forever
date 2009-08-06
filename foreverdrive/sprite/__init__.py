@@ -19,6 +19,7 @@ class Sprite(pygame.sprite.Sprite):
     lastmove = 0
     speed = 4.0
     speed_multiplier = 2.5
+    z_sub = 0
 
     pushedby = None
 
@@ -93,11 +94,13 @@ class Sprite(pygame.sprite.Sprite):
     def boundtop(self, top):
         top_offset = top - self.boundrect.top
         self.boundrect.top += top_offset
-        self.z = z = self.boundrect.top + self.height
+        try:
+            self.z = self.parent.z
+        except AttributeError:
+            self.z = z = self.rect.top + self.height
         self.rect.top += top_offset
         for child in self.children:
             child.rect.top += top_offset
-            child.z = z
 
     @property
     def boundleft(self):
@@ -199,6 +202,8 @@ class Sprite(pygame.sprite.Sprite):
         part_sprite.rect = image.get_rect()
         self.children.add(part_sprite)
         self.area.add(part_sprite)
+        part_sprite.parent = self
+        part_sprite.z_sub = self.z_sub + 1
 
         part_sprite.rect.top = self.rect.top + top
         part_sprite.rect.left = self.rect.left + left
@@ -356,7 +361,7 @@ class CloudSprite(SolidSprite):
         return self.boundleft + x, self.boundtop + y, self.height, self.width
 
 
-class FacingSprite(SolidSprite):
+class FacingSprite(Sprite):
 
     def __init__(self, *args, **kwargs):
         imagename = kwargs.pop('imagename')
@@ -373,16 +378,39 @@ class FacingSprite(SolidSprite):
         super(FacingSprite, self).update(current_time)
         self.speed = speed
 
-        if self.hmove > 0:
+        main = self
+        while True:
+            try:
+                main = main.parent
+            except AttributeError:
+                break
+
+        if main.hmove > 0:
             self.image = self.image_right
-        elif self.hmove < 0:
+        elif main.hmove < 0:
             self.image = self.image_left
 
-        if self.vmove > 0:
+        if main.vmove > 0:
             self.image = self.image_down
-        elif self.vmove < 0:
+        elif main.vmove < 0:
             self.image = self.image_up
 
+    def grow_part(self, (top, left), partname):
+        part_sprite = FacingSprite(imagename=partname)
+
+        part_sprite.rect = part_sprite.image.get_rect()
+        self.children.add(part_sprite)
+        self.area.add(part_sprite)
+
+        part_sprite.rect.top = self.rect.top + top
+        part_sprite.rect.left = self.rect.left + left
+
+        part_sprite.parent = self
+        part_sprite.z_sub = self.z_sub + 1
+
+
+class Player(FacingSprite, SolidSprite):
+    pass
 
 class RectShower(pygame.sprite.Sprite):
     def __init__(self, show_for, color=(128, 128, 128)):

@@ -182,11 +182,11 @@ class BoundArea(TileArea):
         def sprite_key(sprite):
             try:
                 try:
-                    return sprite.z
+                    return sprite.z + sprite.z_sub
                 except:
-                    return sprite.boundtop
+                    return (sprite.boundtop, 0)
             except:
-                return sprite.rect.top
+                return (sprite.rect.top, 0)
 
         group = self.bound_group
         sprites = list(group)

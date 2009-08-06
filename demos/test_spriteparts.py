@@ -1,7 +1,7 @@
 from foreverdrive.base import ForeverMain
 from foreverdrive.modes.scrolling import ScrollingMode
 from foreverdrive.area import AreaManager
-from foreverdrive.sprite import Sprite, SolidSprite, FacingSprite, CloudSprite, ImmovableSprite
+from foreverdrive.sprite import Sprite, SolidSprite, FacingSprite, CloudSprite, ImmovableSprite, Player
 from foreverdrive.events import Entering, CancelEvent
 
 def report(event):
@@ -22,7 +22,7 @@ class AreaManagingMode(ScrollingMode):
         self.area = area
 
         sprite = area.create_sprite(
-            FacingSprite,
+            Player,
             topleft=(300, 100),
             height=25,
             imagename="default_player",
@@ -30,7 +30,7 @@ class AreaManagingMode(ScrollingMode):
         sprite.register_listeners(self.game.mode)
         self.player = sprite
 
-        sprite.grow_part((-25, 0), "tile")
+        sprite.grow_part((-25, 0), "default_player")
 
         self.make_cylinder(0, 0)
         self.make_cylinder(75, 150)
