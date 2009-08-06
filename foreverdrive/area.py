@@ -181,7 +181,10 @@ class BoundArea(TileArea):
 
         def sprite_key(sprite):
             try:
-                return sprite.boundtop
+                try:
+                    return sprite.z
+                except:
+                    return sprite.boundtop
             except:
                 return sprite.rect.top
 

@@ -93,9 +93,11 @@ class Sprite(pygame.sprite.Sprite):
     def boundtop(self, top):
         top_offset = top - self.boundrect.top
         self.boundrect.top += top_offset
+        self.z = z = self.boundrect.top + self.height
         self.rect.top += top_offset
         for child in self.children:
             child.rect.top += top_offset
+            child.z = z
 
     @property
     def boundleft(self):
