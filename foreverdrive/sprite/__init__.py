@@ -290,11 +290,11 @@ class SolidSprite(PerimeterSensoringMixin, Sprite):
         ow = sprite.width
 
         dx1 = sx + ow - ox
-        dx2 = ox + ow - sx
+        dx2 = ox + oh - sx
         dx = (dx2, -dx1)[abs(dx1) < abs(dx2)] / 2.0 * P
 
         dy1 = sy + sh - oy
-        dy2 = oy + sh - sy
+        dy2 = oy + oh - sy
         dy = (dy2, -dy1)[abs(dy1) < abs(dy2)] / 2.0 * P
 
         self._push_apart_xy(sprite, dx, dy)

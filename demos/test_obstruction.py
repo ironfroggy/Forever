@@ -45,7 +45,7 @@ class AreaManagingMode(Mode):
             obstruction = area.create_sprite(
                 cls,
                 topleft=topleft,
-                height=50,
+                height=30,
                 image_path="default_oildrum",
                 name="block %d" % (i,))
             #obstruction.image.fill((i*(20+(i%5)), i*(20+(i%3)), i*(20+(i%4)), 128))
