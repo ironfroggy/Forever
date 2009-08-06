@@ -38,22 +38,15 @@ class AreaManagingMode(ScrollingMode):
             for x in range(6):
                 obstruction = area.create_sprite(
                     CloudSprite,
-                    topleft=(0, 0),
+                    topleft=(x*50, y*50),
                     height=50,
                     image_path="default_cloud",
                     name="water %d" % (x,))
                 #obstruction.image.fill((x*(20+(y%5)), x*(20+(y%3)), x*(20+(y%4)), 100))
                 objects.append(obstruction)
-                obstruction.rect.top -= 10
-                obstruction.rect.left -= 10
-                obstruction.boundrect.width -= 20
-                obstruction.boundrect.height -= 20
-                obstruction.pressure = 0.25
+                obstruction.pressure = 0.1
 
-        self.make_cylinder(100, 50)
-        self.make_cylinder(75, 50)
-        self.make_cylinder(25, 50)
-        self.make_cylinder(0, 50)
+        self.make_cylinder(200, 200)
 
         obj = area.create_sprite(
             SolidSprite,
@@ -65,7 +58,7 @@ class AreaManagingMode(ScrollingMode):
 
     def make_cylinder(self, x, y):
         obj = self.area.create_sprite(
-            ImmovableSprite,
+            SolidSprite,
             topleft=(x, y),
             height=50,
             image_path="default_obstruction",

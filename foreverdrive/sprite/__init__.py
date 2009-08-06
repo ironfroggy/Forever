@@ -338,9 +338,20 @@ class ImmovableSprite(SolidSprite):
 class CloudSprite(SolidSprite):
 
     radius = 25
+    turbulance = (-1, 20)
+
     def check_overlap(self, sprite):
         """Cloud-like things aren't rectangles!"""
         return pygame.sprite.collide_circle(Bound(self), Bound(sprite))
+
+    def _get_pushing_bound(self, sprite):
+        x = 0
+        y = 0
+        c, t = self.turbulance
+        if randint(0, 100) < c:
+            x = randint(-t, t)
+            y = randint(-t, t)
+        return self.boundleft + x, self.boundtop + y, self.height, self.width
 
 
 class FacingSprite(SolidSprite):
