@@ -18,7 +18,6 @@ class TileArea(object):
                  mode=None):
 
         self.mode = mode
-        print mode
 
         self.image = pygame.image.load(get_media_path(image_path)).convert()
         for filter in self.filters:
@@ -144,95 +143,6 @@ class BlurredBackground(TileArea):
             self.left += int(left)
         self.scroll_rollover_left = left % 1
 
-class Portal(Sprite):
-
-    def __init__(self, *args, **kwargs):
-        self.to = kwargs.pop('to', None)
-        self.offset = kwargs.pop('offset', None)
-        height = kwargs.pop('height', 100)
-        width = kwargs.pop('width', 1)
-
-        kwargs['image_path'] = "default_portal.png"
-        super(Portal, self).__init__(*args, **kwargs)
-
-        top, left = self.offset
-        if left:
-            self.rect.height = height
-            self.rect.width = width
-
-    def adjust_inside_area(self):
-        self.rect.top += self.area.top
-        self.rect.left += self.area.left
-        self.boundrect.top += self.area.top
-        self.boundrect.left += self.area.left
-
-    def enter(self, leaving_area, sprite):
-        # The sprite has to be moving in the same
-        # direction as the offset
-        down, right = self.offset
-        if down == sprite.vmove and down or right == sprite.hmove and right:
-            leaving_area.remove(sprite)
-            self.to.add(sprite)
-            sprite.boundtop = sprite.boundrect.top + down
-            sprite.rect.left = sprite.boundrect.left + right
-
-    def update(self, t):
-        r = super(Portal, self).update(t)
-        return r
-
-    @classmethod
-    def _connect_vertical(cls, area1, area2):
-        # area1 has to be on top
-        assert area1.top != area2.top
-        if area1.top > area2.top:
-            return cls._connect_vertical(area2, area1)
-
-        portal_left = max(area1.left, area2.left)
-        portal_width = min(area1.left + area1.width, area2.left + area2.width)
-
-        area1.create_sprite(Portal,
-                            topleft=(area1.height - 2,
-                                     portal_left - area1.left),
-                            to=area2,
-                            offset=(1, 0),
-                            height=1, width=portal_width)
-        area2.create_sprite(Portal,
-                            topleft=(2, portal_left - area2.left),
-                            to=area1,
-                            offset=(-1, 0),
-                            height=1, width=portal_width)
-
-    @classmethod
-    def _connect_horizontal(cls, area1, area2):
-        # area1 has to be on left
-        assert area1.left != area2.left
-        if area1.left > area2.left:
-            return cls._connect_horizontal(area2, area1)
-
-        height = area2.height
-
-        # When connecting horizontal areas, the right area needs
-        # to overlap this area to make room for the sprite. The
-        # overlap will be invisible.
-        area2.left -= 50
-        area2.width += 50
-        for sprite in area2:
-            sprite.rect.left += 50
-
-        portal_top = max(area1.top, area2.top)
-        portal_height = min(area1.top + area1.height, area2.top + area2.height) - portal_top
-
-        area1.create_sprite(Portal,
-                            topleft=(portal_top - area1.top,
-                                     area2.left - area1.left + 49),
-                            to=area2,
-                            offset=(0, 1),
-                            height=portal_height, width=1)
-        area2.create_sprite(Portal,
-                            topleft=(portal_top - area2.top, 0),
-                            to=area1,
-                            offset=(0, -1),
-                            height=portal_height, width=1)
 
 class BoundArea(TileArea):
 
@@ -247,8 +157,6 @@ class BoundArea(TileArea):
         return chain(self.tile_group, self.bound_group)
 
     def add(self, sprite):
-        if isinstance(sprite, Portal):
-            self.portals.add(sprite)
         self.bound_group.add(sprite)
 
     def remove(self, sprite):
@@ -263,10 +171,13 @@ class BoundArea(TileArea):
     def update(self, ticks):
         self.bound_group.update(ticks)
         for bound_sprite in self.bound_group:
-            if isinstance(bound_sprite, Portal):
-                continue
-
-            self.check_collision(bound_sprite)
+            self.keep_inside(bound_sprite)
+            try:
+                cc = bound_sprite.check_collisions
+            except AttributeError:
+                pass
+            else:
+                cc(self)
 
         def sprite_key(sprite):
             try:
@@ -288,51 +199,18 @@ class BoundArea(TileArea):
 
         topleft = bound_sprite.boundtop, bound_sprite.boundleft
 
-        bound_sprite.boundrect = pygame.Rect(
-            min(max(self.left, rect.left),
-                self.left + self.width - rect.width),
-            min(max(self.top, rect.top),
-                self.top + self.height - rect.height),
-            rect.width,
-            rect.height)
-
-        bound_sprite.rect.top = rect.top - bound_sprite.rect.height + bound_sprite.height
-        bound_sprite.rect.left = rect.left
+        new_left = min(max(self.left, rect.left),
+                      self.left + self.width - rect.width)
+        new_top = min(max(self.top, rect.top),
+                      self.top + self.height - rect.height)
+        
+        bound_sprite.boundtop = new_top
+        bound_sprite.boundleft = new_left
         
         return topleft != (bound_sprite.boundtop, bound_sprite.boundleft)
 
-    def check_collision(self, bound_sprite):
-        self.keep_inside(bound_sprite)
-        try:
-            lastmovebound = bound_sprite.lastmovebound
-        except AttributeError:
-            return "not applicable"
-
-        try:
-            if bound_sprite.__checking_collisions:
-                return "already checked"
-        except AttributeError:
-            bound_sprite.__checking_collisions = 0
-            print "new"
-
-        try:
-            bound_sprite.__checking_collisions += 1
-            hit = []
-            for entered_portal in pygame.sprite.spritecollide(
-                lastmovebound,
-                [Bound(s) for s in self.portals],
-                False):
-
-                if entered_portal.sprite is bound_sprite:
-                    continue
-                entered_portal.on_overlap(self, bound_sprite)
-                hit.append(entered_portal)
-            return hit
-        finally:
-            bound_sprite.__checking_collisions -= 1
-
     def on_movement(self, event):
-        self.check_collision(event.sprite)
+        pass
 
     def draw(self, surface):
         return chain(

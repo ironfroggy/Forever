@@ -38,6 +38,7 @@ class Sprite(pygame.sprite.Sprite):
         self.area = area
         self.name = name
         self.height = height
+        self.children = set()
       
         # Create the image that will be displayed and fill it with the
         # right color.
@@ -45,19 +46,22 @@ class Sprite(pygame.sprite.Sprite):
 
         # Make our top-left corner the passed-in location.
         self.rect = self.image.get_rect()
-        self.rect.top, self.rect.left = topleft
+        top, left = topleft
 
         self.boundrect = pygame.Rect(
-            self.rect.left,
-            self.rect.top,
+            0,
+            0,
             self.rect.width,
             height)
+
+        self.rect.top -= self.rect.height - height
+        self.boundtop = top
+        self.boundleft = left
+
         self.width = self.rect.width
         self.lastmovebound = RectHolder(self.boundrect)
 
         self.adjust_inside_area()
-
-        self.children = set()
 
     def __iter__(self):
         return iter(self.children)
@@ -73,7 +77,7 @@ class Sprite(pygame.sprite.Sprite):
 
     def adjust_inside_area(self):
         try:
-            self.boundtop += self.area.top - self.height
+            self.boundtop += self.area.top
             self.boundleft += self.area.left
         except AttributeError:
             pass
@@ -87,19 +91,22 @@ class Sprite(pygame.sprite.Sprite):
         return self.boundrect.top
     @boundtop.setter
     def boundtop(self, top):
-        diff = top - self.boundrect.top
-        self.boundrect.top = top + diff
-        self.rect.top = top - diff
+        top_offset = top - self.boundrect.top
+        self.boundrect.top += top_offset
+        self.rect.top += top_offset
+        for child in self.children:
+            child.rect.top += top_offset
 
     @property
     def boundleft(self):
         return self.boundrect.left
     @boundleft.setter
     def boundleft(self, left):
-        diff = left - self.boundrect.left
-        self.boundrect.left = left + diff
-        self.rect.left = left - diff
-        
+        left_offset = left - self.boundrect.left
+        self.boundrect.left += left_offset
+        self.rect.left += left_offset
+        for child in self.children:
+            child.rect.left += left_offset
 
     def update(self, current_time):
         if current_time == self.lastmove and self.lastmove > 0:
@@ -128,30 +135,14 @@ class Sprite(pygame.sprite.Sprite):
         previous_left = self.boundleft
 
         if vmove or hmove:
-            #print self.name, (hmove, vmove), self.speed,
-            last_lastmovebound = RectHolder(pygame.Rect(
-                    self.boundrect.left,
-                    self.boundrect.top,
-                    self.boundrect.width,
-                    self.boundrect.height))
 
-            self.boundrect.top += vmove
-            self.boundrect.left += hmove
-            #print self.boundrect
-            self.rect.top += vmove
-            self.rect.left += hmove
+            self.boundtop += vmove
+            self.boundleft += hmove
 
             self.last_hv = (hmove, vmove)
-            self.lastmovebound = RectHolder(pygame.Rect(
-                    self.boundrect.left - hmove,
-                    self.boundrect.top - vmove,
-                    self.boundrect.width + abs(hmove),
-                    self.boundrect.height + abs(vmove)
-                    ))
             try:
                 self.announce_movement(hmove, vmove)
             except CancelEvent:
-#                print "  couldn't move."
                 self.boundtop = previous_top - vmove
                 self.boundleft = previous_left - hmove
                 self.lastmovebound = last_lastmovebound
@@ -197,10 +188,18 @@ class Sprite(pygame.sprite.Sprite):
         elif event.key == pygame.locals.K_LSHIFT and event.type == pygame.locals.KEYUP:
             self.speed = type(self).speed
 
-        print self.speed
 
-#        if self.hmove or self.vmove:
-#            print "player moved", (self.hmove, self.vmove)
+    def grow_part(self, (top, left), partname):
+        image = pygame.image.load(media_manager.open('sprite', 'defaults', 'default', partname)).convert_alpha()
+
+        part_sprite = pygame.sprite.Sprite()
+        part_sprite.image = image
+        part_sprite.rect = image.get_rect()
+        self.children.add(part_sprite)
+        self.area.add(part_sprite)
+
+        part_sprite.rect.top = self.rect.top + top
+        part_sprite.rect.left = self.rect.left + left
         
 class PerimeterSensoringMixin(EventRouter):
     """Mixin for sprites to watch other things in their area
@@ -210,9 +209,30 @@ class PerimeterSensoringMixin(EventRouter):
 
     def __init__(self, *args, **kwargs):
         super(PerimeterSensoringMixin, self).__init__(*args, **kwargs)
-        
-        self.area.portals.add(self)
+
         self.sprites_inside = set()
+
+    def check_collisions(self, area):
+        try:
+            self.__checking_collisions
+        except AttributeError:
+            self.__checking_collisions = 0
+
+        try:
+            self.__checking_collisions += 1
+            hit = []
+            for entered_portal in pygame.sprite.spritecollide(
+                Bound(self),
+                [Bound(s) for s in area if isinstance(s, PerimeterSensoringMixin)],
+                False):
+
+                if entered_portal.sprite is self:
+                    continue
+                entered_portal.on_overlap(area, self)
+                hit.append(entered_portal)
+            return hit
+        finally:
+            self.__checking_collisions -= 1
 
     def check_overlap(self, sprite):
         return pygame.sprite.collide_rect(Bound(self), Bound(sprite))
