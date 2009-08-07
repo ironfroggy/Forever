@@ -17,7 +17,7 @@ class AreaManagingMode(ScrollingMode):
 
     def first_entering(self):
         area = self.areas.new_areas([
-            ((125, 25), (6, 6), None, None)
+            ((100, 100), (6, 6), None, None)
             ])[0]
         self.area = area
 
@@ -28,11 +28,8 @@ class AreaManagingMode(ScrollingMode):
             height=50,
             imagename="default_player",
             name="player")
-        sprite.speed *= 3
         sprite.register_listeners(self.game.mode)
         self.player = sprite
-    
-        #self.area.add(sprite)
 
         m = 50*(6.0/7.0)
         for y in range(7):
@@ -47,15 +44,10 @@ class AreaManagingMode(ScrollingMode):
                 objects.append(obstruction)
                 obstruction.pressure = 0.0001
 
+        self.make_cylinder(100, 200)
+        self.make_cylinder(200, 100)
+        self.make_cylinder(100, 100)
         self.make_cylinder(200, 200)
-
-        obj = area.create_sprite(
-            SolidSprite,
-            topleft=(150, 0),
-            height=50,
-            image_path="default_obstruction",
-            name="block")
-            #obstruction.show_bounds()
 
     def make_cylinder(self, x, y):
         obj = self.area.create_sprite(

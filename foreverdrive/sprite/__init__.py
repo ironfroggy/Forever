@@ -313,8 +313,8 @@ class SolidSprite(PerimeterSensoringMixin, Sprite):
         lx, ly = sprite.last_hv
         cx, cy = sprite.hmove, sprite.vmove
 
-        mx = (floor(dx+1) if dx > 0 else ceil(dx))
-        my = (floor(dy+1) if dy > 0 else ceil(dy))
+        mx = dx
+        my = dy
 
         # Move on the shortest axis
         # Which is also the direction the pusher is moving
@@ -345,7 +345,7 @@ class ImmovableSprite(SolidSprite):
 class CloudSprite(SolidSprite):
 
     radius = 25
-    turbulance = (-1, 20)
+    turbulance = (100, 20)
 
     def check_overlap(self, sprite):
         """Cloud-like things aren't rectangles!"""
@@ -358,7 +358,9 @@ class CloudSprite(SolidSprite):
         if randint(0, 100) < c:
             x = randint(-t, t)
             y = randint(-t, t)
-        return self.boundleft + x, self.boundtop + y, self.height, self.width
+            self.boundtop += y
+            self.boundleft += x
+        return self.boundleft, self.boundtop, self.height, self.width
 
 
 class FacingSprite(Sprite):
