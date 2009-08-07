@@ -5,7 +5,7 @@ import pygame
 from pygame.locals import *
 
 from foreverdrive import get_media_path
-from foreverdrive.events import Pause, Movement, EventRouter, Entering, CancelEvent
+from foreverdrive.events import Pause, Movement, EventRouter, Entering
 from foreverdrive.sprite.util import Bound, RectHolder
 from foreverdrive.media import Media
 
@@ -97,7 +97,7 @@ class Sprite(pygame.sprite.Sprite):
         try:
             self.z = self.parent.z
         except AttributeError:
-            self.z = z = self.rect.top + self.height
+            self.z = z = self.rect.top + self.rect.height
         self.rect.top += top_offset
         for child in self.children:
             child.rect.top += top_offset
@@ -145,18 +145,6 @@ class Sprite(pygame.sprite.Sprite):
             self.boundleft += hmove
 
             self.last_hv = (hmove, vmove)
-            try:
-                self.announce_movement(hmove, vmove)
-            except CancelEvent:
-                self.boundtop = previous_top - vmove
-                self.boundleft = previous_left - hmove
-                self.lastmovebound = last_lastmovebound
-
-    mode = None
-    def announce_movement(self, hmove, vmove):
-        if self.mode is not None:
-            self.mode.route(Movement(self, (hmove, vmove)))
-            
 
     def register_listeners(self, router):
         router.listen_arrows(self.handle_event)
