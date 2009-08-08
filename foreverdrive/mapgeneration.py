@@ -15,6 +15,9 @@ class RoomTemplate(object):
     down_chance = 1
     right_chance = 1
     left_chance = 1
+    next = ()
+
+    c = (1.0, 1.0, 1.0)
 
     def __init__(self, width_range=None, height_range=None):
         if not width_range:
@@ -26,20 +29,33 @@ class RoomTemplate(object):
         self._width_ranges = {}
         self._height_ranges = {}
 
-    def getRandomRoom(self, from_room):
-        direction = self.getRandomDirection(from_room)
+        self.next = {'up':[], 'down': [], 'left': [], 'right': []}
 
+    def getTemplateAndDirection(self, exclude=()):
+        direction = None
+        while direction in exclude or not direction:
+            direction = self.getRandomDirection()
+
+        if self.next[direction]:
+            template = choice(self.next[direction])
+        else:
+            return self.getTemplateAndDirection(exclude + (direction,))
+        
+        return template, direction
+
+    def getRandomRoom(self, from_room, direction):
         width, height = self.getRandomSize(from_room, direction)
 
         left, top = self.getRandomPositionAt(from_room, (width, height), direction)
 
-        return Room(left, top, width, height)
+        return Room(left, top, width, height, template=self)
 
-    def getRandomDirection(self, from_room):
-        direction_sampling = (('left',) * from_room.template.left_chance +
-                              ('up',) * from_room.template.up_chance +
-                              ('right',) * from_room.template.right_chance +
-                              ('down',) * from_room.template.down_chance)
+    def getRandomDirection(self, from_room=None):
+        template = from_room.template if from_room is not None else self
+        direction_sampling = (('left',) * template.left_chance +
+                              ('up',) * template.up_chance +
+                              ('right',) * template.right_chance +
+                              ('down',) * template.down_chance)
         return choice(direction_sampling)
 
     def getRandomSize(self, from_room, direction):
@@ -128,14 +144,17 @@ class MapGenerator(object):
             raise MapConflict("Room collides with existing room(s)")
 
     def addRandomRoom(self):
-        try:
-            return self._addRandomRoom()
-        except (MapConflict, ValueError), e:
-            return self.addRandomRoom()
+        while True:
+            try:
+                return self._addRandomRoom()
+            except (MapConflict, ValueError), e:
+                continue
 
     def _addRandomRoom(self):
         from_room = self.getRandomRoom()
 
-        room = template.getRandomRoom(from_room)
+        template, direction = from_room.template.getTemplateAndDirection()
+
+        room = template.getRandomRoom(from_room, direction)
         return self.addRoom(room), room
 
