@@ -80,6 +80,7 @@ class ForeverMain(object):
             update = ticks - lastupdate > delay
             if update:
                 lastupdate = ticks
+                mode.update(ticks)
             for group in mode.groups:
                 if update:
                     group.update(ticks)
