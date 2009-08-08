@@ -5,24 +5,45 @@ from foreverdrive.area import AreaManager
 from foreverdrive.mapgeneration import MapGenerator, Room, RoomTemplate
 
 
-hallway_template_h = RoomTemplate(width_range=(1, 2), height_range=(2, 5))
+hallway_template_h = RoomTemplate(width_range=(1, 2), height_range=(5, 10))
 hallway_template_h.c = (1.0, 0.6, 0.6)
-hallway_template_w = RoomTemplate(width_range=(2, 10), height_range=(1, 2))
+hallway_template_w = RoomTemplate(width_range=(5, 10), height_range=(1, 2))
 hallway_template_w.c = (0.6, 1.0, 0.6)
 
-main_room_template = RoomTemplate(width_range=(4, 6), height_range=(4, 6))
+main_room_template = RoomTemplate(width_range=(4, 10), height_range=(4, 10))
 main_room_template.c = (0.6, 0.6, 1.0)
 
+HALL_EXTEND_CHANCE = 0.3
+HALL_TO_MAIN_CHANCE = 0.3
+
+hallway_template_h.next['up'].extend([
+        (hallway_template_w, HALL_EXTEND_CHANCE),
+        (hallway_template_h, HALL_EXTEND_CHANCE * 2),
+        (main_room_template, HALL_TO_MAIN_CHANCE)
+        ])
+hallway_template_h.next['down'].extend([
+        (hallway_template_w, HALL_EXTEND_CHANCE),
+        (hallway_template_h, HALL_EXTEND_CHANCE * 2),
+        (main_room_template, HALL_TO_MAIN_CHANCE)
+        ])
+hallway_template_w.next['left'].extend([
+        (hallway_template_h, HALL_EXTEND_CHANCE),
+        (hallway_template_w, HALL_EXTEND_CHANCE * 2),
+        (main_room_template, HALL_TO_MAIN_CHANCE)
+        ])
+hallway_template_w.next['right'].extend([
+        (hallway_template_h, HALL_EXTEND_CHANCE),
+        (hallway_template_w, HALL_EXTEND_CHANCE * 2),
+        (main_room_template, HALL_TO_MAIN_CHANCE)
+])
+
+small_hall = RoomTemplate(width_range=(1, 2), height_range=(1, 2))
+small_hall.c = (1.0, 1.0, 0.6)
+small_hall.next['up'] = [(main_room_template, 1.0)]
+small_hall.next['down'] = [(main_room_template, 1.0)]
+
 for d in ('up', 'down', 'left', 'right'):
-    main_room_template.next[d].extend([(hallway_template_w, 0.5), (hallway_template_h, 0.5)])
-
-HALL_EXTEND_CHANCE = 0.8
-HALL_TO_MAIN_CHANCE = 0.2
-
-hallway_template_h.next['up'].extend([(hallway_template_w, HALL_EXTEND_CHANCE), (main_room_template, HALL_TO_MAIN_CHANCE)])
-hallway_template_h.next['down'].extend([(hallway_template_w, HALL_EXTEND_CHANCE), (main_room_template, HALL_TO_MAIN_CHANCE)])
-hallway_template_w.next['left'].extend([(hallway_template_h, HALL_EXTEND_CHANCE), (main_room_template, HALL_TO_MAIN_CHANCE)])
-hallway_template_w.next['right'].extend([(hallway_template_h, HALL_EXTEND_CHANCE), (main_room_template, HALL_TO_MAIN_CHANCE)])
+    main_room_template.next[d].extend([(hallway_template_w, 0.1), (hallway_template_h, 0.1), (small_hall, 0.7)])
 
 class MapDisplayModeTest(MapDisplayMode):
 
