@@ -5,7 +5,7 @@ from pygame import Surface, Rect
 from foreverdrive.modes import Mode
 from foreverdrive.mapgeneration import MapGenerator
 
-ROOMS = 10000
+ROOMS = 400
 
 class MapDisplayMode(Mode):
 
