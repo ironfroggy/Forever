@@ -1,10 +1,21 @@
-from random import randint, choice
+from random import randint, choice, uniform
 
 from pygame import Rect
 from pygame.sprite import collide_rect
 
-MIN = 10
-MAX = 30
+MIN = 1
+MAX = 4
+
+def w_choice(lst):
+    """Like random.choice() but expects items to be a 2-tuple
+    of (item, weight).
+    """
+    n = uniform(0, 1)
+    for item, weight in lst:
+        if n < weight:
+            break
+        n = n - weight
+    return item
 
 class MapConflict(Exception):
     pass
@@ -15,17 +26,15 @@ class RoomTemplate(object):
     down_chance = 1
     right_chance = 1
     left_chance = 1
-    next = ()
 
     c = (1.0, 1.0, 1.0)
 
     def __init__(self, width_range=None, height_range=None):
-        if not width_range:
-            width_range = (MIN, MAX)
-        if not height_range:
-            height_range = (MIN, MAX)
-        self.width_range = width_range
-        self.height_range = height_range
+        if width_range:
+            self.width_range = width_range
+        if height_range:
+            self.height_range = height_range
+
         self._width_ranges = {}
         self._height_ranges = {}
 
@@ -37,7 +46,7 @@ class RoomTemplate(object):
             direction = self.getRandomDirection()
 
         if self.next[direction]:
-            template = choice(self.next[direction])
+            template = w_choice(self.next[direction])
         else:
             return self.getTemplateAndDirection(exclude + (direction,))
         
@@ -59,8 +68,8 @@ class RoomTemplate(object):
         return choice(direction_sampling)
 
     def getRandomSize(self, from_room, direction):
-        height = randint(*from_room.template.getNeighborHeightRange(direction))
-        width = randint(*from_room.template.getNeighborWidthRange(direction))
+        height = randint(*self.height_range)
+        width = randint(*self.width_range)
 
         return width, height
 
@@ -131,14 +140,25 @@ class MapGenerator(object):
         i = randint(0, len(self.rooms) - 1)
         return self.rooms[i]
 
-    def proposeNewRoom(self, new_room):
+    def proposeNewRoom(self, from_room, new_room):
+        """Finds if the new room fits into the map. It cannot overlap existing rooms.
+
+        This is done by inflating the new_room by 1 pixel on all sides and allowing
+        it to overlap the room its actually connected to.
+        """
+
+        new_room = new_room.rect
+        new_room = Room(new_room.left - 1, new_room.top - 1, new_room.width + 2, new_room.height + 2)
+
         for room in self.rooms:
+            if room is from_room:
+                continue
             if collide_rect(new_room, room):
                 return False
         return True
 
-    def addRoom(self, new_room):
-        if self.proposeNewRoom(new_room):
+    def addRoom(self, from_room, new_room):
+        if self.proposeNewRoom(from_room, new_room):
             return MapGenerator(rooms=self.rooms + (new_room,))
         else:
             raise MapConflict("Room collides with existing room(s)")
@@ -156,5 +176,5 @@ class MapGenerator(object):
         template, direction = from_room.template.getTemplateAndDirection()
 
         room = template.getRandomRoom(from_room, direction)
-        return self.addRoom(room), room
+        return self.addRoom(from_room, room), room
 
