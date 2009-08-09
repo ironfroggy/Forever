@@ -4,17 +4,21 @@ from foreverdrive.area import AreaManager
 
 from foreverdrive.mapgeneration import MapGenerator, Room, RoomTemplate
 
+HALL_WIDE = (3, 4)
+HALL_LONG = (10, 20)
 
-hallway_template_h = RoomTemplate(width_range=(1, 2), height_range=(5, 10))
+hallway_template_h = RoomTemplate(width_range=HALL_WIDE, height_range=HALL_LONG)
 hallway_template_h.c = (1.0, 0.6, 0.6)
-hallway_template_w = RoomTemplate(width_range=(5, 10), height_range=(1, 2))
+hallway_template_w = RoomTemplate(width_range=HALL_LONG, height_range=HALL_WIDE)
 hallway_template_w.c = (0.6, 1.0, 0.6)
 
-main_room_template = RoomTemplate(width_range=(4, 10), height_range=(4, 10))
+MAIN_SIZE = (10, 15)
+
+main_room_template = RoomTemplate(width_range=MAIN_SIZE, height_range=MAIN_SIZE)
 main_room_template.c = (0.6, 0.6, 1.0)
 
-HALL_EXTEND_CHANCE = 0.3
-HALL_TO_MAIN_CHANCE = 0.3
+HALL_EXTEND_CHANCE = 0.1
+HALL_TO_MAIN_CHANCE = 0.9
 
 hallway_template_h.next['up'].extend([
         (hallway_template_w, HALL_EXTEND_CHANCE),

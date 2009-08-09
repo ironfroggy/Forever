@@ -3,7 +3,7 @@ from random import randint, choice, uniform
 from pygame import Rect
 from pygame.sprite import collide_rect
 
-MIN = 1
+MIN = 2
 MAX = 4
 
 def w_choice(lst):
@@ -85,24 +85,28 @@ class RoomTemplate(object):
         except KeyError:
             return self.width_range
 
+    def _getSideRange(self, base, room_length, new_length, minimum):
+        #return (base - new_length + minimum), (base + room_length - new_length - minimum)
+        return base, base + room_length - minimum
+
     def getRandomPositionAt(self, from_room, (width, height), direction):
         rect = from_room.rect
 
         if direction == 'up':
             top = rect.top - height
-            left = randint(rect.left - width + MIN, rect.left + rect.width - width - MIN)
+            left = randint(*self._getSideRange(rect.left, rect.width, width, MIN))
 
         elif direction == 'left':
             left = rect.left - width
-            top = randint(rect.top - height + MIN, rect.top + rect.height - height - MIN)
+            top = randint(*self._getSideRange(rect.top, rect.height, height, MIN))
 
         elif direction == 'down':
             top = rect.top + rect.height
-            left = randint(rect.left - width + MIN, rect.left + rect.width - MIN)
+            left = randint(*self._getSideRange(rect.left, rect.width, width, MIN))
 
         elif direction == 'right':
             left = rect.left + rect.width
-            top = randint(rect.top - height + MIN, rect.top + rect.height - MIN)
+            top = randint(*self._getSideRange(rect.top, rect.height, height, MIN))
 
         return left, top
 
