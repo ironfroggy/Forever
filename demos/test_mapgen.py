@@ -2,7 +2,7 @@ from foreverdrive.base import ForeverMain
 from foreverdrive.modes.map import MapDisplayMode
 from foreverdrive.area import AreaManager
 
-from foreverdrive.mapgeneration import MapGenerator, Room, RoomTemplate
+from foreverdrive.mapgeneration import MapGenerator, Room, RoomTemplate, GreedyRoomTemplate
 
 HALL_WIDE = (3, 4)
 HALL_LONG = (10, 20)
@@ -41,7 +41,7 @@ hallway_template_w.next['right'].extend([
         (main_room_template, HALL_TO_MAIN_CHANCE)
 ])
 
-small_hall = RoomTemplate(width_range=(1, 2), height_range=(1, 2))
+small_hall = GreedyRoomTemplate(width_range=(1, 2), height_range=(1, 2))
 small_hall.c = (1.0, 1.0, 0.6)
 small_hall.next['up'] = [(main_room_template, 1.0)]
 small_hall.next['down'] = [(main_room_template, 1.0)]

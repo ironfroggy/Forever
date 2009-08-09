@@ -112,7 +112,21 @@ class RoomTemplate(object):
 
     def getRandomRoom(self, rooms):
         i = randint(0, len(rooms) - 1)
-        return rooms[i]        
+        return rooms[i]
+
+class GreedyRoomTemplate(RoomTemplate):
+
+    def getRandomRoom(self, rooms):
+        print "greedy",
+        rooms = [r for r in rooms if isinstance(r.template, GreedyRoomTemplate)]
+        i = randint(0, len(rooms) - 1)
+        print type(rooms[i].template)
+        return rooms[i]
+
+    def _getSideRange(self, base, room_length, new_length, minimum):
+        lower = base - room_length/2 + new_length/2
+        upper = lower + new_length
+        return (lower, upper)
 
 
 template = RoomTemplate()
@@ -176,7 +190,7 @@ class MapGenerator(object):
         while True:
             try:
                 return self._addRandomRoom()
-            except (MapConflict, ValueError), e:
+            except (MapConflict, TypeError), e:
                 continue
 
     def _addRandomRoom(self):
