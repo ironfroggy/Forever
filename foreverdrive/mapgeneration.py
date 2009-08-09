@@ -52,7 +52,7 @@ class RoomTemplate(object):
         
         return template, direction
 
-    def getRandomRoom(self, from_room, direction):
+    def makeRandomNeighbor(self, from_room, direction):
         width, height = self.getRandomSize(from_room, direction)
 
         left, top = self.getRandomPositionAt(from_room, (width, height), direction)
@@ -110,6 +110,10 @@ class RoomTemplate(object):
 
         return left, top
 
+    def getRandomRoom(self, rooms):
+        i = randint(0, len(rooms) - 1)
+        return rooms[i]        
+
 
 template = RoomTemplate()
 
@@ -131,18 +135,19 @@ class MapGenerator(object):
     for collisions and is not used if there are any.
     """
 
-    def __init__(self, rooms=None):
+    def __init__(self, rooms=None, last_room=None):
         if rooms is None:
             self.rooms = (Room(0, 0, randint(MIN, MAX), randint(MIN, MAX)),)
         else:
             self.rooms = rooms
 
+        if last_room is None:
+            self.last_room = self.rooms[0]
+        else:
+            self.last_room = last_room
+
     def __iter__(self):
         return iter(self.rooms)
-
-    def getRandomRoom(self):
-        i = randint(0, len(self.rooms) - 1)
-        return self.rooms[i]
 
     def proposeNewRoom(self, from_room, new_room):
         """Finds if the new room fits into the map. It cannot overlap existing rooms.
@@ -163,7 +168,7 @@ class MapGenerator(object):
 
     def addRoom(self, from_room, new_room):
         if self.proposeNewRoom(from_room, new_room):
-            return MapGenerator(rooms=self.rooms + (new_room,))
+            return MapGenerator(rooms=self.rooms + (new_room,), last_room=new_room)
         else:
             raise MapConflict("Room collides with existing room(s)")
 
@@ -175,10 +180,11 @@ class MapGenerator(object):
                 continue
 
     def _addRandomRoom(self):
-        from_room = self.getRandomRoom()
+        last_template = self.last_room.template
+        from_room = last_template.getRandomRoom(self.rooms)
 
         template, direction = from_room.template.getTemplateAndDirection()
 
-        room = template.getRandomRoom(from_room, direction)
+        room = template.makeRandomNeighbor(from_room, direction)
         return self.addRoom(from_room, room), room
 
