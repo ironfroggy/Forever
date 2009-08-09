@@ -87,7 +87,8 @@ class RoomTemplate(object):
 
     def _getSideRange(self, base, room_length, new_length, minimum):
         #return (base - new_length + minimum), (base + room_length - new_length - minimum)
-        return base, base + room_length - minimum
+        upper = base + new_length - minimum
+        return base, upper
 
     def getRandomPositionAt(self, from_room, (width, height), direction):
         rect = from_room.rect
@@ -110,23 +111,33 @@ class RoomTemplate(object):
 
         return left, top
 
-    def getRandomRoom(self, rooms):
+    def getRandomRoom(self, all_rooms):
+        rooms = [r for r in all_rooms if r.wants_neighbors]
         i = randint(0, len(rooms) - 1)
         return rooms[i]
 
-class GreedyRoomTemplate(RoomTemplate):
 
-    def getRandomRoom(self, rooms):
-        print "greedy",
-        rooms = [r for r in rooms if isinstance(r.template, GreedyRoomTemplate)]
-        i = randint(0, len(rooms) - 1)
-        print type(rooms[i].template)
-        return rooms[i]
+class MainRoomTemplate(RoomTemplate):
 
     def _getSideRange(self, base, room_length, new_length, minimum):
-        lower = base - room_length/2 + new_length/2
-        upper = lower + new_length
-        return (lower, upper)
+        lower = base - new_length/2 + room_length/2
+        return (lower, lower)
+
+
+class ConnectingRoomTemplate(RoomTemplate):
+
+    def getRandomRoom(self, all_rooms):
+        rooms = [r for r in all_rooms if isinstance(r.template, ConnectingRoomTemplate) and r.wants_neighbors]
+        if rooms:
+            i = randint(0, len(rooms) - 1)
+            return rooms[i]
+        else:
+            return super(ConnectingRoomTemplate, self).getRandomRoom(all_rooms)
+
+    def _getSideRange(self, base, room_length, new_length, minimum):
+        lower = base + room_length/2 - new_length/2
+        return (lower, lower)
+        
 
 
 template = RoomTemplate()
@@ -135,6 +146,7 @@ class Room(object):
     def __init__(self, *args, **kwargs):
         self.template = kwargs.pop('template', RoomTemplate())
         self.rect = Rect(*args, **kwargs)
+        self.wants_neighbors = 10
 
 class MapGenerator(object):
     """Randomly generates maps.
@@ -177,6 +189,7 @@ class MapGenerator(object):
             if room is from_room:
                 continue
             if collide_rect(new_room, room):
+                from_room.wants_neighbors -= 1
                 return False
         return True
 
