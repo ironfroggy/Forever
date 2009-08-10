@@ -275,7 +275,10 @@ class SolidSprite(PerimeterSensoringMixin, Sprite):
         if isinstance(sprite, ImmovableSprite):
             P = 1.0
         else:
-            P = min(sprite.pressure, self.pressure)
+            try:
+                P = min(sprite.pressure, self.pressure)
+            except AttributeError:
+                return
 
         sx, sy, sh, sw = self._get_pushing_bound(sprite)
 

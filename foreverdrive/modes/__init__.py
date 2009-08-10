@@ -15,6 +15,9 @@ class Mode(EventRouter):
         self.listen(self.background.on_scroll, Scroll)
         self.groups = [self.background]
 
+    def update(self, tick):
+        pass
+
     def first_entering(self):
         pass
 

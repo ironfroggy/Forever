@@ -41,7 +41,7 @@ class AreaManagingMode(ScrollingMode):
         obj = self.area.create_sprite(
             SolidSprite,
             topleft=(x, y),
-            height=25,
+            height=1,
             image_path="default_oildrum",
             name="block")
 

@@ -149,7 +149,6 @@ class BoundArea(TileArea):
     def __init__(self, *args, **kwargs):
         super(BoundArea, self).__init__(*args, **kwargs)
         self.bound_group = pygame.sprite.OrderedUpdates()
-        self.portals = pygame.sprite.Group()
         if self.mode:
             self.mode.listen(self.on_movement, Movement)
 

@@ -1,7 +1,8 @@
 from foreverdrive.base import ForeverMain
 from foreverdrive.modes.scrolling import ScrollingMode
-from foreverdrive.area import Portal, BoundArea
-from foreverdrive.sprite import FacingSprite
+from foreverdrive.area import BoundArea
+from foreverdrive.sprite import Player
+from foreverdrive.sprite.portal import Portal
 
 class PortalTest(ScrollingMode):
 
@@ -54,15 +55,16 @@ class PortalTest(ScrollingMode):
 
         Portal._connect_horizontal(self.areas[0], self.areas[4])
 
+
     def first_entering(self):
         self.new = False
         self.game.groups.append(self.area)
 
-        sprite = FacingSprite(topleft=(self.area.top+50, self.area.left+50), imagename="default_player", area=self.area)
+        sprite = Player(topleft=(self.area.top+50, self.area.left+50), imagename="default_player", area=self.area, height=25)
         sprite.register_listeners(self.game.mode)
         self.player = sprite
     
-        self.area.add(sprite)
+        self.areas[0].add(sprite)
         super(PortalTest, self).first_entering()
 
 def main():
