@@ -53,7 +53,7 @@ class Portal(Sprite, PerimeterSensoringMixin):
             sprite.rect.top += 50
 
         portal_left = max(area1.left, area2.left)
-        portal_width = min(area1.left + area1.width, area2.left + area2.width)
+        portal_width = min(area1.width, area2.width)
 
         area1.create_sprite(Portal,
                             topleft=(area1.height - 2,
@@ -61,8 +61,9 @@ class Portal(Sprite, PerimeterSensoringMixin):
                             to=area2,
                             offset=(1, 0),
                             height=1, width=portal_width)
+
         area2.create_sprite(Portal,
-                            topleft=(2, portal_left - area2.left),
+                            topleft=(0, portal_left),
                             to=area1,
                             offset=(-1, 0),
                             height=1, width=portal_width)
