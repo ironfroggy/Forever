@@ -46,6 +46,4 @@ class ScrollingMode(Mode):
                 x = left_under
 
         if x or y:
-            event.player.boundtop += y
-            event.player.boundleft += x
             self.route(Scroll(window, (x, y)))

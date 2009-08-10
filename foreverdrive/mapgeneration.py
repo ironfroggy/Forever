@@ -147,6 +147,7 @@ class Room(object):
         self.template = kwargs.pop('template', RoomTemplate())
         self.rect = Rect(*args, **kwargs)
         self.wants_neighbors = 10
+        self.neighbors = set()
 
 class MapGenerator(object):
     """Randomly generates maps.
@@ -195,6 +196,7 @@ class MapGenerator(object):
 
     def addRoom(self, from_room, new_room):
         if self.proposeNewRoom(from_room, new_room):
+            from_room.neighbors.add(new_room)
             return MapGenerator(rooms=self.rooms + (new_room,), last_room=new_room)
         else:
             raise MapConflict("Room collides with existing room(s)")

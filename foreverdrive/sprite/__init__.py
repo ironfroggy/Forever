@@ -25,7 +25,7 @@ class Sprite(pygame.sprite.Sprite):
 
     def __init__(self,
                  topleft=(100, 100),
-                 image_path="sprite",
+                 image_path="default_sprite",
                  area=None,
                  height=1,
                  name=None):
@@ -145,6 +145,8 @@ class Sprite(pygame.sprite.Sprite):
             self.boundleft += hmove
 
             self.last_hv = (hmove, vmove)
+
+            self.area.mode.route(Movement(self, (hmove, vmove)))
 
     def register_listeners(self, router):
         router.listen_arrows(self.handle_event)

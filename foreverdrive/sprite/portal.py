@@ -55,18 +55,20 @@ class Portal(Sprite, PerimeterSensoringMixin):
         portal_left = max(area1.left, area2.left)
         portal_width = min(area1.width, area2.width)
 
-        area1.create_sprite(Portal,
+        p1 = area1.create_sprite(Portal,
                             topleft=(area1.height - 2,
                                      portal_left - area1.left),
                             to=area2,
                             offset=(1, 0),
                             height=1, width=portal_width)
 
-        area2.create_sprite(Portal,
+        p2 = area2.create_sprite(Portal,
                             topleft=(0, portal_left),
                             to=area1,
                             offset=(-1, 0),
                             height=1, width=portal_width)
+
+        return p1, p2
 
     @classmethod
     def _connect_horizontal(cls, area1, area2):

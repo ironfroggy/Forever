@@ -64,9 +64,12 @@ class TileArea(object):
         change = new_top - self._top
         self._top = new_top
         for sprite in self:
-            t = sprite.rect.top
             sprite.rect.top += change
-        self.update_rect()
+            try:
+                sprite.boundrect.top += change
+            except AttributeError:
+                pass
+
     @property
     def bottom(self):
         return self.top + self.height
@@ -80,6 +83,10 @@ class TileArea(object):
         self._left = new_left
         for sprite in self:
             sprite.rect.left += change
+            try:
+                sprite.boundrect.left += change
+            except AttributeError:
+                pass
         self.update_rect()
     @property
     def right(self):
