@@ -17,17 +17,19 @@ class AreaManagingMode(ScrollingMode):
 
     def first_entering(self):
         area = self.areas.new_areas([
-            ((100, 100), (6, 6), None, None)
+            ((100, 100), (6, 6)),
+            ((400, 200), (3, 8)),
             ])[0]
+        self.areas.connect_all()
         self.area = area
 
         sprite = area.create_sprite(
             Player,
-            topleft=(300, 100),
+            topleft=(200, 100),
             height=25,
             imagename="default_player",
             name="player")
-        sprite.register_listeners(self.game.mode)
+        sprite.register_listeners(self)
         self.player = sprite
 
         sprite.grow_part((-25, 0), "default_player")
@@ -36,6 +38,8 @@ class AreaManagingMode(ScrollingMode):
         self.make_cylinder(75, 150)
         self.make_cylinder(25, 50)
         self.make_cylinder(0, 200)
+
+        super(AreaManagingMode, self).first_entering()
 
     def make_cylinder(self, x, y):
         obj = self.area.create_sprite(

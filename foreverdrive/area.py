@@ -2,8 +2,10 @@ from itertools import chain
 
 import pygame
 from foreverdrive import get_media_path
+from foreverdrive.errors import PlacementError
 from foreverdrive.events import Movement, CancelEvent
 from foreverdrive.sprite import Sprite, Bound
+from foreverdrive.sprite.portal import Portal
 from foreverdrive.visual.filters import blur, dim
 
 class TileArea(object):
@@ -231,10 +233,13 @@ class AreaManager(object):
         self.areas = []
         self.namedareas = {}
 
+    def __iter__(self):
+        return iter(self.areas)
+
     def add(self, area):
+        self.mode.groups.append(area)
         self.areas.append(area)
         self.namedareas[area.name] = area
-        self.mode.groups.extend(self.areas)
         area.manager = self
 
     def new_area(self,
@@ -254,3 +259,13 @@ class AreaManager(object):
             area = self.new_area(topleft, size)
             areas.append(area)
         return areas
+
+    def connect_all(self):
+        for area1 in self.areas:
+            for area2 in self.areas:
+                if area1 in area2.neighbors:
+                    continue
+                try:
+                    Portal.connect(area1, area2)
+                except PlacementError:
+                    continue

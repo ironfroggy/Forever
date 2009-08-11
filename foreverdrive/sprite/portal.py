@@ -21,8 +21,6 @@ class Portal(Sprite, PerimeterSensoringMixin):
         self.boundrect.width = width
         self.boundrect.height = height
 
-        self.show_bounds()
-
     def adjust_inside_area(self):
         self.rect.top += self.area.top
         self.rect.left += self.area.left
