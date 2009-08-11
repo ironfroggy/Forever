@@ -28,11 +28,14 @@ class Portal(Sprite, PerimeterSensoringMixin):
         self.boundrect.left += self.area.left
 
     def on_overlap(self, leaving_area, sprite):
-        print sprite.name
         # The sprite has to be moving in the same
         # direction as the offset
         down, right = self.offset
-        if down == sprite.vmove and down or right == sprite.hmove and right:
+        last_hmove, last_vmove = sprite.last_hv
+        last_hmove = 1 if last_hmove > 0 else -1 if last_hmove < 0 else 1
+        last_vmove = 1 if last_vmove > 0 else -1 if last_vmove < 0 else 1
+        if (down in (sprite.vmove, last_vmove) and down) \
+            or (right in (sprite.hmove, last_hmove) and right):
             leaving_area.remove(sprite)
             self.to.add(sprite)
             sprite.boundtop = sprite.boundrect.top + down
@@ -57,7 +60,7 @@ class Portal(Sprite, PerimeterSensoringMixin):
         portal_width = min(area1.width, area2.width)
 
         p1 = area1.create_sprite(Portal,
-                            topleft=(area1.height - 2,
+                            topleft=(area1.height,
                                      portal_left - area1.left),
                             to=area2,
                             offset=(1, 0),
