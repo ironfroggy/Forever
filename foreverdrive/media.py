@@ -19,7 +19,6 @@ class Media(object):
         path = pathjoin(self.basedir, theme, palette)
         if state:
             path = '_'.join((path, state))
-        print path + '.' + extension[media_type]
         return '.'.join((path, extension[media_type]))
 
 media_manager = Media()

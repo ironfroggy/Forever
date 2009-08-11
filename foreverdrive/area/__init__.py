@@ -8,6 +8,7 @@ from foreverdrive.sprite import Sprite, Bound
 from foreverdrive.sprite.portal import Portal
 from foreverdrive.visual.filters import blur, dim
 
+
 class TileArea(object):
     name = None
     filters = []
