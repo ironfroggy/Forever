@@ -17,6 +17,7 @@ class TileArea(object):
                  mode=None):
 
         self.mode = mode
+        self.neighbors = set()
 
         self.image = pygame.image.load(get_media_path(image_path)).convert()
         for filter in self.filters:
@@ -169,6 +170,7 @@ class BoundArea(TileArea):
         self.bound_group.update(ticks)
         for bound_sprite in self.bound_group:
             self.keep_inside(bound_sprite)
+        for bound_sprite in chain(self.bound_group, *(n.bound_group for n in self.neighbors)):
             try:
                 cc = bound_sprite.check_collisions
             except AttributeError:

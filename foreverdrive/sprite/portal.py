@@ -68,6 +68,8 @@ class Portal(Sprite, PerimeterSensoringMixin):
                             offset=(-1, 0),
                             height=1, width=portal_width)
 
+        area1.neighbors.add(area2)
+        area2.neighbors.add(area1)
         return p1, p2
 
     @classmethod
@@ -90,14 +92,18 @@ class Portal(Sprite, PerimeterSensoringMixin):
         portal_top = max(area1.top, area2.top)
         portal_height = min(area1.top + area1.height, area2.top + area2.height) - portal_top
 
-        area1.create_sprite(Portal,
+        p1 = area1.create_sprite(Portal,
                             topleft=(portal_top - area1.top,
                                      area2.left - area1.left + 49),
                             to=area2,
                             offset=(0, 1),
                             height=portal_height, width=1)
-        area2.create_sprite(Portal,
+        p2 = area2.create_sprite(Portal,
                             topleft=(portal_top - area2.top, 0),
                             to=area1,
                             offset=(0, -1),
                             height=portal_height, width=1)
+
+        area1.neighbors.add(area2)
+        area2.neighbors.add(area1)
+        return p1, p2
