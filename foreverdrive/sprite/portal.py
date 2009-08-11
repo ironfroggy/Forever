@@ -1,4 +1,6 @@
+from foreverdrive.errors import PlacementError
 from foreverdrive.sprite import Sprite, PerimeterSensoringMixin
+
 
 class Portal(Sprite, PerimeterSensoringMixin):
 
@@ -43,6 +45,25 @@ class Portal(Sprite, PerimeterSensoringMixin):
             self.to.add(sprite)
             sprite.boundtop = sprite.boundrect.top + down
             sprite.rect.left = sprite.boundrect.left + right
+
+    @classmethod
+    def connect(cls, area1, area2):
+        """Determine the orientation of two areas and make
+        a pair of portals between them.
+
+        Refuses if the areas are not touching.
+        """
+
+        if area1.top + area1.height == area2.top:
+            cls._connect_vertical(area1, area2)
+        elif area1.top == area2.top + area2.height:
+            cls._connect_vertical(area2, area1)
+        elif area1.left + area1.width == area2.left:
+            cls._connect_horizontal(area1, area2)
+        elif area1.left == area2.left + area2.width:
+            cls._connect_horizontal(area2, area1)
+        else:
+            raise PlacementError("Could not find touching sides to create portal on.")
 
     @classmethod
     def _connect_vertical(cls, area1, area2):

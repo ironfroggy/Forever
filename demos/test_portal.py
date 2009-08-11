@@ -8,12 +8,12 @@ class PortalTest(ScrollingMode):
 
     def __init__(self, *args, **kwargs):
         super(PortalTest, self).__init__(*args, **kwargs)
-        area = self.area = BoundArea("default_tile.png",
+        main_area = self.area = BoundArea("default_tile.png",
                               size=(5, 5),
                               topleft=(150, 150),
                               mode=self)
-        self.groups.append(self.area)
-        self.areas.append(area)
+        self.groups.append(main_area)
+        self.areas.append(main_area)
 
         #  0123456789.123456
         #2-   ----
@@ -47,7 +47,7 @@ class PortalTest(ScrollingMode):
         self.areas.append(area)
         self.groups.append(area)
 
-        Portal._connect_vertical(self.areas[0], area)
+        Portal.connect(self.areas[0], area)
 
         # Area left
         area = BoundArea("default_tile.png",
@@ -57,7 +57,7 @@ class PortalTest(ScrollingMode):
         self.areas.append(area)
         self.groups.append(area)
 
-        Portal._connect_horizontal(self.areas[0], area)
+        Portal.connect(self.areas[0], area)
 
         # Area below
         area = BoundArea("default_tile.png",
@@ -67,7 +67,7 @@ class PortalTest(ScrollingMode):
         self.areas.append(area)
         self.groups.append(area)
 
-        Portal._connect_vertical(self.areas[0], area)
+        Portal.connect(self.areas[0], area)
 
         # Area right
         area = BoundArea("default_tile.png",
@@ -77,7 +77,7 @@ class PortalTest(ScrollingMode):
         self.areas.append(area)
         self.groups.append(area)
 
-        Portal._connect_horizontal(self.areas[0], area)
+        Portal.connect(self.areas[0], area)
 
     def first_entering(self):
         self.new = False
