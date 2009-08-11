@@ -28,6 +28,7 @@ class Portal(Sprite, PerimeterSensoringMixin):
         self.boundrect.left += self.area.left
 
     def on_overlap(self, leaving_area, sprite):
+        print sprite.name
         # The sprite has to be moving in the same
         # direction as the offset
         down, right = self.offset
