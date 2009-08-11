@@ -42,7 +42,7 @@ class PortalTest(ScrollingMode):
         area = BoundArea("default_tile.png",
                          size=(3, 10),
                          topleft=(0, 100),
-                         relative_to=area.bottom_left,
+                         relative_to=area, reltype="bottom_left",
                          mode=self)
         self.areas.append(area)
         self.groups.append(area)

@@ -15,6 +15,7 @@ class TileArea(object):
                  size,
                  topleft=(0, 0),
                  relative_to=None,
+                 reltype="top_left",
                  mode=None):
 
         self.mode = mode
@@ -28,8 +29,7 @@ class TileArea(object):
         self._top, self._left = topleft
         if relative_to is not None:
             try:
-                rel_top = relative_to.top
-                rel_left = relative_to.left
+                rel_top, rel_left = getattr(relative_to, reltype)
             except AttributeError:
                 rel_top, rel_left = relative_to
             self._top += rel_top
