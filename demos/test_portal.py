@@ -16,11 +16,11 @@ class PortalTest(ScrollingMode):
         self.areas.append(area)
 
         #  0123456789.123456
-        #2-    ----
-        #1-    |  |
-        #0     |  |
-        #1     |  |
-        #2     ----
+        #2-   ----
+        #1-   |  |
+        #0    |  |
+        #1    |  |
+        #2    ----
         #3 -------
         #4 --|   |----------
         #5   |   ||        |
@@ -42,7 +42,7 @@ class PortalTest(ScrollingMode):
         print "above"
         area = BoundArea("default_tile.png",
                          size=(4, 4),
-                         topleft=(-50, 250),
+                         topleft=(-50, 200),
                          mode=self)
         self.areas.append(area)
         self.groups.append(area)
