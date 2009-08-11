@@ -28,7 +28,11 @@ class Sprite(pygame.sprite.Sprite):
                  image_path="default_sprite",
                  area=None,
                  height=1,
-                 name=None):
+                 name=None,
+                 *args, **kwargs):
+
+        self.spriteset = kwargs.pop('spriteset', 'defaults')
+        self.slotgroup = kwargs.pop('slotgroup', None)
 
         # All sprite classes should extend pygame.sprite.Sprite. This
         # gives you several important internal methods that you probably
@@ -359,14 +363,14 @@ class CloudSprite(SolidSprite):
 class FacingSprite(Sprite):
 
     def __init__(self, *args, **kwargs):
-        imagename = kwargs.pop('imagename')
-        kwargs['image_path'] = imagename + '_down'
+        kwargs.setdefault('slotgroup', 'body')
         super(FacingSprite, self).__init__(*args, **kwargs)
 
-        self.image_down = self.image
-        self.image_up = pygame.image.load(media_manager.open('sprite', 'defaults', imagename, "up")).convert_alpha()
-        self.image_right = pygame.image.load(media_manager.open('sprite', 'defaults', imagename, "right")).convert_alpha()
-        self.image_left = pygame.image.load(media_manager.open('sprite', 'defaults', imagename, "left")).convert_alpha()
+        slotgroup = self.slotgroup
+        self.image_down = self.spriteset.load(slotgroup, 'down')
+        self.image_up = self.spriteset.load(slotgroup, 'up')
+        self.image_left = self.spriteset.load(slotgroup, 'left')
+        self.image_right = self.spriteset.load(slotgroup, 'right')
 
     def update(self, current_time):
         speed = self.speed
@@ -391,7 +395,7 @@ class FacingSprite(Sprite):
             self.image = self.image_up
 
     def grow_part(self, (top, left), partname):
-        part_sprite = FacingSprite(imagename=partname)
+        part_sprite = FacingSprite(spriteset=self.spriteset, slotgroup=partname)
 
         part_sprite.rect = part_sprite.image.get_rect()
         self.children.add(part_sprite)
