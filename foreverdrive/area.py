@@ -14,8 +14,6 @@ class TileArea(object):
                  image_path,
                  size,
                  topleft=(0, 0),
-                 relative_to=None,
-                 reltype="top_left",
                  mode=None):
 
         self.mode = mode
@@ -27,13 +25,6 @@ class TileArea(object):
         self.screen = pygame.display.get_surface()
 
         self._top, self._left = topleft
-        if relative_to is not None:
-            try:
-                rel_top, rel_left = getattr(relative_to, reltype)
-            except AttributeError:
-                rel_top, rel_left = relative_to
-            self._top += rel_top
-            self._left += rel_left
         self.width = self.image.get_width() * size[0]
         self.height = self.image.get_height() * size[1]
 
@@ -247,21 +238,17 @@ class AreaManager(object):
     def new_area(self,
                  (top, left),
                  (tiles_wide, tiles_tall),
-                 relative_to=None,
                  ):
         area = BoundArea("default_tile.png",
                          size=(tiles_wide, tiles_tall),
                          topleft=(top, left),
-                         relative_to=relative_to,
                          mode=self.mode)
         self.add(area)
         return area
 
-    def new_areas(self, dimensions, relative_to=None):
+    def new_areas(self, dimensions):
         areas = []
-        for (topleft, size, reltype, children) in dimensions:
-            area = self.new_area(topleft, size, relative_to=getattr(relative_to, reltype or "top_left", None))
+        for (topleft, size) in dimensions:
+            area = self.new_area(topleft, size)
             areas.append(area)
-            if children is not None:
-                areas.extend(self.new_areas(children, relative_to=area))
         return areas
