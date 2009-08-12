@@ -37,6 +37,7 @@ class SpriteSet(object):
 
     def __init__(self, name):
         self.name = name
+        self.cache = {}
 
     def getGraphicForSlot(self, slotgroup, slotname):
         return self.path_pattern % {'spriteset':self.name, 'slotname': slotname}
@@ -55,6 +56,8 @@ class SpriteSet(object):
 
     def _load(self, setname, slotname):
         f = media_manager.open('sprite', setname, slotname)
-        return pygame.image.load(f).convert_alpha()
+        if not f in self.cache:
+            self.cache[f] = pygame.image.load(f).convert_alpha()
+        return self.cache[f]
 
 default_spriteset = SpriteSet("defaults")
