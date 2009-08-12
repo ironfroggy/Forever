@@ -271,3 +271,17 @@ class AreaManager(object):
                     Portal.connect(area1, area2)
                 except PlacementError:
                     continue
+
+    def decorate_all(self):
+        """Calls the 'decorate' method of each area with
+        it, which does things like add walls.
+        """
+
+        for area in self.areas:
+            try:
+                decorate = area.decorate
+            except AttributeError:
+                continue
+            else:
+                decorate()
+                
