@@ -1,5 +1,8 @@
 import pygame
+
+from random import choice
 from os.path import join as pathjoin
+from glob import glob
 
 extension = {
     'sprite': 'png',
@@ -19,8 +22,12 @@ class Media(object):
         path = pathjoin(self.basedir, theme, palette)
         if state:
             path = '_'.join((path, state))
-        print "Loading...", '.'.join((path, extension[media_type]))
-        return '.'.join((path, extension[media_type]))
+
+        choices = glob('.'.join((path, '*', extension[media_type])))
+        if choices:
+            return choice(choices)
+        else:
+            return '.'.join((path, extension[media_type]))
 
 media_manager = Media()
 

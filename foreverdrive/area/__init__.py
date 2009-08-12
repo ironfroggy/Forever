@@ -37,8 +37,8 @@ class TileArea(object):
         for x in xrange(size[0]):
             for y in xrange(size[1]):
                 sprite = pygame.sprite.Sprite()
-                sprite.image = self.image
-                sprite.rect = self.image.get_rect()
+                sprite.image = spriteset.load("default", "tile")
+                sprite.rect = sprite.image.get_rect()
                 sprite.rect.top = self._top + self.image.get_height() * y
                 sprite.rect.left = self._left + self.image.get_width() * x
                 tg.add(sprite)
