@@ -45,44 +45,12 @@ class Room(BoundArea):
         top = self.height - upleft.get_height()
         self.create_sprite(ImmovableSprite, (top, left), slotgroup="roomwall", slotname="concave_upleft")
 
-        self._decorate_wall('up', upright.get_width(), left)
-        self._decorate_wall('down', upright.get_width(), left)
-        self._decorate_wall('left', upleft.get_height(), top)
-        self._decorate_wall('right', upleft.get_height(), top)
-
-    def _decorate_bottom_wall(self, lower, upper):
-        flat_up = self.spriteset.load("roomwall", "flat_up")
-        flat_up_width = flat_up.get_width()
-        top = self.height - flat_up.get_height()
-        distance = upper - lower
-        left = lower
-        while left + flat_up_width <= upper:
-            self.create_sprite(ImmovableSprite, (top, left), slotgroup="roomwall", slotname="flat_up")
-            left += flat_up_width
-        remaining = upper - left
-        if remaining:
-            last = self.create_sprite(ImmovableSprite, (top, left), slotgroup="roomwall", slotname="flat_up")
-            image = Surface((remaining, last.image.get_height()), 0).convert_alpha()
-            image.blit(last.image, image.get_clip())
-            last.image = image
-            
-    def _decorate_right_wall(self, lower, upper):
-        """The RIGHT wall faces LEFT."""
-
-        flat_left = self.spriteset.load("roomwall", "flat_left")
-        flat_left_height = flat_left.get_height()
-        left = self.width - flat_left.get_width()
-        distance = upper - lower
-        top = lower
-        while top + flat_left_height <= upper:
-            print self.create_sprite(ImmovableSprite, (top, left), slotgroup="roomwall", slotname="flat_left").boundrect
-            top += flat_left_height
-        remaining = abs(upper - top)
-        if remaining:
-            last = self.create_sprite(ImmovableSprite, (top, left), slotgroup="roomwall", slotname="flat_left")
-            image = Surface((last.image.get_width(), remaining), 0).convert_alpha()
-            image.blit(last.image, image.get_clip())
-            last.image = image
+        lower = upright.get_width()
+        self._decorate_wall('up', lower, left)
+        self._decorate_wall('down', lower, left)
+        lower = upleft.get_height()
+        self._decorate_wall('left', lower, top)
+        self._decorate_wall('right', lower, top)
 
     def _get_length_by_facing(self, tile, facing):
         if facing in ('up', 'down'):
