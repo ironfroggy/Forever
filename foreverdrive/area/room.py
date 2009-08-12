@@ -1,3 +1,5 @@
+from pygame import Surface
+
 from foreverdrive.sprite import ImmovableSprite
 from foreverdrive.area import BoundArea
 
@@ -55,7 +57,7 @@ class Room(BoundArea):
         remaining = upper - left
         if remaining:
             last = self.create_sprite(ImmovableSprite, (top, left), slotgroup="roomwall", slotname="flat_up")
-            clip = last.image.get_clip()
-            clip.width = remaining
-            last.image.set_clip(clip)
-        
+            image = Surface((remaining, last.image.get_height()), 0).convert_alpha()
+            image.blit(last.image, image.get_clip())
+            last.image = image
+            
