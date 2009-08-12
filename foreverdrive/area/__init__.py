@@ -19,6 +19,7 @@ class TileArea(object):
                  topleft=(0, 0),
                  mode=None):
 
+        self.spriteset = spriteset
         self.mode = mode
         self.neighbors = set()
 
@@ -119,6 +120,7 @@ class TileArea(object):
 
     def create_sprite(self, cls, *args, **kwargs):
         kwargs['area'] = self
+        kwargs.setdefault('spriteset', self.spriteset)
         sprite = cls(*args, **kwargs)
         self.add(sprite)
         sprite.mode = self.mode
@@ -229,11 +231,12 @@ class BoundArea(TileArea):
 class AreaManager(object):
     """Manages multiple areas and portals between them."""
 
-    def __init__(self, mode, spriteset=None):
+    def __init__(self, mode, spriteset=None, default_area_class=BoundArea):
         self.spriteset = spriteset
         self.mode = mode
         self.areas = []
         self.namedareas = {}
+        self.default_area_class = default_area_class
 
     def __iter__(self):
         return iter(self.areas)
@@ -248,10 +251,11 @@ class AreaManager(object):
                  (top, left),
                  (tiles_wide, tiles_tall),
                  ):
-        area = BoundArea(self.spriteset,
-                         size=(tiles_wide, tiles_tall),
-                         topleft=(top, left),
-                         mode=self.mode)
+        area = self.default_area_class(
+            self.spriteset,
+            size=(tiles_wide, tiles_tall),
+            topleft=(top, left),
+            mode=self.mode)
         self.add(area)
         return area
 

@@ -27,7 +27,7 @@ class Sprite(pygame.sprite.Sprite):
                  topleft=(100, 100),
                  image_path="default_sprite",
                  area=None,
-                 height=1,
+                 height=None,
                  name=None,
                  *args, **kwargs):
 
@@ -43,12 +43,13 @@ class Sprite(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.area = area
         self.name = name
-        self.height = height
         self.children = set()
       
         # Create the image that will be displayed and fill it with the
         # right color.
         self.image = self.spriteset.load(self.slotgroup, self.slotname)
+
+        self.height = height or self.image.get_height()
 
         # Make our top-left corner the passed-in location.
         self.rect = self.image.get_rect()
@@ -58,9 +59,9 @@ class Sprite(pygame.sprite.Sprite):
             0,
             0,
             self.rect.width,
-            height)
+            self.height)
 
-        self.rect.top -= self.rect.height - height
+        self.rect.top -= self.rect.height - self.height
         self.boundtop = top
         self.boundleft = left
 
