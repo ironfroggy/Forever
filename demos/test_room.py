@@ -1,6 +1,6 @@
 from foreverdrive.base import ForeverMain
 from foreverdrive.modes.scrolling import ScrollingMode
-from foreverdrive.area import AreaManager
+from foreverdrive.area.manager import AreaManager
 from foreverdrive.area.room import Room
 from foreverdrive.sprite import Sprite, SolidSprite, FacingSprite, CloudSprite, ImmovableSprite, Player
 from foreverdrive.events import Entering, CancelEvent
