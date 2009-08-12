@@ -281,7 +281,7 @@ class SolidSprite(PerimeterSensoringMixin, Sprite):
 
     def push_apart(self, sprite):
         if isinstance(sprite, ImmovableSprite):
-            P = 1.0
+            P = 3.0
         else:
             try:
                 P = min(sprite.pressure, self.pressure)
