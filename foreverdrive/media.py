@@ -37,3 +37,5 @@ class SpriteSet(object):
         if slotgroup is not None:
             slotname = '_'.join((slotgroup, slotname))
         return pygame.image.load(media_manager.open('sprite', self.name, slotname)).convert_alpha()
+
+default_spriteset = SpriteSet("defaults")

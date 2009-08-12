@@ -14,7 +14,7 @@ class TileArea(object):
     filters = []
 
     def __init__(self,
-                 image_path,
+                 spriteset,
                  size,
                  topleft=(0, 0),
                  mode=None):
@@ -22,7 +22,7 @@ class TileArea(object):
         self.mode = mode
         self.neighbors = set()
 
-        self.image = pygame.image.load(get_media_path(image_path)).convert()
+        self.image = spriteset.load("default", "tile")
         for filter in self.filters:
             filter(self.image)
 
@@ -229,7 +229,8 @@ class BoundArea(TileArea):
 class AreaManager(object):
     """Manages multiple areas and portals between them."""
 
-    def __init__(self, mode):
+    def __init__(self, mode, spriteset=None):
+        self.spriteset = spriteset
         self.mode = mode
         self.areas = []
         self.namedareas = {}
@@ -247,7 +248,7 @@ class AreaManager(object):
                  (top, left),
                  (tiles_wide, tiles_tall),
                  ):
-        area = BoundArea("default_tile.png",
+        area = BoundArea(self.spriteset,
                          size=(tiles_wide, tiles_tall),
                          topleft=(top, left),
                          mode=self.mode)
