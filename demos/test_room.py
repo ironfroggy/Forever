@@ -16,7 +16,7 @@ class RoomTestMode(ScrollingMode):
 
     def first_entering(self):
         area = self.areas.new_areas([
-            ((100, 100), (6, 6)),
+            ((60, 60), (15, 15)),
             ])[0]
         self.areas.connect_all()
         self.areas.decorate_all()
