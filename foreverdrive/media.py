@@ -42,7 +42,7 @@ class SpriteSet(object):
             try:
                 return self._load("defaults", slotname)
             except:
-                return self._load("defaults", "tile")
+                return self._load("defaults", "default_tile")
 
 
     def _load(self, setname, slotname):

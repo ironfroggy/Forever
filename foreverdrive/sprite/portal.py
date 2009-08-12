@@ -10,7 +10,8 @@ class Portal(Sprite, PerimeterSensoringMixin):
         height = kwargs.pop('height', 100)
         width = kwargs.pop('width', 1)
 
-        kwargs['image_path'] = "default_portal"
+        kwargs.setdefault('slotgroup', 'default')
+        kwargs['slotname'] = 'portal'
         super(Portal, self).__init__(*args, **kwargs)
 
         top, left = self.offset

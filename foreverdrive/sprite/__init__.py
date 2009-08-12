@@ -7,7 +7,7 @@ from pygame.locals import *
 from foreverdrive import get_media_path
 from foreverdrive.events import Pause, Movement, EventRouter, Entering
 from foreverdrive.sprite.util import Bound, RectHolder
-from foreverdrive.media import Media
+from foreverdrive.media import Media, default_spriteset
 
 media_manager = Media()
 
@@ -31,8 +31,9 @@ class Sprite(pygame.sprite.Sprite):
                  name=None,
                  *args, **kwargs):
 
-        self.spriteset = kwargs.pop('spriteset', 'defaults')
-        self.slotgroup = kwargs.pop('slotgroup', None)
+        self.spriteset = kwargs.pop('spriteset', default_spriteset)
+        self.slotgroup = kwargs.pop('slotgroup', "defaults")
+        self.slotname = kwargs.pop('slotname', "tile")
 
         # All sprite classes should extend pygame.sprite.Sprite. This
         # gives you several important internal methods that you probably
@@ -47,7 +48,7 @@ class Sprite(pygame.sprite.Sprite):
       
         # Create the image that will be displayed and fill it with the
         # right color.
-        self.image = pygame.image.load(media_manager.open('sprite', 'defaults', image_path)).convert_alpha()
+        self.image = self.spriteset.load(self.slotgroup, self.slotname)
 
         # Make our top-left corner the passed-in location.
         self.rect = self.image.get_rect()
