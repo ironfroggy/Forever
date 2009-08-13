@@ -1,6 +1,6 @@
 from foreverdrive.base import ForeverMain
 from foreverdrive.modes.scrolling import ScrollingMode
-from foreverdrive.area import AreaManager
+from foreverdrive.area.manager import AreaManager
 from foreverdrive.sprite import Sprite, SolidSprite, FacingSprite, CloudSprite, ImmovableSprite, Player
 from foreverdrive.events import Entering, CancelEvent
 from foreverdrive.media import SpriteSet, default_spriteset
@@ -13,8 +13,8 @@ class AreaManagingMode(ScrollingMode):
 
     def first_entering(self):
         area = self.areas.new_areas([
-            ((100, 100), (6, 6)),
-            ((400, 200), (3, 8)),
+            ((100, 100), (300, 300)),
+            ((400, 200), (150, 400)),
             ])[0]
         self.areas.connect_all()
         self.area = area

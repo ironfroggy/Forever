@@ -30,12 +30,11 @@ class TileArea(object):
         self.screen = pygame.display.get_surface()
 
         self._top, self._left = topleft
-        self.width = self.image.get_width() * size[0]
-        self.height = self.image.get_height() * size[1]
+        self.width, self.height = size
 
         tg = self.tile_group = pygame.sprite.OrderedUpdates()
-        for x in xrange(size[0]):
-            for y in xrange(size[1]):
+        for x in xrange(size[0]/self.image.get_width()):
+            for y in xrange(size[1]/self.image.get_height()):
                 sprite = pygame.sprite.Sprite()
                 sprite.image = spriteset.load("default", "tile")
                 sprite.rect = sprite.image.get_rect()
@@ -125,6 +124,22 @@ class TileArea(object):
         self.add(sprite)
         sprite.mode = self.mode
         return sprite
+
+    def get_neighbors_at_side(self, side):
+        """Where side is up, down, left, or right"""
+
+        checker = getattr(self, '_is_on_side_' + side)
+        return [N for N in self.neighbors if checker(N)]
+
+    def _is_on_side_up(self, other_area):
+        return other_area.top + other_area.height == self.top
+    def _is_on_side_down(self, other_area):
+        return other_area._is_on_side_up(self)
+    def _is_on_side_left(self, other_area):
+        return other_area.left + other_area.width == self.left
+    def _is_on_side_right(self, other_area):
+        return other_area._is_on_side_left(self)
+            
 
 class BlurredBackground(TileArea):
     filters = [blur, blur, blur, blur]

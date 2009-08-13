@@ -45,12 +45,52 @@ class Room(BoundArea):
         top = self.height - upleft.get_height()
         self.create_sprite(ImmovableSprite, (top, left), slotgroup="roomwall", slotname="concave_upleft")
 
-        lower = upright.get_width()
+        lower = upright.get_width()        
         self._decorate_wall('up', lower, left)
         self._decorate_wall('down', lower, left)
         lower = upleft.get_height()
-        self._decorate_wall('left', lower, top)
+
+        right_lower = lower
+        for (wall_length, portal_length) in self._get_portals_at_side('right'):
+            self._decorate_wall('left', right_lower, wall_length)
+            right_lower += wall_length + portal_length
+
         self._decorate_wall('right', lower, top)
+
+    def _get_portals_at_side(self, side):
+        """Returns a list of 2-tuples of int pairs, which denote
+        length of wall and length of portal.
+        """
+
+        side_to_pos = {
+            'up': 'left', 'left': 'top', 'right': 'top', 'down': 'left'
+            }
+        side_to_length = {
+            'up': 'width', 'left': 'height', 'right': 'height', 'down': 'width'
+            }
+
+        results = []
+
+        # Get the neighbors on this side and sort them in the order on the map
+        neighbors = self.get_neighbors_at_side(side)
+        neighbors.sort(key=lambda N: getattr(N, side_to_attr[side]))
+
+        w_pos = getattr(self, side_to_pos[side])
+        for neighbor in neighbors:
+            # Where and how large is the neighbor?
+            n_pos = getattr(neighbor, side_to_pos[side])
+            n_length = getattr(neighbor, side_to_length[side])
+
+            if n_pos <= w_pos:
+                w_length = 0
+            else:
+                w_length = n_pos - w_pos
+
+            results.append((w_length, n_length))
+
+            w_pos = n_pos + n_length
+
+        return results
 
     def _get_length_by_facing(self, tile, facing):
         if facing in ('up', 'down'):
