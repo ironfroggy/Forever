@@ -337,8 +337,19 @@ class SolidSprite(PerimeterSensoringMixin, Sprite):
 
 
 class ImmovableSprite(SolidSprite):
-    def push_apart(self, sprite):
-        return
+    def _push_apart_xy(self, sprite, dx, dy):
+        lx, ly = sprite.last_hv
+        cx, cy = sprite.hmove, sprite.vmove
+
+        mx = dx
+        my = dy
+
+        # Move on the shortest axis
+        # Which is also the direction the pusher is moving
+        if abs(dx) < abs(dy) and (lx or not ly or cx):
+            sprite.hmove = 0
+        elif abs(dx) > abs(dy) and (ly or not lx or cy):
+            sprite.vmove = 0
 
 
 class CloudSprite(SolidSprite):
