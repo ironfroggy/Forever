@@ -1,15 +1,15 @@
 from foreverdrive.base import ForeverMain
 from foreverdrive.modes.scrolling import ScrollingMode
 from foreverdrive.area import BoundArea
-from foreverdrive.sprite import Player, SolidSprite
+from foreverdrive.sprite import Player, SolidSprite, default_spriteset
 from foreverdrive.sprite.portal import Portal
 
 class PortalTest(ScrollingMode):
 
     def __init__(self, *args, **kwargs):
         super(PortalTest, self).__init__(*args, **kwargs)
-        main_area = self.area = BoundArea("default_tile.png",
-                              size=(5, 5),
+        main_area = self.area = BoundArea(default_spriteset,
+                              size=(250, 250),
                               topleft=(150, 150),
                               mode=self)
         self.groups.append(main_area)
@@ -40,8 +40,8 @@ class PortalTest(ScrollingMode):
 
         # Area above
         print "above"
-        area = BoundArea("default_tile.png",
-                         size=(4, 4),
+        area = BoundArea(default_spriteset,
+                         size=(200, 200),
                          topleft=(-50, 200),
                          mode=self)
         self.areas.append(area)
@@ -50,8 +50,8 @@ class PortalTest(ScrollingMode):
         Portal.connect(self.areas[0], area)
 
         # Area left
-        area = BoundArea("default_tile.png",
-                         size=(2, 2),
+        area = BoundArea(default_spriteset,
+                         size=(100, 100),
                          topleft=(150, 50),
                          mode=self)
         self.areas.append(area)
@@ -60,8 +60,8 @@ class PortalTest(ScrollingMode):
         Portal.connect(self.areas[0], area)
 
         # Area below
-        area = BoundArea("default_tile.png",
-                         size=(3, 10),
+        area = BoundArea(default_spriteset,
+                         size=(150, 500),
                          topleft=(400, 150),
                          mode=self)
         self.areas.append(area)
@@ -70,8 +70,8 @@ class PortalTest(ScrollingMode):
         Portal.connect(self.areas[0], area)
 
         # Area right
-        area = BoundArea("default_tile.png",
-                         size=(10, 3),
+        area = BoundArea(default_spriteset,
+                         size=(500, 150),
                          topleft=(200, 400),
                          mode=self)
         self.areas.append(area)
