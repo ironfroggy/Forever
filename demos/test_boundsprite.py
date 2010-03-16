@@ -5,12 +5,12 @@ from pygame.sprite import Sprite
 
 from foreverdrive.base import ForeverMain
 from foreverdrive.area import TileArea
-from foreverdrive.sprite.bound import BoundSprite
+from foreverdrive.sprite.bound import BoundSprite, BoundGroup
 
 def main():
     game = ForeverMain()
 
-    group = pygame.sprite.RenderUpdates()
+    group = BoundGroup()
     background = BoundSprite()
     background.image = Surface((500, 500))
     group.add(background)

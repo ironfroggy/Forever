@@ -4,7 +4,7 @@ the facilities to do that. This includes collision detection and
 correction, applying force, and constraints.
 """
 
-from pygame.sprite import Sprite
+from pygame.sprite import Sprite, RenderUpdates
 from pygame import Rect
 from pygame.locals import *
 
@@ -112,7 +112,7 @@ class BoundSprite(Sprite):
             self.rect
             self._rect.move_ip(right*m*10, down*m*10)
 
-        self._rect.clamp(self.groups[0].rect)
+        self._rect.clamp_ip(self.groups()[0].rect)
 
     def register_listeners(self, router):
         router.listen_arrows(self.handle_event)
@@ -134,7 +134,7 @@ class BoundSprite(Sprite):
             elif event.key == K_RIGHT:
                 self.keypressing_right = pressing
 
-class BoundGroup(pygame.sprite.RenderUpdates):
+class BoundGroup(RenderUpdates):
 
     def __init__(self, *args, **kwargs):
         super(BoundGroup, self).__init__(*args, **kwargs)
