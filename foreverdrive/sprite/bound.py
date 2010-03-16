@@ -6,6 +6,7 @@ correction, applying force, and constraints.
 
 from pygame.sprite import Sprite
 from pygame import Rect
+from pygame.locals import *
 
 class Bound(object):
     """A Bound object interacts with others with simulated physics.
@@ -39,19 +40,30 @@ class Bound(object):
         self.rect.left += self.veloc_x / 1000.0
 
 
+class Force(object):
+
+    def __iter__(self):
+        return iter((self.x, self.y))
+
+    x = 0
+    y = 0
+
+
 class BoundSprite(Sprite):
     """A bound sprite is in one group, a BoundGroup, which defines its
     boundries. The BoundSprite can move, but cannot go past the boundries
     or overlap other BoundSprite in the group.
     """
 
-    slowdown = 1.0
+    slowdown = 0.25
+    speed = 2
 
     def __init__(self, *args, **kwargs):
         super(BoundSprite, self).__init__(*args, **kwargs)
 
         self.velocity = (0.0, 0.0)
-        self.forces = []
+        self.controlled_force = Force()
+        self.forces = [self.controlled_force]
 
     @property
     def rect(self):
@@ -74,6 +86,11 @@ class BoundSprite(Sprite):
     def update(self, ticks):
         m = ticks / 1000.0
 
+        s = self.speed
+        self.controlled_force.x = (s if self.keypressing_right else 0) + (-s if self.keypressing_left else 0)
+        self.controlled_force.y = (s if self.keypressing_down else 0) + (-s if self.keypressing_up else 0)
+
+        right, down = self.velocity
         if self.forces:
             right_forces, down_forces = zip(*self.forces)
             right_force_avg = sum(right_forces) / len(right_forces)
@@ -81,10 +98,10 @@ class BoundSprite(Sprite):
 
             try:
                 self.velocity = (right + (right_force_avg/m), down + (down_force_avg/m))
+                right, down = self.velocity
             except ZeroDivisionError:
                 pass
 
-        right, down = self.velocity
         slowdown = self.slowdown
         self.velocity = (right - right * (m / slowdown), down - down * (m / slowdown))
 
@@ -95,3 +112,22 @@ class BoundSprite(Sprite):
             self.rect
             self._rect.move_ip(right*m*10, down*m*10)
 
+    def register_listeners(self, router):
+        router.listen_arrows(self.handle_event)
+
+    keypressing_up = False
+    keypressing_down = False
+    keypressing_left = False
+    keypressing_right = False
+    def handle_event(self, event):
+        
+        if event.type in (KEYDOWN, KEYUP):
+            pressing = event.type == KEYDOWN
+            if event.key == K_DOWN:
+                self.keypressing_down = pressing
+            elif event.key == K_UP:
+                self.keypressing_up = pressing
+            elif event.key == K_LEFT:
+                self.keypressing_left = pressing
+            elif event.key == K_RIGHT:
+                self.keypressing_right = pressing
