@@ -16,7 +16,7 @@ class ForeverMain(object):
     etc.
     """
 
-    delay = 0
+    delay = 50
 
     def __init__(self, initmode=None):
         if initmode is None:
@@ -78,13 +78,17 @@ class ForeverMain(object):
             rectlist.extend(background.update_and_draw(ticks))
             drawlist = []
             update = ticks - lastupdate > delay
+            ticks_passed = ticks - lastupdate
             if update:
                 lastupdate = ticks
-                mode.update(ticks)
+                mode.update(ticks_passed)
             for group in mode.groups:
                 if update:
-                    group.update(ticks)
-                drawlist.extend(group.get_groups())
+                    group.update(ticks_passed)
+                try:
+                    drawlist.extend(group.get_groups())
+                except AttributeError:
+                    drawlist.append((0, group))
             drawlist.sort()
             for (order, group) in drawlist:
                 rectlist.extend(group.draw(screen))

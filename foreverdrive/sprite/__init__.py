@@ -150,9 +150,9 @@ class Sprite(pygame.sprite.Sprite):
             self.boundtop += vmove
             self.boundleft += hmove
 
-            self.last_hv = (hmove, vmove)
-
-            self.area.mode.route(Movement(self, (hmove, vmove)))
+            if not self.area.keep_inside(self):
+                self.last_hv = (hmove, vmove)
+                self.area.mode.route(Movement(self, (hmove, vmove)))
 
     def register_listeners(self, router):
         router.listen_arrows(self.handle_event)
