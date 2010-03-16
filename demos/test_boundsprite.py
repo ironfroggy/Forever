@@ -15,7 +15,7 @@ def main():
     group.add(sprite)
     game.groups.append(group)
 
-    sprite.velocity = (200.0, 100.0)
+    sprite.register_listeners(game.current_mode)
 
     game.run()
 
