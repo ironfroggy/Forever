@@ -208,6 +208,7 @@ class BoundGroup(RenderUpdates):
                             vy = y
                         else:
                             pusher._rect.top -= y
+                            y *= -1
                         sd += csd
 
                     # pushing up
@@ -219,6 +220,7 @@ class BoundGroup(RenderUpdates):
                             vy = y
                         else:
                             pusher._rect.top -= y
+                            y *= -1
                         su += csu
                     
                     # pushing right
@@ -230,6 +232,7 @@ class BoundGroup(RenderUpdates):
                             vx = x
                         else:
                             pusher._rect.left -= x
+                            x *= -1
                         sr += csr
 
                     # pushing left
@@ -241,9 +244,11 @@ class BoundGroup(RenderUpdates):
                             vx = x
                         else:
                             pusher._rect.left -= x
+                            x *= -1
                         sl += csl
 
                     pushed.velocity = (cx + vx, cy + vy)
+                    pusher.velocity = (x, y)
 
                     pusher.stuck = su, sr, sd, sl
                     pushed.stuck = csu, csr, csd, csl
