@@ -214,7 +214,7 @@ class BoundGroup(RenderUpdates):
                             csu = 0
                             vy = y
                         else:
-                            pusher._rect.top -= y
+                            pusher._rect.top -= y/2
                             y *= B
                         sd += csd
 
@@ -226,7 +226,7 @@ class BoundGroup(RenderUpdates):
                             csd = 0
                             vy = y
                         else:
-                            pusher._rect.top -= y
+                            pusher._rect.top -= y/2
                             y *= B
                         su += csu
                     
@@ -238,7 +238,7 @@ class BoundGroup(RenderUpdates):
                             csl = 0
                             vx = x
                         else:
-                            pusher._rect.left -= x
+                            pusher._rect.left -= x/2
                             x *= B
                         sr += csr
 
@@ -250,7 +250,7 @@ class BoundGroup(RenderUpdates):
                             csr = 0
                             vx = x
                         else:
-                            pusher._rect.left -= x
+                            pusher._rect.left -= x/2
                             x *= B
                         sl += csl
 
