@@ -53,7 +53,7 @@ class ForeverMain(object):
         pygame.init()
         screen = self.screen
         quit = False
-        lastupdate = 0
+        lastupdate = pygame.time.get_ticks()
         delay = self.delay
         while not quit:
             self.tick(lastupdate)

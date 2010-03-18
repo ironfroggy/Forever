@@ -34,7 +34,7 @@ def main():
             box.velocity = v
         return box
 
-    print "box1", id(make_box((200, 200, 50, 50), v=(0, -150)))
+    print "box1", id(make_box((200, 200, 50, 50), v=(0, 1000)))
     print "box2", id(make_box((300, 250, 50, 50), color=Color(200, 50, 200)))
 
     print "wall", id(make_box((0, 400, 500, 20), cls=WallSprite, color=Color(100, 100, 100)))
