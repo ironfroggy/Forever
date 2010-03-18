@@ -127,23 +127,15 @@ class BoundSprite(Sprite):
         if down > 0:
             if sd:
                 down = 0
-            else:
-                su = 0
         elif down < 0:
             if su:
                 down = 0
-            else:
-                sd = 0
         if right > 0:
             if sr:
                 right = 0
-            else:
-                sl = 0
         elif right < 0:
             if sl:
                 right = 0
-            else:
-                sr = 0
         self._rect.move_ip(right*m*10, down*m*10)
 
         # Now that we've moved, check nearby to see if we're unblocked
