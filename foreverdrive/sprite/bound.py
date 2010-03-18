@@ -228,50 +228,41 @@ class BoundGroup(RenderUpdates):
                     if y > 0:
                         if not csd:
                             pushed._rect.top += y
-                            csu = 0
                             vy = y
                         else:
                             pusher._rect.top -= y/2
                             y *= B
-                        sd += csd
 
                     # pushing up
                     elif y < 0:
                         if not csu:
                             pushed._rect.top += y
-                            csd = 0
                             vy = y
                         else:
                             pusher._rect.top -= y/2
                             y *= B
-                        su += csu
                     
                     # pushing right
                     if x > 0:
                         if not csr:
                             pushed._rect.left += x
-                            csl = 0
                             vx = x
                         else:
                             pusher._rect.left -= x/2
                             x *= B
-                        sr += csr
 
                     # pushing left
                     elif x < 0:
                         if not csl:
                             pushed._rect.left += x
-                            csr = 0
                             vx = x
                         else:
                             pusher._rect.left -= x/2
                             x *= B
-                        sl += csl
 
                     # Pushed object is moved, but did it move inside something else?
                     # If so, retroactively make this a pushback.
                     if self.sprite_colliding(pushed):
-                        csu, csr, csd, csl = self._stuck_for_direction((csu, csr, csd, csl), (x, y)) 
                         pushed._rect = original_rect
                         pushed.velocity = ((cx + vx)/4, (cy + vy)/4)
                         pusher._rect.top -= y
@@ -280,8 +271,6 @@ class BoundGroup(RenderUpdates):
                         pushed.velocity = (cx + vx, cy + vy)
                         pusher.velocity = (x, y)
 
-                    pusher.stuck = su, sr, sd, sl
-                    pushed.stuck = csu, csr, csd, csl
 
     def _stuck_for_direction(self, stuck_now, velocity):
         su, sr, sd, sl = stuck_now
