@@ -37,9 +37,10 @@ def main():
             box.velocity = v
         return box
 
-    for x in (200, 250):
-        for y in (200, 250):
-            box = make_box((x, y, 50, 50))
+    for x in xrange(4):
+        for y in xrange(4):
+            if x + y < 4:
+                box = make_box((200 + x*50, 200 + y*50, 50, 50))
 #    print "box2", id(make_box((300, 250, 50, 50), color=Color(200, 50, 200)))
 
     make_box((0, 0, 500, 20), cls=WallSprite, color=Color(100, 100, 100))

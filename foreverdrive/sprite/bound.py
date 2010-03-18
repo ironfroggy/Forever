@@ -275,6 +275,7 @@ class BoundGroup(RenderUpdates):
                     # Pushed object is moved, but did it move inside something else?
                     # If so, retroactively make this a pushback.
                     if self._retro_undo(pushed):
+                        csu, csr, csd, csl = self._stuck_for_direction((csu, csr, csd, csl), (x, y)) 
                         pushed._rect = original_rect
                         pushed.velocity = ((cx + vx)/4, (cy + vy)/4)
                         pusher._rect.top -= y
@@ -285,6 +286,21 @@ class BoundGroup(RenderUpdates):
 
                     pusher.stuck = su, sr, sd, sl
                     pushed.stuck = csu, csr, csd, csl
+
+    def _stuck_for_direction(self, stuck_now, velocity):
+        su, sr, sd, sl = stuck_now
+        x, y = velocity
+
+        if y < 0:
+            su += 1
+        elif y > 0:
+            sd += 1
+        if x > 0:
+            sl += 1
+        elif x < 0:
+            sr += 1
+
+        return su, sr, sd, sl
 
     def _retro_undo(self, pushed):
         for sprite in pygame.sprite.spritecollide(pushed, self, False):
