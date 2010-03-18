@@ -132,7 +132,7 @@ class BoundSprite(Sprite):
     keypressing_left = False
     keypressing_right = False
     def handle_event(self, event):
-        
+
         if event.type in (KEYDOWN, KEYUP):
             pressing = event.type == KEYDOWN
             if event.key == K_DOWN:
@@ -159,6 +159,11 @@ class BoundGroup(RenderUpdates):
     def __init__(self, *args, **kwargs):
         super(BoundGroup, self).__init__(*args, **kwargs)
         self.rect = Rect((0, 0, 5000, 5000))
+
+    def sprites(self):
+        sprite_list = super(BoundGroup, self).sprites()
+        sprite_list.sort(key=lambda s: s is not self.background)
+        return sprite_list
 
     def update(self, ticks):
         super(BoundGroup, self).update(ticks)

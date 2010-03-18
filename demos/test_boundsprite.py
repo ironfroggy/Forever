@@ -16,11 +16,14 @@ def main():
     group.add(background)
     group.background = background
 
-    player = BoundSprite()
-    player.image = Surface((50, 50))
-    player.image.fill(Color(200, 50, 50))
-    player.register_listeners(game.mode)
-    group.add(player)
+    def player():
+        player = BoundSprite()
+        player.image = Surface((25, 25))
+        player.image.fill(Color(200, 50, 50))
+        player.register_listeners(game.mode)
+        player.rect
+        player._rect.move_ip(300, 300)
+        group.add(player)
 
     def make_box((x, y, w, h), cls=BoundSprite, color=Color(50, 200, 200), v=None):
         box = cls()
@@ -34,10 +37,16 @@ def main():
             box.velocity = v
         return box
 
-    print "box1", id(make_box((200, 200, 50, 50), v=(0, 1000)))
-    print "box2", id(make_box((300, 250, 50, 50), color=Color(200, 50, 200)))
+    for x in (200, 250, 300):
+        for y in (200, 250, 300):
+            box = make_box((x, y, 50, 50))
+#    print "box2", id(make_box((300, 250, 50, 50), color=Color(200, 50, 200)))
 
-    print "wall", id(make_box((0, 400, 500, 20), cls=WallSprite, color=Color(100, 100, 100)))
+    make_box((0, 0, 500, 20), cls=WallSprite, color=Color(100, 100, 100))
+    make_box((0, 480, 500, 20), cls=WallSprite, color=Color(100, 100, 100))
+    make_box((0, 20, 20, 460), cls=WallSprite, color=Color(100, 100, 100))
+    make_box((480, 20, 20, 460), cls=WallSprite, color=Color(100, 100, 100))
+    player()
 
     game.groups.append(group)
 
