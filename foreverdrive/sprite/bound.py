@@ -71,6 +71,10 @@ class BoundSprite(Sprite):
         self.forces = [self.controlled_force]
 
     @property
+    def group(self):
+        return self.groups()[0]
+
+    @property
     def rect(self):
         try:
             rect = Rect(self._rect)
@@ -140,9 +144,11 @@ class BoundSprite(Sprite):
                 right = 0
             else:
                 sr = 0
-        self.stuck = sr, sr, sd, sl
         self._rect.move_ip(right*m*10, down*m*10)
 
+        # Now that we've moved, check nearby to see if we're unblocked
+        bu, br, bd, bl = self.group.blocked_sides(self)
+        self.stuck = bu and su, br and sr, bd and sd, bl and sl
 
     def register_listeners(self, router):
         router.listen_arrows(self.handle_event)
@@ -272,7 +278,7 @@ class BoundGroup(RenderUpdates):
 
                     # Pushed object is moved, but did it move inside something else?
                     # If so, retroactively make this a pushback.
-                    if self._retro_undo(pushed):
+                    if self.sprite_colliding(pushed):
                         csu, csr, csd, csl = self._stuck_for_direction((csu, csr, csd, csl), (x, y)) 
                         pushed._rect = original_rect
                         pushed.velocity = ((cx + vx)/4, (cy + vy)/4)
@@ -300,10 +306,37 @@ class BoundGroup(RenderUpdates):
 
         return su, sr, sd, sl
 
-    def _retro_undo(self, pushed):
+    def sprite_colliding(self, pushed):
         for sprite in pygame.sprite.spritecollide(pushed, self, False):
             if sprite is self.background or sprite is pushed:
                 continue
             else:
                 return True
         return False
+
+    def blocked_sides(self, sprite):
+        r = sprite._rect
+
+        top = pygame.sprite.Sprite()
+        top.rect = Rect(r.left, r.top - 1, r.width, 1)
+
+        right = pygame.sprite.Sprite()
+        right.rect = Rect(r.left + r.width + 1, r.top, 1, r.height)
+
+        bottom = pygame.sprite.Sprite()
+        bottom.rect = Rect(r.left, r.top + r.height + 1, r.width, 1)
+
+        left = pygame.sprite.Sprite()
+        left.rect = Rect(r.left - 1, r.top, 1, r.height)
+
+        su, sr, sd, sl = 0, 0, 0, 0 
+        if self.sprite_colliding(top):
+            su = 1
+        if self.sprite_colliding(right):
+            sr = 1
+        if self.sprite_colliding(bottom):
+            sd = 1
+        if self.sprite_colliding(left):
+            sl = 1
+
+        return su, sr, sd, sl
