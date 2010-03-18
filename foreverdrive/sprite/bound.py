@@ -119,6 +119,28 @@ class BoundSprite(Sprite):
             right, down = v
 
         self.rect
+        su, sr, sd, sl = self.stuck
+        if down > 0:
+            if sd:
+                down = 0
+            else:
+                su = 0
+        elif down < 0:
+            if su:
+                down = 0
+            else:
+                sd = 0
+        if right > 0:
+            if sr:
+                right = 0
+            else:
+                sl = 0
+        elif right < 0:
+            if sl:
+                right = 0
+            else:
+                sr = 0
+        self.stuck = sr, sr, sd, sl
         try:
             self._rect.move_ip(right*m*10, down*m*10)
         except AttributeError:
@@ -208,7 +230,6 @@ class BoundGroup(RenderUpdates):
 
                     # pushing down
                     if y > 0:
-                        sy = 0 if su or sd else 1
                         if not csd:
                             pushed._rect.top += y
                             csu = 0
@@ -220,7 +241,6 @@ class BoundGroup(RenderUpdates):
 
                     # pushing up
                     elif y < 0:
-                        sy = 0 if su or sd else 1
                         if not csu:
                             pushed._rect.top += y
                             csd = 0
@@ -232,7 +252,6 @@ class BoundGroup(RenderUpdates):
                     
                     # pushing right
                     if x > 0:
-                        sx = 0 if sr or sl else 1
                         if not csr:
                             pushed._rect.left += x
                             csl = 0
@@ -244,7 +263,6 @@ class BoundGroup(RenderUpdates):
 
                     # pushing left
                     elif x < 0:
-                        sx = 0 if sr or sl else 1
                         if not csl:
                             pushed._rect.left += x
                             csr = 0
@@ -265,7 +283,7 @@ class BoundGroup(RenderUpdates):
                         pushed.velocity = (cx + vx, cy + vy)
                         pusher.velocity = (x, y)
 
-                    #pusher.stuck = su, sr, sd, sl
+                    pusher.stuck = su, sr, sd, sl
                     pushed.stuck = csu, csr, csd, csl
 
     def _retro_undo(self, pushed):

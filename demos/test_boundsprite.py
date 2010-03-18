@@ -37,8 +37,8 @@ def main():
             box.velocity = v
         return box
 
-    for x in (200, 250, 300):
-        for y in (200, 250, 300):
+    for x in (200, 250):
+        for y in (200, 250):
             box = make_box((x, y, 50, 50))
 #    print "box2", id(make_box((300, 250, 50, 50), color=Color(200, 50, 200)))
 
