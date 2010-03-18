@@ -141,10 +141,8 @@ class BoundSprite(Sprite):
             else:
                 sr = 0
         self.stuck = sr, sr, sd, sl
-        try:
-            self._rect.move_ip(right*m*10, down*m*10)
-        except AttributeError:
-            self._rect.move_ip(right*m*10, down*m*10)
+        self._rect.move_ip(right*m*10, down*m*10)
+
 
     def register_listeners(self, router):
         router.listen_arrows(self.handle_event)
