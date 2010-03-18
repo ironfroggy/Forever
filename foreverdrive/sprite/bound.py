@@ -4,6 +4,9 @@ the facilities to do that. This includes collision detection and
 correction, applying force, and constraints.
 """
 
+import math
+
+import pygame
 from pygame.sprite import Sprite, RenderUpdates
 from pygame import Rect
 from pygame.locals import *
@@ -58,6 +61,8 @@ class BoundSprite(Sprite):
     slowdown = 0.25
     speed = 2
 
+    stuck = (0, 0, 0, 0)
+
     def __init__(self, *args, **kwargs):
         super(BoundSprite, self).__init__(*args, **kwargs)
 
@@ -105,14 +110,19 @@ class BoundSprite(Sprite):
         slowdown = self.slowdown
         self.velocity = (right - right * (m / slowdown), down - down * (m / slowdown))
 
-        right, down = self.velocity
+        self._move(m)
+
+    def _move(self, m, v=None):
+        if not v:
+            right, down = self.velocity
+        else:
+            right, down = v
+
+        self.rect
         try:
             self._rect.move_ip(right*m*10, down*m*10)
         except AttributeError:
-            self.rect
             self._rect.move_ip(right*m*10, down*m*10)
-
-        self._rect.clamp_ip(self.groups()[0].rect)
 
     def register_listeners(self, router):
         router.listen_arrows(self.handle_event)
@@ -134,9 +144,107 @@ class BoundSprite(Sprite):
             elif event.key == K_RIGHT:
                 self.keypressing_right = pressing
 
+
+class WallSprite(BoundSprite):
+
+    stuck = (1, 1, 1, 1) 
+    slowdown = 0.1
+
+    def update(self, ticks):
+        pass
+
+
 class BoundGroup(RenderUpdates):
 
     def __init__(self, *args, **kwargs):
         super(BoundGroup, self).__init__(*args, **kwargs)
         self.rect = Rect((0, 0, 5000, 5000))
+
+    def update(self, ticks):
+        super(BoundGroup, self).update(ticks)
+
+        m = ticks / 1000
+
+        for sprite in self.sprites():
+            if sprite is self.background:
+                continue
+            for hit_sprite in pygame.sprite.spritecollide(sprite, self, False):
+                if hit_sprite is sprite or hit_sprite is self.background:
+                    continue
+                else:
+                    a_x, a_y = sprite.velocity
+                    a_d = math.sqrt(a_x*a_x + a_y*a_y)
+
+                    b_x, b_y = hit_sprite.velocity
+                    b_d = math.sqrt(b_x*b_x + b_y*b_y)
+
+                    if a_d > b_d:
+                        pushed = hit_sprite
+                        pusher = sprite
+                    else:
+                        pushed = sprite
+                        pusher = hit_sprite
+
+                    x, y = pusher.velocity
+                    cx, cy = pushed.velocity
+
+                    su, sr, sd, sl = pusher.stuck
+                    csu, csr, csd, csl = pushed.stuck
+                    csx, csy = 1, 1
+
+                    # sx, sy - 1 if current movement on that axis is allowed 
+                    # Adjust to un-overlap
+                    # In a given direction, if both are unstuck, adjust both
+                    # In a given direction, if the one is stuck, adjust other
+
+                    vx, vy = 0, 0
+
+                    # pushing down
+                    if y > 0:
+                        sy = 0 if su or sd else 1
+                        if not csd:
+                            pushed._rect.top += y
+                            csu = 0
+                            vy = y
+                        else:
+                            pusher._rect.top -= y
+                        sd += csd
+
+                    # pushing up
+                    elif y < 0:
+                        sy = 0 if su or sd else 1
+                        if not csu:
+                            pushed._rect.top += y
+                            csd = 0
+                            vy = y
+                        else:
+                            pusher._rect.top -= y
+                        su += csu
+                    
+                    # pushing right
+                    if x > 0:
+                        sx = 0 if sr or sl else 1
+                        if not csr:
+                            pushed._rect.left += x
+                            csl = 0
+                            vx = x
+                        else:
+                            pusher._rect.left -= x
+                        sr += csr
+
+                    # pushing left
+                    elif x < 0:
+                        sx = 0 if sr or sl else 1
+                        if not csl:
+                            pushed._rect.left += x
+                            csr = 0
+                            vx = x
+                        else:
+                            pusher._rect.left -= x
+                        sl += csl
+
+                    pushed.velocity = (cx + vx, cy + vy)
+
+                    pusher.stuck = su, sr, sd, sl
+                    pushed.stuck = csu, csr, csd, csl
 
