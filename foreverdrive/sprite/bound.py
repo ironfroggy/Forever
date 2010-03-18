@@ -198,6 +198,8 @@ class BoundGroup(RenderUpdates):
                     # In a given direction, if the one is stuck, adjust other
 
                     vx, vy = 0, 0
+                    original_rect = Rect(pushed._rect)
+                    B = -0.1
 
                     # pushing down
                     if y > 0:
@@ -208,7 +210,7 @@ class BoundGroup(RenderUpdates):
                             vy = y
                         else:
                             pusher._rect.top -= y
-                            y *= -1
+                            y *= B
                         sd += csd
 
                     # pushing up
@@ -220,7 +222,7 @@ class BoundGroup(RenderUpdates):
                             vy = y
                         else:
                             pusher._rect.top -= y
-                            y *= -1
+                            y *= B
                         su += csu
                     
                     # pushing right
@@ -232,7 +234,7 @@ class BoundGroup(RenderUpdates):
                             vx = x
                         else:
                             pusher._rect.left -= x
-                            x *= -1
+                            x *= B
                         sr += csr
 
                     # pushing left
@@ -244,12 +246,27 @@ class BoundGroup(RenderUpdates):
                             vx = x
                         else:
                             pusher._rect.left -= x
-                            x *= -1
+                            x *= B
                         sl += csl
 
-                    pushed.velocity = (cx + vx, cy + vy)
-                    pusher.velocity = (x, y)
+                    # Pushed object is moved, but did it move inside something else?
+                    # If so, retroactively make this a pushback.
+                    if self._retro_undo(pushed):
+                        pushed._rect = original_rect
+                        pushed.velocity = ((cx + vx)/4, (cy + vy)/4)
+                        pusher._rect.top -= y
+                        pusher._rect.left -= x
+                    else:
+                        pushed.velocity = (cx + vx, cy + vy)
+                        pusher.velocity = (x, y)
 
-                    pusher.stuck = su, sr, sd, sl
+                    #pusher.stuck = su, sr, sd, sl
                     pushed.stuck = csu, csr, csd, csl
 
+    def _retro_undo(self, pushed):
+        for sprite in pygame.sprite.spritecollide(pushed, self, False):
+            if sprite is self.background or sprite is pushed:
+                continue
+            else:
+                return True
+        return False
