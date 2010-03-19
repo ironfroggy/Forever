@@ -209,36 +209,39 @@ class BoundGroup(RenderUpdates):
                         pusher = hit_sprite
 
                     x, y = pusher.velocity
+                    T = 1
+                    if abs(x) < T:
+                        x = 0
+                    if abs(y) < T:
+                        y = 0
                     cx, cy = pushed.velocity
 
                     su, sr, sd, sl = pusher.stuck
                     csu, csr, csd, csl = pushed.stuck
                     csx, csy = 1, 1
 
-                    # sx, sy - 1 if current movement on that axis is allowed 
-                    # Adjust to un-overlap
-                    # In a given direction, if both are unstuck, adjust both
-                    # In a given direction, if the one is stuck, adjust other
-
                     vx, vy = 0, 0
                     original_rect = Rect(pushed._rect)
                     B = -0.1
 
+                    bu, br, bd, bl = self.blocked_sides(pusher) 
+    
                     # pushing down
                     if y > 0:
                         if not csd:
                             pushed._rect.top += y
                             vy = y
-                        else:
+                        elif bd:
                             pusher._rect.top -= y/2
                             y *= B
 
                     # pushing up
                     elif y < 0:
+                        print bu
                         if not csu:
                             pushed._rect.top += y
                             vy = y
-                        else:
+                        elif bu:
                             pusher._rect.top -= y/2
                             y *= B
                     
@@ -247,7 +250,7 @@ class BoundGroup(RenderUpdates):
                         if not csr:
                             pushed._rect.left += x
                             vx = x
-                        else:
+                        elif br:
                             pusher._rect.left -= x/2
                             x *= B
 
@@ -256,7 +259,7 @@ class BoundGroup(RenderUpdates):
                         if not csl:
                             pushed._rect.left += x
                             vx = x
-                        else:
+                        elif bl:
                             pusher._rect.left -= x/2
                             x *= B
 

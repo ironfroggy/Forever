@@ -13,16 +13,18 @@ def main():
     group = BoundGroup()
     background = BoundSprite()
     background.image = Surface((500, 500))
+    background.image.set_alpha(10)
+    background.image.fill(Color(0, 0, 0))
     group.add(background)
     group.background = background
 
-    def player():
+    def player(x, y):
         player = BoundSprite()
         player.image = Surface((25, 25))
-        player.image.fill(Color(200, 50, 50))
+        player.image.fill(Color(255, 255, 255))
         player.register_listeners(game.mode)
         player.rect
-        player._rect.move_ip(300, 300)
+        player._rect.move_ip(x*10, y*10)
         group.add(player)
 
     def make_box((x, y, w, h), cls=BoundSprite, color=Color(50, 200, 200), v=None):
@@ -40,14 +42,16 @@ def main():
     for x in xrange(4):
         for y in xrange(4):
             if x + y < 4:
-                box = make_box((200 + x*50, 200 + y*50, 50, 50))
+                box = make_box((200 + x*50, 200 + y*50, 50, 50), color=Color(60*x, 60*y, 150))
 #    print "box2", id(make_box((300, 250, 50, 50), color=Color(200, 50, 200)))
 
     make_box((0, 0, 500, 20), cls=WallSprite, color=Color(100, 100, 100))
     make_box((0, 480, 500, 20), cls=WallSprite, color=Color(100, 100, 100))
     make_box((0, 20, 20, 460), cls=WallSprite, color=Color(100, 100, 100))
     make_box((480, 20, 20, 460), cls=WallSprite, color=Color(100, 100, 100))
-    player()
+    for x in xrange(1, 5):
+        for y in xrange(1, 5):
+            player(30*x, 30*y)
 
     game.groups.append(group)
 
